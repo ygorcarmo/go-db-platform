@@ -1,4 +1,16 @@
 {{template "head"}}
 
-<div>This is the content for the page</div>
+<div class="grid grid-cols-[200px_auto] h-screen">
+  <div class="bg-red-400">
+    <ul class="p-5 grid gap-3">
+        <li>Home</li>
+        <li>Create User</li>
+        <li>Edit User</li>
+    </ul>
+  </div>
+  <div class="grid grid-rows-[70px_auto]">
+    {{ template "user-buttom"}}
+    <div class="h-full bg-black"></div>
+  </div>
+</div>
 {{template "end"}}

@@ -26,7 +26,7 @@ func main() {
 	router.Use(middleware.Logger)
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
-		tmpl, err := template.ParseFiles("templates/index.html", "templates/base.html")
+		tmpl, err := template.ParseFiles("templates/index.html", "templates/base.html", "templates/userButtom.html")
 
 		if err != nil {
 			log.Fatal(err)
@@ -34,7 +34,7 @@ func main() {
 		err = tmpl.Execute(w, nil)
 		// w.Write([]byte("Welcome"))
 	})
-	router.Get("/sign-in",	func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/sign-in", func(w http.ResponseWriter, r *http.Request) {
 
 		tmpl, err := template.ParseFiles("templates/signIn.html", "templates/base.html")
 
@@ -44,7 +44,6 @@ func main() {
 		err = tmpl.Execute(w, nil)
 		// w.Write([]byte("Welcome"))
 	})
-
 
 	router.Handle("/admin", injectActiveSession(helloUserHandler(client)))
 	http.ListenAndServe("127.0.0.1:3000", router)
