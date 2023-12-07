@@ -15,25 +15,41 @@ import (
 func main() {
 
 	client, err := clerk.NewClient(os.Getenv("clerk"))
-	injectActiveSession := clerk.WithSessionV2(client)
+	authenticateSession := customRequireSessionV2(client)
 
 	if err != nil {
-		// handle error
 		fmt.Println(err)
 	}
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 
-		tmpl, err := template.ParseFiles("templates/index.html", "templates/base.html", "templates/userButtom.html")
+	router.Group(func(r chi.Router) {
+		r.Use(authenticateSession)
 
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = tmpl.Execute(w, nil)
-		// w.Write([]byte("Welcome"))
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+
+			ctx := r.Context()
+
+			sessClaims, _ := ctx.Value(clerk.ActiveSessionClaims).(*clerk.SessionClaims)
+
+			user, err := client.Users().Read(sessClaims.Subject)
+			if err != nil {
+				panic(err)
+			}
+
+			fmt.Printf("Welcome " + *user.FirstName)
+
+			tmpl, err := template.ParseFiles("templates/index.html", "templates/base.html", "templates/userButtom.html")
+
+			if err != nil {
+				log.Fatal(err)
+			}
+			err = tmpl.Execute(w, nil)
+
+		})
 	})
+
 	router.Get("/sign-in", func(w http.ResponseWriter, r *http.Request) {
 
 		tmpl, err := template.ParseFiles("templates/signIn.html", "templates/base.html")
@@ -42,29 +58,27 @@ func main() {
 			log.Fatal(err)
 		}
 		err = tmpl.Execute(w, nil)
-		// w.Write([]byte("Welcome"))
 	})
-
-	router.Handle("/admin", injectActiveSession(helloUserHandler(client)))
 	http.ListenAndServe("127.0.0.1:3000", router)
 }
-func helloUserHandler(client clerk.Client) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
 
-		sessClaims, ok := ctx.Value(clerk.ActiveSessionClaims).(*clerk.SessionClaims)
-		if !ok {
-			// w.WriteHeader(http.StatusUnauthorized)
-			// w.Write([]byte("Unauthorized"))
-			http.Redirect(w, r, "/", http.StatusUnauthorized)
-			return
-		}
+func customRequireSessionV2(client clerk.Client, verifyTokenOptions ...clerk.VerifyTokenOption) func(handler http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		f := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			claims, ok := r.Context().Value(clerk.ActiveSessionClaims).(*clerk.SessionClaims)
+			if !ok || claims == nil {
+				tmpl, err := template.ParseFiles("templates/signIn.html", "templates/base.html")
 
-		user, err := client.Users().Read(sessClaims.Subject)
-		if err != nil {
-			panic(err)
-		}
+				if err != nil {
+					log.Fatal(err)
+				}
+				err = tmpl.Execute(w, nil)
+				return
+			}
 
-		w.Write([]byte("Welcome " + *user.FirstName))
+			next.ServeHTTP(w, r)
+		})
+
+		return clerk.WithSessionV2(client, verifyTokenOptions...)(f)
 	}
 }
