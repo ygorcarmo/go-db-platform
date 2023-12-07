@@ -40,7 +40,7 @@ func main() {
 
 			fmt.Printf("Welcome " + *user.FirstName)
 
-			tmpl, err := template.ParseFiles("templates/index.html", "templates/base.html", "templates/userButtom.html")
+			tmpl, err := template.ParseFiles("templates/index.tmpl", "templates/base.tmpl", "templates/userButtom.tmpl")
 
 			if err != nil {
 				log.Fatal(err)
@@ -52,7 +52,7 @@ func main() {
 
 	router.Get("/sign-in", func(w http.ResponseWriter, r *http.Request) {
 
-		tmpl, err := template.ParseFiles("templates/signIn.html", "templates/base.html")
+		tmpl, err := template.ParseFiles("templates/signIn.tmpl", "templates/base.tmpl")
 
 		if err != nil {
 			log.Fatal(err)
@@ -67,7 +67,7 @@ func customRequireSessionV2(client clerk.Client, verifyTokenOptions ...clerk.Ver
 		f := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			claims, ok := r.Context().Value(clerk.ActiveSessionClaims).(*clerk.SessionClaims)
 			if !ok || claims == nil {
-				tmpl, err := template.ParseFiles("templates/signIn.html", "templates/base.html")
+				tmpl, err := template.ParseFiles("templates/signIn.tmpl", "templates/base.tmpl")
 
 				if err != nil {
 					log.Fatal(err)
