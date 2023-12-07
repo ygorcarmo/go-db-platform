@@ -1,16 +1,24 @@
 {{template "head"}}
 
 <div class="grid grid-cols-[200px_auto] h-screen">
-  <div class="bg-red-400">
+  <div class="border-gray-600 border-r-2">
     <ul class="p-5 grid gap-3">
-        <li>Home</li>
-        <li>Create User</li>
-        <li>Edit User</li>
+      <li>Home</li>
+      <li>
+        <a hx-get="/create-user" hx-target="#main-content">Create User</a>
+      </li>
+      <li>
+        <a hx-get="/edit-user" hx-target="#main-content">Edit User</a>
+      </li>
     </ul>
   </div>
   <div class="grid grid-rows-[70px_auto]">
     {{ template "user-buttom"}}
-    <div class="h-full bg-black"></div>
+    <div class="h-full">
+      <div id="main-content" class="p-4">
+        <h1 class="text-2xl">Welcome {{ .FirstName }} {{ .LastName }}</h1>
+      </div>
+    </div>
   </div>
 </div>
 {{template "end"}}
