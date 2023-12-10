@@ -1,6 +1,7 @@
-package main
+package server
 
 import (
+	"custom-db-platform/internal/utils"
 	"fmt"
 	"html/template"
 	"log"
@@ -20,9 +21,9 @@ type userDetails struct {
 var clerkClient clerk.Client
 var clerkError error
 
-func router() {
+func (s *Server) RegisterRoutes() http.Handler {
 	clerkClient, clerkError = clerk.NewClient(os.Getenv("clerk"))
-	authenticateSession := customRequireSessionV2(clerkClient)
+	authenticateSession := utils.CustomRequireSessionV2(clerkClient)
 
 	if clerkError != nil {
 		fmt.Println(clerkError)
@@ -35,22 +36,27 @@ func router() {
 		r.Use(authenticateSession)
 
 		r.Get("/", homeHandler)
-		r.Get("/create-user", createUserHandler)
+		r.Get("/create-user", createUserFormHandler)
+		r.Post("/create-user", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Println("POST asdasudhasbh")
+			username := r.FormValue("username")
+			fmt.Println(username)
+		})
 		r.Get("/edit-user", editUserHandler)
 	})
 
 	// TODO : Remove this route as the clerk authenticator will handle sign-ins
 	router.Get("/sign-in", func(w http.ResponseWriter, r *http.Request) {
 
-		tmpl, err := template.ParseFiles("templates/signIn.tmpl", "templates/base.tmpl")
+		tmpl, err := template.ParseFiles("../web/signIn.tmpl", "../web/base.tmpl")
 
 		if err != nil {
 			log.Fatal(err)
 		}
 		err = tmpl.Execute(w, nil)
 	})
-	fmt.Println("Server running on http://localhost:3000")
-	http.ListenAndServe("127.0.0.1:3000", router)
+
+	return router
 
 }
 
@@ -66,7 +72,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Welcome " + *user.FirstName)
 
-	tmpl, err := template.ParseFiles("templates/index.tmpl", "templates/base.tmpl", "templates/userButtom.tmpl")
+	tmpl, err := template.ParseFiles("internal/web/index.tmpl", "internal/web/base.tmpl", "internal/web/userButtom.tmpl")
 
 	if err != nil {
 		log.Fatal(err)
@@ -74,8 +80,8 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	userDet := userDetails{*user.FirstName, *user.LastName}
 	err = tmpl.Execute(w, userDet)
 }
-func createUserHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/createUser.tmpl")
+func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("internal/web/createUser.tmpl")
 
 	if err != nil {
 		log.Fatal(err)
@@ -84,31 +90,20 @@ func createUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func editUserHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("templates/editUser.tmpl")
+
+	tmpl, err := template.ParseFiles("internal/web/editUser.tmpl")
 
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = tmpl.Execute(w, nil)
-}
 
-func customRequireSessionV2(client clerk.Client, verifyTokenOptions ...clerk.VerifyTokenOption) func(handler http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		f := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			claims, ok := r.Context().Value(clerk.ActiveSessionClaims).(*clerk.SessionClaims)
-			if !ok || claims == nil {
-				tmpl, err := template.ParseFiles("templates/signIn.tmpl", "templates/base.tmpl")
-
-				if err != nil {
-					log.Fatal(err)
-				}
-				err = tmpl.Execute(w, nil)
-				return
-			}
-
-			next.ServeHTTP(w, r)
-		})
-
-		return clerk.WithSessionV2(client, verifyTokenOptions...)(f)
+	// TODO maybe have a different layout for partial and full reloads.
+	hxHeader := r.Header.Get("HX-Request")
+	if hxHeader != "" {
+		fmt.Println("Partial Reload")
+		// return
 	}
+
+	err = tmpl.Execute(w, nil)
+	fmt.Println("Full Reload")
 }
