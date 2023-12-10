@@ -22,3 +22,6 @@ go.work
 
 # Go air temp folder
 tmp/
+
+# Test SQLite Db
+*.db
