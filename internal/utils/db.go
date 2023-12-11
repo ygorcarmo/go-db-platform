@@ -2,16 +2,42 @@ package utils
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
 
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/go-sql-driver/mysql"
 )
 
+var db *sql.DB
+
 func ConnectToDB() {
-	db, err := sql.Open("sqlite3", "./internal/data/newDb.db")
-	if err != nil {
-		panic("Couldn't connect to db")
+	// TODO: Connect to docker postgres
+	// Capture connection properties.
+	cfg := mysql.Config{
+		User:   "newuser",
+		Passwd: "123",
+		Net:    "tcp",
+		Addr:   "localhost:3306",
+		DBName: "test",
 	}
+	// Get a database handle.
+	var err error
+	db, err = sql.Open("mysql", cfg.FormatDSN())
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	defer db.Close()
-	createTable, _ := db.Prepare("CREATE TABLE IF NOT EXISTS people (id INTERGER PRIMARY KEY, firstname TEXT, lastname TEXT)")
-	createTable.Exec()
+
+	pingErr := db.Ping()
+	if pingErr != nil {
+		log.Fatal(pingErr)
+	}
+	fmt.Println("Connected!")
+
+	res, err := db.Exec("CREATE TABLE IF NOT EXISTS test (name varchar(25))")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(res)
 }

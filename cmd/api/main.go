@@ -4,8 +4,6 @@ import (
 	"custom-db-platform/internal/server"
 	"custom-db-platform/internal/utils"
 	"fmt"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func init() {
