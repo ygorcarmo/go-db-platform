@@ -1,22 +1,42 @@
 <div>
-    <h1 class="text-2xl">Create User</h1>
-    <form class="border rounded border-gray-500 p-5 w-fit flex flex-col gap-2" hx-post="/create-user">
-        <div class="grid grid-cols-2 gap-y-2">
-            <label for="username" class="col-start-1">Username: </label>
-            <input type="text" name="username" id="username" class="border border-slate-400 rounded" required>
-        
-            <label for="password" class="col-start-1">Password: </label>
-            <input type="text" name="password" id="password" class="border border-slate-400 rounded" required>
-       
-            <label for="wo" class="col-start-1">WO: </label>
-            <input type="text" name="wo" id="wo" class="border border-slate-400 rounded" required>
-        </div>
-        <label for="databases">Select the the following databases: </label>
-        <select name="databases" id="databases" multiple>
-            <option value="maria">mariadb</option>
-            <option value="another">another one</option>
-            <option value="just">just a db another one</option>
-        </select>
-        <button type="submit" class="bg-blue-400 py-2 px-4 rounded">Submit</button>
-    </form>
+  <h1 class="text-2xl">Create User</h1>
+  <form
+    class="border rounded border-gray-500 p-5 w-fit flex flex-col gap-2"
+    hx-post="/create-user"
+  >
+    <div class="grid grid-cols-2 gap-y-2">
+      <label for="username" class="col-start-1">Username: </label>
+      <input
+        type="text"
+        name="username"
+        id="username"
+        class="border border-slate-400 rounded"
+        required
+      />
+
+      <label for="password" class="col-start-1">Password: </label>
+      <input
+        type="text"
+        name="password"
+        id="password"
+        class="border border-slate-400 rounded"
+        required
+      />
+
+      <label for="wo" class="col-start-1">WO: </label>
+      <input
+        type="text"
+        name="wo"
+        id="wo"
+        class="border border-slate-400 rounded"
+        required
+      />
+    </div>
+    <label for="databases">Select the the following databases: </label>
+    <select name="databases" id="databases" multiple>
+      <option value="postgres">postgres</option>
+      <option value="mysql">mysql</option>
+    </select>
+    <button type="submit" class="bg-blue-400 py-2 px-4 rounded">Submit</button>
+  </form>
 </div>

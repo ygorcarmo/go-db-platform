@@ -36,13 +36,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Use(authenticateSession)
 
 		r.Get("/", homeHandler)
-		r.Get("/create-user", createUserFormHandler)
-		r.Post("/create-user", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Println("POST asdasudhasbh")
-			username := r.FormValue("username")
-			fmt.Println(username)
-		})
-		r.Get("/delete-user", deleteUserHandler)
+
+		r.Get("/create-user", createUserPageHandler)
+		r.Post("/create-user", createUserFormHandler)
+
+		r.Get("/delete-user", deleteUserPageHandler)
+		r.Post("/delete-user", deleteUserFormHandler)
 	})
 
 	// TODO : Remove this route as the clerk authenticator will handle sign-ins
@@ -80,7 +79,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	userDet := userDetails{*user.FirstName, *user.LastName}
 	err = tmpl.Execute(w, userDet)
 }
-func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
+func createUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles("internal/web/createUser.tmpl")
 
 	if err != nil {
@@ -89,7 +88,17 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.Execute(w, nil)
 }
 
-func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
+func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	wo := r.FormValue("wo")
+	databases := r.Form["databases"]
+
+	fmt.Printf("username: %s, password: %s, wo: %s, databases: %v\n", username, password, wo, databases)
+}
+
+func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	tmpl, err := template.ParseFiles("internal/web/deleteUser.tmpl")
 
@@ -106,4 +115,14 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = tmpl.Execute(w, nil)
 	fmt.Println("Full Reload")
+}
+
+func deleteUserFormHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	username := r.FormValue("username")
+	wo := r.FormValue("wo")
+	databases := r.Form["databases"]
+
+	fmt.Printf("username: %s, wo: %s, databases: %v\n", username, wo, databases)
+
 }
