@@ -26,6 +26,7 @@ func NewServer() *http.Server {
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
+	fmt.Printf("Server is running on http://localhost:%d\n", port)
 
 	return server
 }

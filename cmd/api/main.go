@@ -2,12 +2,11 @@ package main
 
 import (
 	"custom-db-platform/internal/server"
-	"custom-db-platform/internal/utils"
 	"fmt"
 )
 
 func init() {
-	utils.ConnectToDB()
+	// utils.ConnectToDB()
 }
 
 func main() {
@@ -17,4 +16,5 @@ func main() {
 		fmt.Printf("%v\n", err)
 		panic("Cannot Start Server")
 	}
+
 }

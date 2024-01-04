@@ -42,7 +42,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 			username := r.FormValue("username")
 			fmt.Println(username)
 		})
-		r.Get("/edit-user", editUserHandler)
+		r.Get("/delete-user", deleteUserHandler)
 	})
 
 	// TODO : Remove this route as the clerk authenticator will handle sign-ins
@@ -89,9 +89,9 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.Execute(w, nil)
 }
 
-func editUserHandler(w http.ResponseWriter, r *http.Request) {
+func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 
-	tmpl, err := template.ParseFiles("internal/web/editUser.tmpl")
+	tmpl, err := template.ParseFiles("internal/web/deleteUser.tmpl")
 
 	if err != nil {
 		log.Fatal(err)
