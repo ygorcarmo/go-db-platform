@@ -79,4 +79,6 @@ func ConnectToDBAndCreateUser(username string, password string, address string, 
 		}
 	}
 
+	fmt.Printf("User %s has been created successfully", newUser)
+
 }

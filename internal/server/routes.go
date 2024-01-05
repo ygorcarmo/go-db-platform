@@ -96,6 +96,8 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	databases := r.Form["databases"]
 
 	fmt.Printf("username: %s, password: %s, wo: %s, databases: %v\n", username, password, wo, databases)
+	utils.ConnectToDBAndCreateUser("postgres", "test", "localhost:5432", databases[0], "disable", username)
+	// utils.ConnectToDBAndCreateUser("root", "test", "localhost:3306", "mysql", "disable", "test3")
 }
 
 func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
@@ -124,5 +126,4 @@ func deleteUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	databases := r.Form["databases"]
 
 	fmt.Printf("username: %s, wo: %s, databases: %v\n", username, wo, databases)
-
 }
