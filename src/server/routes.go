@@ -1,7 +1,7 @@
 package server
 
 import (
-	"custom-db-platform/internal/utils"
+	"custom-db-platform/src/utils"
 	"fmt"
 	"html/template"
 	"log"
@@ -47,7 +47,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 	// TODO : Remove this route as the clerk authenticator will handle sign-ins
 	router.Get("/sign-in", func(w http.ResponseWriter, r *http.Request) {
 
-		tmpl, err := template.ParseFiles("../web/signIn.tmpl", "../web/base.tmpl")
+		tmpl, err := template.ParseFiles("src/web/signIn.tmpl", "src/web/base.tmpl")
 
 		if err != nil {
 			log.Fatal(err)
@@ -71,7 +71,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Welcome " + *user.FirstName)
 
-	tmpl, err := template.ParseFiles("internal/web/index.tmpl", "internal/web/base.tmpl", "internal/web/userButtom.tmpl")
+	tmpl, err := template.ParseFiles("src/web/index.tmpl", "src/web/base.tmpl", "src/web/userButtom.tmpl")
 
 	if err != nil {
 		log.Fatal(err)
@@ -80,7 +80,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.Execute(w, userDet)
 }
 func createUserPageHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles("internal/web/createUser.tmpl")
+	tmpl, err := template.ParseFiles("src/web/createUser.tmpl")
 
 	if err != nil {
 		log.Fatal(err)
@@ -102,7 +102,7 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 
 func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 
-	tmpl, err := template.ParseFiles("internal/web/deleteUser.tmpl")
+	tmpl, err := template.ParseFiles("src/web/deleteUser.tmpl")
 
 	if err != nil {
 		log.Fatal(err)

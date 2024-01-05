@@ -5,6 +5,7 @@ services:
       - 3001:3306
     environment:
       - MYSQL_ROOT_PASSWORD=test
+    # command: mysql -u root -ptest && CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
 
   postgres:
     image: postgres

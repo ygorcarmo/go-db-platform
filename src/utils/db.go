@@ -20,8 +20,6 @@ type DBConfig struct {
 
 func ConnectToDBAndCreateUser(username string, password string, address string, dbType string, sslMode string, newUser string) {
 
-	// username:password@protocol(address)/dbname?param=value
-	// dsn := "%s:%s@%s/?sslmode=%s"
 	var connectionStr string
 	if dbType == "postgres" {
 		connectionStr = fmt.Sprintf("postgres://%s:%s@%s/?sslmode=%s", username, password, address, sslMode)
@@ -35,25 +33,6 @@ func ConnectToDBAndCreateUser(username string, password string, address string, 
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// TODO: Connect to docker postgres
-	// Capture connection properties.
-	// cfg := mysql.Config{
-	// 	User:   "newuser",
-	// 	Passwd: "123",
-	// 	Net:    "tcp",
-	// 	Addr:   "localhost:3306",
-	// 	DBName: "test",
-	// }
-	// // Get a database handle.
-	// var err error
-	// db, err = sql.Open("mysql", cfg.FormatDSN())
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// connStr := "postgres://postgres:test@localhost:5432/postgres?sslmode=disable"
-	// db, err := sql.Open("postgres", connStr)
 
 	defer db.Close()
 

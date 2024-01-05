@@ -15,8 +15,8 @@ func CustomRequireSessionV2(client clerk.Client, verifyTokenOptions ...clerk.Ver
 		f := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			claims, ok := r.Context().Value(clerk.ActiveSessionClaims).(*clerk.SessionClaims)
 			if !ok || claims == nil {
-				signInTemplate := filepath.Join("internal", "web", "signIn.tmpl")
-				baseTemplate := filepath.Join("internal", "web", "base.tmpl")
+				signInTemplate := filepath.Join("src", "web", "signIn.tmpl")
+				baseTemplate := filepath.Join("src", "web", "base.tmpl")
 
 				tmpl, err := template.ParseFiles(signInTemplate, baseTemplate)
 

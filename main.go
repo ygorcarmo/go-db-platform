@@ -1,7 +1,7 @@
 package main
 
 import (
-	"custom-db-platform/internal/server"
+	"custom-db-platform/src/server"
 	"fmt"
 )
 
