@@ -69,7 +69,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	fmt.Printf("Welcome " + *user.FirstName)
+	fmt.Printf("Welcome %s\n", *user.FirstName)
 
 	tmpl, err := template.ParseFiles("src/web/index.tmpl", "src/web/base.tmpl", "src/web/userButtom.tmpl")
 
