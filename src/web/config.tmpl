@@ -1,0 +1,50 @@
+<div>
+  <h1 class="text-2xl">Add Database</h1>
+  <form
+    class="border rounded border-gray-500 p-5 w-fit flex flex-col gap-2"
+    hx-post="/db"
+  >
+    <div class="grid grid-cols-2 gap-y-2">
+      <label for="name" class="col-start-1">Name: </label>
+      <input
+        type="text"
+        name="name"
+        id="name"
+        class="border border-slate-400 rounded"
+        required
+      />
+
+      <label for="host" class="col-start-1">Host: </label>
+      <input
+        type="text"
+        name="host"
+        id="host"
+        class="border border-slate-400 rounded"
+        required
+      />
+      <label for="port" class="col-start-1">Port: </label>
+      <input
+        type="number"
+        name="port"
+        id="port"
+        class="border border-slate-400 rounded"
+        required
+      />
+      <label for="type">Type: </label>
+      <select name="type" id="type">
+        <option value="postgres">postgres</option>
+        <option value="mysql">mysql</option>
+        <option value="mariadb">mariadb</option>
+      </select>
+      <label for="sslMode">SSL Mode: </label>
+      <select name="sslMode" id="sslMode">
+        <option value="disable">disable</option>
+        <option value="require">require</option>
+        <option value="verify-ca">verify-ca</option>
+        <option value="verify-full">verify-full</option>
+      </select>
+    </div>
+
+    <button type="submit" class="bg-blue-400 py-2 px-4 rounded">Submit</button>
+  </form>
+</div>

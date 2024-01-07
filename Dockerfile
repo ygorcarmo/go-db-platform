@@ -1,4 +1,3 @@
-# FROM golang:latest as builder
 FROM golang:alpine as builder
 
 WORKDIR /app
@@ -16,8 +15,6 @@ WORKDIR /app
 
 COPY --from=builder /app/src/web ./src/web
 COPY --from=builder /app/db-platform .
-
-# EXPOSE 8080/tcp
 
 EXPOSE 8080/tcp
 

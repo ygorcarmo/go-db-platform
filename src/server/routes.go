@@ -42,18 +42,21 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 		r.Get("/delete-user", deleteUserPageHandler)
 		r.Post("/delete-user", deleteUserFormHandler)
+
+		r.Get("/configuration", configPageHandler)
+		r.Post("/db", addDBHandler)
 	})
 
 	// TODO : Remove this route as the clerk authenticator will handle sign-ins
-	router.Get("/sign-in", func(w http.ResponseWriter, r *http.Request) {
+	// router.Get("/sign-in", func(w http.ResponseWriter, r *http.Request) {
 
-		tmpl, err := template.ParseFiles("src/web/signIn.tmpl", "src/web/base.tmpl")
+	// 	tmpl, err := template.ParseFiles("src/web/signIn.tmpl", "src/web/base.tmpl")
 
-		if err != nil {
-			log.Fatal(err)
-		}
-		err = tmpl.Execute(w, nil)
-	})
+	// 	if err != nil {
+	// 		log.Fatal(err)
+	// 	}
+	// 	err = tmpl.Execute(w, nil)
+	// })
 
 	return router
 
@@ -126,4 +129,29 @@ func deleteUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	databases := r.Form["databases"]
 
 	fmt.Printf("username: %s, wo: %s, databases: %v\n", username, wo, databases)
+}
+
+func configPageHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles("src/web/config.tmpl")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = tmpl.Execute(w, nil)
+}
+
+func addDBHandler(w http.ResponseWriter, r *http.Request) {
+	name := r.FormValue("name")
+	host := r.FormValue("host")
+	port := r.FormValue("port")
+	dbType := r.FormValue("type")
+	sslMode := r.FormValue("sslMode")
+
+	_, err := db.Exec("INSERT INTO db_connection_info (name, host, port, type, sslMode) VALUES (?, ?, ?, ?, ?)", name, host, port, dbType, sslMode)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Success")
 }

@@ -44,7 +44,7 @@ func ConnectToDBAndCreateUser(username string, password string, address string, 
 
 	if dbType == "postgres" {
 
-		_, err := db.Exec(fmt.Sprintf("CREATE USER %s PASSWORD '1234'", newUser))
+		_, err := db.Exec("CREATE USER ? PASSWORD '1234'", newUser)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -52,7 +52,7 @@ func ConnectToDBAndCreateUser(username string, password string, address string, 
 
 	if dbType == "mysql" {
 
-		_, err := db.Exec(fmt.Sprintf("CREATE USER '%s'@'localhost' IDENTIFIED BY 'password';", newUser))
+		_, err := db.Exec("CREATE USER '?'@'localhost' IDENTIFIED BY 'password';", newUser)
 		if err != nil {
 			log.Fatal(err)
 		}
