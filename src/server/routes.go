@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 
 	"github.com/clerkinc/clerk-sdk-go/clerk"
 	"github.com/go-chi/chi/v5"
@@ -16,6 +17,11 @@ import (
 type userDetails struct {
 	FirstName string
 	LastName  string
+}
+
+type Result struct {
+	Message string
+	Err     error
 }
 
 var clerkClient clerk.Client
@@ -92,7 +98,11 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	wo := r.FormValue("wo")
 	databases := r.Form["databases"]
 
+	c := make(chan string)
+	var wg sync.WaitGroup
+
 	for _, database := range databases {
+		wg.Add(1)
 
 		dbDetail, err := getDBByName(database)
 
@@ -102,8 +112,10 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println(dbDetail)
 		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, dbDetail)
-		utils.ConnectToDBAndCreateUser(dbDetail.Host, dbDetail.Port, dbDetail.DbType, dbDetail.SslMode, username)
+		go utils.ConnectToDBAndCreateUser(dbDetail.Host, dbDetail.Port, dbDetail.DbType, dbDetail.SslMode, username, c, &wg)
+		fmt.Println(<-c)
 	}
+	wg.Wait()
 }
 
 func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
