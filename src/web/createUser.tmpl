@@ -14,15 +14,6 @@
         required
       />
 
-      <label for="password" class="col-start-1">Password: </label>
-      <input
-        type="text"
-        name="password"
-        id="password"
-        class="border border-slate-400 rounded"
-        required
-      />
-
       <label for="wo" class="col-start-1">WO: </label>
       <input
         type="text"
@@ -34,8 +25,11 @@
     </div>
     <label for="databases">Select the the following databases: </label>
     <select name="databases" id="databases" multiple>
-      <option value="postgres">postgres</option>
-      <option value="mysql">mysql</option>
+      {{ range .}}
+      <option value="{{.}}">{{ . }}</option>
+      {{
+        end
+      }}
     </select>
     <button type="submit" class="bg-blue-400 py-2 px-4 rounded">Submit</button>
   </form>

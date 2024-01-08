@@ -47,19 +47,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Post("/db", addDBHandler)
 	})
 
-	// TODO : Remove this route as the clerk authenticator will handle sign-ins
-	// router.Get("/sign-in", func(w http.ResponseWriter, r *http.Request) {
-
-	// 	tmpl, err := template.ParseFiles("src/web/signIn.tmpl", "src/web/base.tmpl")
-
-	// 	if err != nil {
-	// 		log.Fatal(err)
-	// 	}
-	// 	err = tmpl.Execute(w, nil)
-	// })
-
 	return router
-
 }
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -88,24 +76,45 @@ func createUserPageHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = tmpl.Execute(w, nil)
+
+	dbs, err := getDBsName()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = tmpl.Execute(w, dbs)
 }
 
 func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.FormValue("username")
-	password := r.FormValue("password")
 	wo := r.FormValue("wo")
 	databases := r.Form["databases"]
 
-	fmt.Printf("username: %s, password: %s, wo: %s, databases: %v\n", username, password, wo, databases)
-	utils.ConnectToDBAndCreateUser("postgres", "test", "localhost:5432", databases[0], "disable", username)
-	// utils.ConnectToDBAndCreateUser("root", "test", "localhost:3306", "mysql", "disable", "test3")
+	for _, database := range databases {
+
+		dbDetail, err := getDBByName(database)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(dbDetail)
+		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, dbDetail)
+		utils.ConnectToDBAndCreateUser(dbDetail.Host, dbDetail.Port, dbDetail.DbType, dbDetail.SslMode, username)
+	}
 }
 
 func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	tmpl, err := template.ParseFiles("src/web/deleteUser.tmpl")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dbs, err := getDBsName()
 
 	if err != nil {
 		log.Fatal(err)
@@ -118,7 +127,7 @@ func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 		// return
 	}
 
-	err = tmpl.Execute(w, nil)
+	err = tmpl.Execute(w, dbs)
 	fmt.Println("Full Reload")
 }
 
