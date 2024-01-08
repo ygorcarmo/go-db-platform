@@ -25,7 +25,7 @@ func ConnectDB() {
 		User:   "root",
 		Passwd: "test",
 		Net:    "tcp",
-		Addr:   "127.0.0.1:3001",
+		Addr:   "127.0.0.1:3306",
 		DBName: "db_platform",
 	}
 	// Get a database handle.

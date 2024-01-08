@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-var port = 8080
+var port = 3000
 
 type Server struct {
 	port int

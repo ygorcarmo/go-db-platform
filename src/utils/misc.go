@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"custom-db-platform/src/datatypes"
 	"database/sql"
 	"fmt"
 	"sync"
@@ -9,8 +10,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func ConnectToDBAndCreateUser(host string, port int, dbType string, sslMode string, newUser string, c chan string, wg *sync.WaitGroup) {
-	var res string
+func ConnectToDBAndCreateUser(host string, port int, dbType string, sslMode string, newUser string, c chan datatypes.Result, wg *sync.WaitGroup) {
 	var connectionStr string
 	if dbType == "postgres" {
 		connectionStr = fmt.Sprintf("postgres://postgres:test@%s:%d/?sslmode=%s", host, port, sslMode)
@@ -23,8 +23,7 @@ func ConnectToDBAndCreateUser(host string, port int, dbType string, sslMode stri
 	db, err := sql.Open(dbType, connectionStr)
 	if err != nil {
 		// log.Fatal(err)
-		res = fmt.Sprintf("Error: %v", err)
-		return
+		c <- datatypes.Result{Message: fmt.Sprintf("Error: %v", err), Success: false}
 	}
 
 	defer db.Close()
@@ -32,8 +31,7 @@ func ConnectToDBAndCreateUser(host string, port int, dbType string, sslMode stri
 	pingErr := db.Ping()
 	if pingErr != nil {
 		// log.Fatal(pingErr)
-		res = fmt.Sprintf("Error: %v", err)
-		return
+		c <- datatypes.Result{Message: fmt.Sprintf("Error: %v", err), Success: false}
 	}
 	fmt.Println("Connected!")
 
@@ -42,8 +40,7 @@ func ConnectToDBAndCreateUser(host string, port int, dbType string, sslMode stri
 		_, err := db.Exec(fmt.Sprintf("CREATE USER %s PASSWORD '1234';", newUser))
 		if err != nil {
 			// log.Fatal(err)
-			res = fmt.Sprintf("Error: %v", err)
-			return
+			c <- datatypes.Result{Message: fmt.Sprintf("Error: %v", err), Success: false}
 		}
 	}
 
@@ -52,13 +49,9 @@ func ConnectToDBAndCreateUser(host string, port int, dbType string, sslMode stri
 		_, err := db.Exec(fmt.Sprintf("CREATE USER '%s'@'localhost' IDENTIFIED BY 'password';", newUser))
 		if err != nil {
 			// log.Fatal(err)
-			res = fmt.Sprintf("Error: %v", err)
-			return
+			c <- datatypes.Result{Message: fmt.Sprintf("Error: %v", err), Success: false}
 		}
 	}
-
-	res = fmt.Sprintf("User %s has been created successfully\n", newUser)
-
-	c <- res
+	c <- datatypes.Result{Message: fmt.Sprintf("User %s has been created successfully\n", newUser), Success: true}
 	wg.Done()
 }

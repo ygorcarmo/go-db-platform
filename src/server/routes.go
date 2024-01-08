@@ -1,6 +1,7 @@
 package server
 
 import (
+	"custom-db-platform/src/datatypes"
 	"custom-db-platform/src/utils"
 	"fmt"
 	"html/template"
@@ -17,11 +18,6 @@ import (
 type userDetails struct {
 	FirstName string
 	LastName  string
-}
-
-type Result struct {
-	Message string
-	Err     error
 }
 
 var clerkClient clerk.Client
@@ -98,7 +94,9 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	wo := r.FormValue("wo")
 	databases := r.Form["databases"]
 
-	c := make(chan string)
+	var results []datatypes.Result
+
+	c := make(chan datatypes.Result)
 	var wg sync.WaitGroup
 
 	for _, database := range databases {
@@ -114,8 +112,10 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, dbDetail)
 		go utils.ConnectToDBAndCreateUser(dbDetail.Host, dbDetail.Port, dbDetail.DbType, dbDetail.SslMode, username, c, &wg)
 		fmt.Println(<-c)
+		results = append(results, <-c)
 	}
 	wg.Wait()
+	fmt.Println(results)
 }
 
 func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
