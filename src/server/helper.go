@@ -17,8 +17,6 @@ func ConnectToDBAndCreateUser(host string, port int, dbType string, sslMode stri
 		return
 	}
 
-	fmt.Println(connectionStr)
-
 	localdb, err := sql.Open(dbType, connectionStr)
 	if err != nil {
 		// log.Fatal(err)
