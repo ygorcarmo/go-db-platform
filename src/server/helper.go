@@ -3,8 +3,6 @@ package server
 import (
 	"database/sql"
 	"fmt"
-	// _ "github.com/go-sql-driver/mysql"
-	// _ "github.com/lib/pq"
 )
 
 func ConnectToDBAndCreateUser(host string, port int, dbType string, sslMode string, newUser string, dbName string, c chan Result) {
