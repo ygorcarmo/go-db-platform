@@ -1,0 +1,14 @@
+{{if .Sucesses }}
+<div class="border border-green-500 bg-green-300 w-fit p-2 rounded">
+  {{ range.Sucesses }}
+  <p>{{ . }}</p>
+  {{ end }}
+</div>
+{{ end }}
+{{ if .Errors}}
+<div class="border border-red-500 bg-red-300 w-fit p-2 rounded">
+  {{ range.Errors }}
+  <p>{{ . }}</p>
+  {{ end }}
+</div>
+{{ end }}

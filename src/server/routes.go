@@ -1,7 +1,6 @@
 package server
 
 import (
-	"custom-db-platform/src/datatypes"
 	"custom-db-platform/src/utils"
 	"fmt"
 	"html/template"
@@ -20,8 +19,19 @@ type userDetails struct {
 	LastName  string
 }
 
+type Result struct {
+	Message string
+	Success bool
+}
+
+type filteredResults struct {
+	Sucesses []string
+	Errors   []string
+}
+
 var clerkClient clerk.Client
 var clerkError error
+var wg sync.WaitGroup
 
 func (s *Server) RegisterRoutes() http.Handler {
 	clerkClient, clerkError = clerk.NewClient(os.Getenv("clerk"))
@@ -93,11 +103,11 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	wo := r.FormValue("wo")
 	databases := r.Form["databases"]
+	fmt.Println(databases)
 
-	var results []datatypes.Result
+	var results []Result
 
-	c := make(chan datatypes.Result)
-	var wg sync.WaitGroup
+	c := make(chan Result)
 
 	for _, database := range databases {
 		wg.Add(1)
@@ -110,12 +120,29 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 
 		fmt.Println(dbDetail)
 		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, dbDetail)
-		go utils.ConnectToDBAndCreateUser(dbDetail.Host, dbDetail.Port, dbDetail.DbType, dbDetail.SslMode, username, c, &wg)
-		fmt.Println(<-c)
-		results = append(results, <-c)
+		go ConnectToDBAndCreateUser(dbDetail.Host, dbDetail.Port, dbDetail.DbType, dbDetail.SslMode, username, dbDetail.Name, c)
+		msg := <-c
+		results = append(results, msg)
 	}
 	wg.Wait()
 	fmt.Println(results)
+
+	var fResponse filteredResults
+
+	for _, result := range results {
+		if result.Success {
+			fResponse.Sucesses = append(fResponse.Sucesses, result.Message)
+		} else {
+			fResponse.Errors = append(fResponse.Errors, result.Message)
+		}
+	}
+
+	tmpl, err := template.ParseFiles("src/web/response.tmpl")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = tmpl.Execute(w, fResponse)
 }
 
 func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
