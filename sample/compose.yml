@@ -7,7 +7,20 @@ services:
       - MYSQL_ROOT_PASSWORD=test
     volumes:
       - ../src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
-    # command: mysql -u root -ptest && CREATE USER 'user'@'localhost' IDENTIFIED BY 'password';
+
+  mysql-dois:
+    image: mysql
+    ports:
+      - 3003:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=test
+
+  mysql-three:
+    image: mysql
+    ports:
+      - 3004:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=test
 
   postgres:
     image: postgres
@@ -16,9 +29,23 @@ services:
     environment:
       - POSTGRES_PASSWORD=test
 
+  postgres-dois:
+    image: postgres
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_PASSWORD=test
+
   mariadb:
     image: mariadb
     ports:
       - 3002:3306
+    environment:
+      - MARIADB_ROOT_PASSWORD=test
+
+  mariadb-que:
+    image: mariadb
+    ports:
+      - 3005:3306
     environment:
       - MARIADB_ROOT_PASSWORD=test

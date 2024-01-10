@@ -15,5 +15,9 @@ CREATE TABLE db_connection_info (
 
 INSERT INTO db_connection_info (name, host, port, type, sslMode) VALUES
  ("mysql", "localhost", 3001, "mysql", "disable"),
+ ("mysql-2", "localhost", 3003, "mysql", "disable"),
+ ("mysql-3", "localhost", 3004, "mysql", "disable"),
  ("maria", "localhost", 3002, "mysql", "disable"),
- ("postgres", "localhost", 5432, "postgres", "disable");
+ ("maria-2", "localhost", 3005, "mysql", "disable"),
+ ("postgres", "localhost", 5432, "postgres", "disable"),
+ ("postgres-2", "localhost", 5433, "postgres", "disable");
