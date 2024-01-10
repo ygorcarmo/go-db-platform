@@ -6,7 +6,7 @@
     hx-target="#response"
     hx-ext="disable-element"
     hx-disable-element="#button"
-    hx-indicator="#spinner"
+    hx-indicator=".spinner"
   >
     <div class="grid grid-cols-2 gap-y-2">
       <label for="username" class="col-start-1">Username: </label>
@@ -35,15 +35,18 @@
         end
       }}
     </select>
-    <button type="submit" class="bg-blue-400 py-2 px-4 rounded" id="button">
+    <button
+      type="submit"
+      class="bg-blue-400 py-2 px-4 rounded spinner my-indicator"
+      id="button"
+    >
       Submit
 
       <svg
-        id="spinner"
-        class="my-indicator pl-2"
+        class="pl-2"
         xmlns="http://www.w3.org/2000/svg"
-        width="38"
-        height="38"
+        width="25"
+        height="25"
         viewBox="0 0 38 38"
         stroke="#fff"
       >
@@ -70,13 +73,23 @@
 <script src="https://unpkg.com/htmx.org/dist/ext/disable-element.js"></script>
 
 <style>
-  .my-indicator {
+  .my-indicator > svg {
     display: none;
   }
+
   .htmx-request .my-indicator {
+    background-color: lightslategray;
+  }
+
+  .htmx-request .my-indicator > svg {
     display: inline;
   }
+
   .htmx-request.my-indicator {
+    background-color: lightslategray;
+  }
+
+  .htmx-request.my-indicator > svg {
     display: inline;
   }
 </style>
