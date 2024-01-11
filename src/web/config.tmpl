@@ -3,6 +3,7 @@
   <form
     class="border rounded border-gray-500 p-5 w-fit flex flex-col gap-2"
     hx-post="/db"
+    hx-target="#response"
   >
     <div class="grid grid-cols-2 gap-y-2">
       <label for="name" class="col-start-1">Name: </label>
@@ -46,4 +47,5 @@
 
     <button type="submit" class="bg-blue-400 py-2 px-4 rounded">Submit</button>
   </form>
+  <div id="response"></div>
 </div>

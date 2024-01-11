@@ -118,14 +118,12 @@ func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
-		fmt.Println(dbDetail)
 		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, dbDetail)
 		go ConnectToDBAndCreateUser(dbDetail.Host, dbDetail.Port, dbDetail.DbType, dbDetail.SslMode, username, dbDetail.Name, c)
 		msg := <-c
 		results = append(results, msg)
 	}
 	wg.Wait()
-	fmt.Println(results)
 
 	var fResponse filteredResults
 
@@ -199,7 +197,10 @@ func addDBHandler(w http.ResponseWriter, r *http.Request) {
 	_, err := db.Exec("INSERT INTO db_connection_info (name, host, port, type, sslMode) VALUES (?, ?, ?, ?, ?)", name, host, port, dbType, sslMode)
 
 	if err != nil {
-		log.Fatal(err)
+		w.WriteHeader(http.StatusAlreadyReported)
+		w.Write([]byte(fmt.Sprintf("<div class=\"border border-red-500 bg-red-300 w-fit p-2 rounded\">%v.</div>", err.Error())))
+		return
 	}
-	fmt.Println("Success")
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(fmt.Sprintf("<div class=\"border border-green-500 bg-green-300 w-fit p-2 rounded\">%s has been created successfully.</div>", name)))
 }
