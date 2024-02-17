@@ -34,7 +34,7 @@ var clerkError error
 var wg sync.WaitGroup
 
 func (s *Server) RegisterRoutes() http.Handler {
-	clerkClient, clerkError = clerk.NewClient(os.Getenv("clerk"))
+	clerkClient, clerkError = clerk.NewClient(os.Getenv("CLERK"))
 	authenticateSession := utils.CustomRequireSessionV2(clerkClient)
 
 	if clerkError != nil {

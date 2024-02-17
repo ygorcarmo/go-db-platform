@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
 
 	"github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
@@ -23,11 +24,11 @@ func ConnectDB() {
 
 	// Capture connection properties.
 	cfg := mysql.Config{
-		User:   "root",
-		Passwd: "test",
+		User:   os.Getenv("DB_USER"),
+		Passwd: os.Getenv("DB_PASSWORD"),
 		Net:    "tcp",
-		Addr:   "127.0.0.1:3001",
-		DBName: "db_platform",
+		Addr:   os.Getenv("DB_ADDRESS"),
+		DBName: os.Getenv("DB_NAME"),
 	}
 	// Get a database handle.
 	var err error
