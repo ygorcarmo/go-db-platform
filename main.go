@@ -10,8 +10,8 @@ func init() {
 }
 
 func main() {
-	server := server.NewServer()
-	err := server.ListenAndServe()
+	webServer := server.NewServer()
+	err := webServer.ListenAndServe()
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		panic("Cannot Start Server")
