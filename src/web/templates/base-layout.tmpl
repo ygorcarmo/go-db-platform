@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://unpkg.com/htmx.org@1.9.10"
+      integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>DB PLatform</title>
+  </head>
+  <body>
+    <main>
+      <div class="grid grid-cols-[200px_auto] h-screen">
+        {{ block "sideBar" . }}
+        <div class="border-gray-600 border-r-2">
+          <ul class="p-5 grid gap-3">
+            <li>
+              <a href="/" class="block">Home</a>
+            </li>
+            <li>
+              <a href="/create-user" class="block">Create User</a>
+            </li>
+            <li>
+              <a href="/delete-user" class="block">Delete User</a>
+            </li>
+            <li>
+              <a href="/configuration" class="block">Configuration</a>
+            </li>
+          </ul>
+        </div>
+        {{ end }}
+        <div class="grid grid-rows-[70px_auto]">
+          {{ block "settings" .}}
+          <div class="h-full bg-slate-300">
+            <div>setting button here?</div>
+          </div>
+          {{ end }}
+          <div class="h-full p-4">
+            {{ block "main" .}}
+            <h1 class="text-2xl">Sistema de cadastro de usuarios</h1>
+            {{ end }}
+          </div>
+        </div>
+      </div>
+      <script src="https://unpkg.com/htmx.org/dist/ext/disable-element.js"></script>
+    </main>
+  </body>
+</html>
