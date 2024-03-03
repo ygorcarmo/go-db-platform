@@ -1,5 +1,27 @@
-{{define "main"}}
+{{define "body"}}
 <div class="w-full h-screen grid justify-center content-center">
-  <div id="sign-in"></div>
+  <form
+    action=""
+    method="post"
+    class="border rounded border-gray-500 p-5 w-fit flex flex-col gap-2"
+  >
+    <label for="username">Username</label>
+    <input
+      type="text"
+      name="username"
+      id="username"
+      class="border border-slate-400 rounded"
+      required
+    />
+
+    <label for="password">Password</label>
+    <input
+      type="password"
+      name="password"
+      id="password"
+      class="border border-slate-400 rounded"
+      required
+    />
+  </form>
 </div>
 {{ end }}

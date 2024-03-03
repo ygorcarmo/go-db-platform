@@ -1,4 +1,4 @@
-package server
+package db
 
 import (
 	"database/sql"
@@ -44,7 +44,7 @@ func ConnectDB() {
 	fmt.Println("Connected!")
 }
 
-func getDBsName() ([]string, error) {
+func GetDBsName() ([]string, error) {
 	var dbs []string
 
 	rows, err := db.Query("SELECT name FROM db_connection_info")
@@ -72,7 +72,7 @@ func getDBsName() ([]string, error) {
 
 }
 
-func getDBByName(name string) (*dbDetails, error) {
+func GetDBByName(name string) (*dbDetails, error) {
 
 	var newDB dbDetails
 

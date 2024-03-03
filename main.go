@@ -1,13 +1,14 @@
 package main
 
 import (
+	"custom-db-platform/src/db"
 	"custom-db-platform/src/server"
 	"custom-db-platform/src/web"
 	"fmt"
 )
 
 func init() {
-	server.ConnectDB()
+	db.ConnectDB()
 	web.LoadTemplates()
 }
 

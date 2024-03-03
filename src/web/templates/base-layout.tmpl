@@ -12,6 +12,7 @@
     <title>DB PLatform</title>
   </head>
   <body>
+    {{ block "body" . }}
     <main>
       <div class="grid grid-cols-[200px_auto] h-screen">
         {{ block "sideBar" . }}
@@ -47,5 +48,6 @@
       </div>
       <script src="https://unpkg.com/htmx.org/dist/ext/disable-element.js"></script>
     </main>
+    {{ end }}
   </body>
 </html>

@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-//go:embed templates assets
+//go:embed templates/** assets/**
 var assets embed.FS
 
 var Templates map[string]*template.Template
@@ -22,7 +22,8 @@ func LoadTemplates() {
 	}
 
 	Templates["home"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "home.tmpl"))
-	Templates["createUser"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "createUser.tmpl"))
-	Templates["deleteUser"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "deleteUser.tmpl"))
-	Templates["config"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "config.tmpl"))
+	Templates["createUserForm"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbUser/createDbUserForm.tmpl"))
+	Templates["deleteUserForm"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbUser/deleteDbUserForm.tmpl"))
+	Templates["addDbForm"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbConfig/addDbForm.tmpl"))
+	Templates["signIn"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "signIn.tmpl"))
 }
