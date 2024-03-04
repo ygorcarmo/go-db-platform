@@ -18,16 +18,16 @@ var wg sync.WaitGroup
 
 var targetDbs models.TargetDb
 
-func LoadCreateUserForm(w http.ResponseWriter, r *http.Request) {
+func LoadExternalCreateUserPage(w http.ResponseWriter, r *http.Request) {
 	dbs, err := targetDbs.GetAllNames()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	views.Templates["createUserForm"].Execute(w, dbs)
+	views.Templates["createUserPage"].Execute(w, dbs)
 }
 
-func CreateUserFormHandler(w http.ResponseWriter, r *http.Request) {
+func CreateExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	username := r.FormValue("username")
 	wo := r.FormValue("wo")
@@ -63,11 +63,4 @@ func CreateUserFormHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	views.Templates["dbUserFormResponse"].Execute(w, fResponse)
-	// add this to template loader
-	// tmpl, err := template.ParseFiles("src/web/response.tmpl")
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// err = tmpl.Execute(w, fResponse)
 }

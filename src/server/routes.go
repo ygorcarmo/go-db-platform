@@ -24,8 +24,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 		r.Get("/", handlers.LoadHomePage)
 
-		r.Get("/create-user", handlers.LoadCreateUserForm)
-		r.Post("/create-user", handlers.CreateUserFormHandler)
+		r.Get("/create-user", handlers.LoadExternalCreateUserPage)
+		r.Post("/create-user", handlers.CreateExternalUserFormHandler)
 
 		r.Get("/delete-user", deleteUserPageHandler)
 		r.Post("/delete-user", deleteUserFormHandler)
@@ -33,7 +33,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Get("/configuration", configPageHandler)
 		r.Post("/db", addDBHandler)
 
-		r.Get("/sign-in", handleSignIn)
+		r.Get("/sign-in", handlers.LoadSignInPage)
+		r.Post("/sign-in", handlers.HandleSignIn)
 	})
 
 	return router
@@ -79,8 +80,4 @@ func addDBHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(fmt.Sprintf("<div class=\"border border-green-500 bg-green-300 w-fit p-2 rounded\">%s has been created successfully.</div>", name)))
-}
-
-func handleSignIn(w http.ResponseWriter, r *http.Request) {
-	views.Templates["signIn"].Execute(w, nil)
 }

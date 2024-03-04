@@ -22,9 +22,9 @@ func LoadTemplates() {
 	}
 
 	Templates["home"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "home.tmpl"))
-	Templates["createUserForm"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbUser/createDbUserForm.tmpl"))
-	Templates["deleteUserForm"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbUser/deleteDbUserForm.tmpl"))
+	Templates["createUserPage"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbUser/createDbUserPage.tmpl"))
+	Templates["deleteUserPage"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbUser/deleteDbUserPage.tmpl"))
 	Templates["dbUserFormResponse"] = template.Must(template.ParseFS(templatesFolder, "dbUser/response.tmpl"))
-	Templates["addDbForm"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbConfig/addDbForm.tmpl"))
+	Templates["addDbPage"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbConfig/addDbPage.tmpl"))
 	Templates["signIn"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "signIn.tmpl"))
 }
