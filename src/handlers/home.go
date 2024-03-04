@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"custom-db-platform/src/web"
+	"custom-db-platform/src/views"
 	"net/http"
 )
 
 func LoadHomePage(w http.ResponseWriter, r *http.Request) {
-	web.Templates["home"].ExecuteTemplate(w, "base-layout.tmpl", nil)
+	views.Templates["home"].ExecuteTemplate(w, "base-layout.tmpl", nil)
 }

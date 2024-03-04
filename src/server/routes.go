@@ -4,7 +4,7 @@ import (
 	"custom-db-platform/src/db"
 	"custom-db-platform/src/handlers"
 	"custom-db-platform/src/models"
-	"custom-db-platform/src/web"
+	"custom-db-platform/src/views"
 	"fmt"
 	"log"
 	"net/http"
@@ -39,51 +39,6 @@ func (s *Server) RegisterRoutes() http.Handler {
 	return router
 }
 
-// func createUserFormHandler(w http.ResponseWriter, r *http.Request) {
-// 	r.ParseForm()
-// 	username := r.FormValue("username")
-// 	wo := r.FormValue("wo")
-// 	databases := r.Form["databases"]
-// 	fmt.Println(databases)
-
-// 	var results []Result
-
-// 	c := make(chan Result)
-
-// 	for _, database := range databases {
-// 		wg.Add(1)
-
-// 		dbDetail, err := getDBByName(database)
-
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-
-// 		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, dbDetail)
-// 		go ConnectToDBAndCreateUser(dbDetail.Host, dbDetail.Port, dbDetail.DbType, dbDetail.SslMode, username, dbDetail.Name, c)
-// 		msg := <-c
-// 		results = append(results, msg)
-// 	}
-// 	wg.Wait()
-
-// 	var fResponse filteredResults
-
-// 	for _, result := range results {
-// 		if result.Success {
-// 			fResponse.Sucesses = append(fResponse.Sucesses, result.Message)
-// 		} else {
-// 			fResponse.Errors = append(fResponse.Errors, result.Message)
-// 		}
-// 	}
-
-// 	tmpl, err := template.ParseFiles("src/web/response.tmpl")
-
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	err = tmpl.Execute(w, fResponse)
-// }
-
 func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 
 	var dbNames models.TargetDb
@@ -92,7 +47,7 @@ func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	web.Templates["deleteUser"].ExecuteTemplate(w, "base-layout.tmpl", dbs)
+	views.Templates["deleteUser"].Execute(w, dbs)
 }
 
 func deleteUserFormHandler(w http.ResponseWriter, r *http.Request) {
@@ -105,7 +60,7 @@ func deleteUserFormHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func configPageHandler(w http.ResponseWriter, r *http.Request) {
-	web.Templates["config"].ExecuteTemplate(w, "base-layout.tmpl", nil)
+	views.Templates["config"].Execute(w, nil)
 }
 
 func addDBHandler(w http.ResponseWriter, r *http.Request) {
@@ -127,5 +82,5 @@ func addDBHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleSignIn(w http.ResponseWriter, r *http.Request) {
-	web.Templates["signIn"].ExecuteTemplate(w, "base-layout.tmpl", nil)
+	views.Templates["signIn"].Execute(w, nil)
 }

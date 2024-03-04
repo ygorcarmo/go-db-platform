@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"custom-db-platform/src/models"
-	"custom-db-platform/src/web"
+	"custom-db-platform/src/views"
 	"fmt"
 	"log"
 	"net/http"
@@ -24,7 +24,7 @@ func LoadCreateUserForm(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	web.Templates["createUserForm"].ExecuteTemplate(w, "base-layout.tmpl", dbs)
+	views.Templates["createUserForm"].Execute(w, dbs)
 }
 
 func CreateUserFormHandler(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +62,7 @@ func CreateUserFormHandler(w http.ResponseWriter, r *http.Request) {
 			fResponse.Errors = append(fResponse.Errors, result.Message)
 		}
 	}
-	web.Templates["dbUserFormResponse"].Execute(w, fResponse)
+	views.Templates["dbUserFormResponse"].Execute(w, fResponse)
 	// add this to template loader
 	// tmpl, err := template.ParseFiles("src/web/response.tmpl")
 
