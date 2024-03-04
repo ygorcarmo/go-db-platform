@@ -4,7 +4,6 @@ import (
 	"custom-db-platform/src/models"
 	"custom-db-platform/src/web"
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"sync"
@@ -63,11 +62,12 @@ func CreateUserFormHandler(w http.ResponseWriter, r *http.Request) {
 			fResponse.Errors = append(fResponse.Errors, result.Message)
 		}
 	}
+	web.Templates["dbUserFormResponse"].Execute(w, fResponse)
 	// add this to template loader
-	tmpl, err := template.ParseFiles("src/web/response.tmpl")
+	// tmpl, err := template.ParseFiles("src/web/response.tmpl")
 
-	if err != nil {
-		log.Fatal(err)
-	}
-	err = tmpl.Execute(w, fResponse)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// err = tmpl.Execute(w, fResponse)
 }

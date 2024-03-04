@@ -6,5 +6,5 @@ import (
 )
 
 func LoadHomePage(w http.ResponseWriter, r *http.Request) {
-	web.Templates["Home"].ExecuteTemplate(w, "base-layout.tmpl", nil)
+	web.Templates["home"].ExecuteTemplate(w, "base-layout.tmpl", nil)
 }

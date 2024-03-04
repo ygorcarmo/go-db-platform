@@ -13,15 +13,11 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-type userDetails struct {
-	FirstName string
-	LastName  string
-}
-
 func (s *Server) RegisterRoutes() http.Handler {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+	router.Get("/", handlers.LoadHomePage)
 
 	router.Group(func(r chi.Router) {
 		// r.Use(utils.CustomMiddleware())
