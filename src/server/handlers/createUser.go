@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"custom-db-platform/src/db"
+	"custom-db-platform/src/models"
 	"custom-db-platform/src/web"
 	"fmt"
 	"html/template"
@@ -10,11 +10,6 @@ import (
 	"sync"
 )
 
-type Result struct {
-	Message string
-	Success bool
-}
-
 type filteredResults struct {
 	Sucesses []string
 	Errors   []string
@@ -22,8 +17,10 @@ type filteredResults struct {
 
 var wg sync.WaitGroup
 
+var targetDbs models.TargetDb
+
 func LoadCreateUserForm(w http.ResponseWriter, r *http.Request) {
-	dbs, err := db.GetDBsName()
+	dbs, err := targetDbs.GetAllNames()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,21 +34,21 @@ func CreateUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	wo := r.FormValue("wo")
 	databases := r.Form["databases"]
 
-	var results []Result
+	var results []models.TargetDbsRepose
 
-	c := make(chan Result)
+	c := make(chan models.TargetDbsRepose)
 
 	for _, database := range databases {
 		wg.Add(1)
-
-		dbDetail, err := db.GetDBByName(database)
+		var currentDb models.TargetDb
+		_, err := currentDb.GetByName(database)
 
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, dbDetail)
-		go db.ConnectToDBAndCreateUser(dbDetail.Host, dbDetail.Port, dbDetail.DbType, dbDetail.SslMode, username, dbDetail.Name, c, &wg)
+		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, currentDb)
+		go currentDb.ConnectToDBAndCreateUser(username, c, &wg)
 		msg := <-c
 		results = append(results, msg)
 	}

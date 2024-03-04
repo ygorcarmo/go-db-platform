@@ -1,7 +1,9 @@
 package server
 
 import (
-	"custom-db-platform/src/server/handlers"
+	"custom-db-platform/src/db"
+	"custom-db-platform/src/handlers"
+	"custom-db-platform/src/models"
 	"custom-db-platform/src/web"
 	"fmt"
 	"log"
@@ -27,7 +29,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Get("/", handlers.LoadHomePage)
 
 		r.Get("/create-user", handlers.LoadCreateUserForm)
-		r.Post("/create-user", createUserFormHandler)
+		r.Post("/create-user", handlers.CreateUserFormHandler)
 
 		r.Get("/delete-user", deleteUserPageHandler)
 		r.Post("/delete-user", deleteUserFormHandler)
@@ -88,11 +90,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 
-	dbs, err := getDBsName()
-
+	var dbNames models.TargetDb
+	dbs, err := dbNames.GetAllNames()
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	web.Templates["deleteUser"].ExecuteTemplate(w, "base-layout.tmpl", dbs)
 }
 
@@ -116,7 +119,7 @@ func addDBHandler(w http.ResponseWriter, r *http.Request) {
 	dbType := r.FormValue("type")
 	sslMode := r.FormValue("sslMode")
 
-	_, err := db.Exec("INSERT INTO db_connection_info (name, host, port, type, sslMode) VALUES (?, ?, ?, ?, ?)", name, host, port, dbType, sslMode)
+	_, err := db.Database.Exec("INSERT INTO db_connection_info (name, host, port, type, sslMode) VALUES (?, ?, ?, ?, ?)", name, host, port, dbType, sslMode)
 
 	if err != nil {
 		w.WriteHeader(http.StatusAlreadyReported)

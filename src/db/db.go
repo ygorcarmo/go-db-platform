@@ -10,7 +10,7 @@ import (
 	_ "github.com/lib/pq"
 )
 
-var db *sql.DB
+var Database *sql.DB
 
 type dbDetails struct {
 	Name    string
@@ -32,58 +32,14 @@ func ConnectDB() {
 	}
 	// Get a database handle.
 	var err error
-	db, err = sql.Open("mysql", cfg.FormatDSN())
+	Database, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	pingErr := db.Ping()
+	pingErr := Database.Ping()
 	if pingErr != nil {
 		log.Fatal(pingErr)
 	}
 	fmt.Println("Connected!")
-}
-
-func GetDBsName() ([]string, error) {
-	var dbs []string
-
-	rows, err := db.Query("SELECT name FROM db_connection_info")
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer rows.Close()
-
-	for rows.Next() {
-		var dbName string
-		if err := rows.Scan(&dbName); err != nil {
-			return nil, err
-		}
-
-		dbs = append(dbs, dbName)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return dbs, nil
-
-}
-
-func GetDBByName(name string) (*dbDetails, error) {
-
-	var newDB dbDetails
-
-	row := db.QueryRow("SELECT * FROM db_connection_info WHERE name=?;", name)
-
-	if err := row.Scan(&newDB.Name, &newDB.Host, &newDB.Port, &newDB.DbType, &newDB.SslMode); err != nil {
-		if err == sql.ErrNoRows {
-			return nil, err
-		}
-		return nil, err
-	}
-
-	return &newDB, nil
 }
