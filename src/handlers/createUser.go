@@ -1,0 +1,73 @@
+package handlers
+
+import (
+	"custom-db-platform/src/models"
+	"custom-db-platform/src/web"
+	"fmt"
+	"log"
+	"net/http"
+	"sync"
+)
+
+type filteredResults struct {
+	Sucesses []string
+	Errors   []string
+}
+
+var wg sync.WaitGroup
+
+var targetDbs models.TargetDb
+
+func LoadCreateUserForm(w http.ResponseWriter, r *http.Request) {
+	dbs, err := targetDbs.GetAllNames()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	web.Templates["createUserForm"].ExecuteTemplate(w, "base-layout.tmpl", dbs)
+}
+
+func CreateUserFormHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	username := r.FormValue("username")
+	wo := r.FormValue("wo")
+	databases := r.Form["databases"]
+
+	var results []models.TargetDbsRepose
+
+	c := make(chan models.TargetDbsRepose)
+
+	for _, database := range databases {
+		wg.Add(1)
+		var currentDb models.TargetDb
+		_, err := currentDb.GetByName(database)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, currentDb)
+		go currentDb.ConnectToDBAndCreateUser(username, c, &wg)
+		msg := <-c
+		results = append(results, msg)
+	}
+	wg.Wait()
+
+	var fResponse filteredResults
+
+	for _, result := range results {
+		if result.Success {
+			fResponse.Sucesses = append(fResponse.Sucesses, result.Message)
+		} else {
+			fResponse.Errors = append(fResponse.Errors, result.Message)
+		}
+	}
+	web.Templates["dbUserFormResponse"].Execute(w, fResponse)
+	// add this to template loader
+	// tmpl, err := template.ParseFiles("src/web/response.tmpl")
+
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// err = tmpl.Execute(w, fResponse)
+}
