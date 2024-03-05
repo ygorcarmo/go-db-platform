@@ -1,7 +1,6 @@
 package server
 
 import (
-	"custom-db-platform/src/db"
 	"custom-db-platform/src/handlers"
 	"custom-db-platform/src/models"
 	"custom-db-platform/src/views"
@@ -22,19 +21,22 @@ func (s *Server) RegisterRoutes() http.Handler {
 	router.Post("/sign-in", handlers.HandleSignIn)
 
 	router.Group(func(r chi.Router) {
+		// TODO change this with jwt token decode and only make a few routes available(only admins are able to access)
 		r.Use(customMiddleware())
 
 		r.Get("/", handlers.LoadHomePage)
 
-		r.Get("/create-user", handlers.LoadExternalCreateUserPage)
-		r.Post("/create-user", handlers.CreateExternalUserFormHandler)
+		r.Route("/db", func(dbRoute chi.Router) {
 
-		r.Get("/delete-user", deleteUserPageHandler)
-		r.Post("/delete-user", deleteUserFormHandler)
+			dbRoute.Get("/", handlers.LoadAddDbPage)
+			dbRoute.Post("/", handlers.AddDbFormHanlder)
 
-		r.Get("/configuration", configPageHandler)
-		r.Post("/db", addDBHandler)
+			dbRoute.Get("/create-user", handlers.LoadCreateExternalUserPage)
+			dbRoute.Post("/create-user", handlers.CreateExternalUserFormHandler)
 
+			dbRoute.Get("/delete-user", deleteUserPageHandler)
+			dbRoute.Post("/delete-user", deleteUserFormHandler)
+		})
 	})
 
 	return router
@@ -48,7 +50,7 @@ func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	views.Templates["deleteUser"].Execute(w, dbs)
+	views.Templates["deleteUserPage"].Execute(w, dbs)
 }
 
 func deleteUserFormHandler(w http.ResponseWriter, r *http.Request) {
@@ -58,26 +60,4 @@ func deleteUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	databases := r.Form["databases"]
 
 	fmt.Printf("username: %s, wo: %s, databases: %v\n", username, wo, databases)
-}
-
-func configPageHandler(w http.ResponseWriter, r *http.Request) {
-	views.Templates["config"].Execute(w, nil)
-}
-
-func addDBHandler(w http.ResponseWriter, r *http.Request) {
-	name := r.FormValue("name")
-	host := r.FormValue("host")
-	port := r.FormValue("port")
-	dbType := r.FormValue("type")
-	sslMode := r.FormValue("sslMode")
-
-	_, err := db.Database.Exec("INSERT INTO db_connection_info (name, host, port, type, sslMode) VALUES (?, ?, ?, ?, ?)", name, host, port, dbType, sslMode)
-
-	if err != nil {
-		w.WriteHeader(http.StatusAlreadyReported)
-		w.Write([]byte(fmt.Sprintf("<div class=\"border border-red-500 bg-red-300 w-fit p-2 rounded\">%v.</div>", err.Error())))
-		return
-	}
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(fmt.Sprintf("<div class=\"border border-green-500 bg-green-300 w-fit p-2 rounded\">%s has been created successfully.</div>", name)))
 }

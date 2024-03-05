@@ -14,7 +14,7 @@
   <body>
     {{ block "body" . }}
     <main>
-      <div class="grid grid-cols-[200px_auto] h-screen">
+      <div class="grid grid-cols-[300px_auto] h-screen">
         {{ block "sideBar" . }}
         <div class="border-gray-600 border-r-2">
           <ul class="p-5 grid gap-3">
@@ -22,14 +22,27 @@
               <a href="/" class="block">Home</a>
             </li>
             <li>
-              <a href="/create-user" class="block">Create User</a>
+              <a href="/db/create-user" class="block">Create Database User</a>
             </li>
             <li>
-              <a href="/delete-user" class="block">Delete User</a>
+              <a href="/db/delete-user" class="block">Delete Database User</a>
             </li>
             <li>
-              <a href="/configuration" class="block">Configuration</a>
+              <a href="/db" class="block">Add New Database Connection</a>
             </li>
+            {{ if .IsAdmin }}
+            <li>
+              <a href="#" class="block">Add New Application User</a>
+            </li>
+            <li>
+              <a href="#" class="block">Manage Application Users</a>
+            </li>
+            <li>
+              <a href="#" class="block">Reset Password</a>
+            </li>
+            {{
+              end
+            }}
           </ul>
         </div>
         {{ end }}

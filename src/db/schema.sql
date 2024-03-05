@@ -8,6 +8,7 @@ CREATE TABLE users(
     id BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    isAdmin BOOLEAN NOT NULL DEFAULT FALSE, 
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id, username)
@@ -28,11 +29,12 @@ CREATE TABLE db_connection_info (
 );
 
 INSERT INTO
-    users (username, password)
+    users (username, password, isAdmin)
 VALUES
     (
         "test",
-        "JGFyZ29uMmlkJHY9MTkkbT02NTUzNix0PTMscD0yJFovVGJ0Q3V4b0dBOWowQzNsR2ttK0EkaGhqVjJGdTQ3WWdFU2RqSm1BQTN6ZTNsM2ZtaGQvcVduNWlscVQ2THE4OA"
+        "JGFyZ29uMmlkJHY9MTkkbT02NTUzNix0PTMscD0yJFovVGJ0Q3V4b0dBOWowQzNsR2ttK0EkaGhqVjJGdTQ3WWdFU2RqSm1BQTN6ZTNsM2ZtaGQvcVduNWlscVQ2THE4OA",
+        TRUE
     );
 
 INSERT INTO

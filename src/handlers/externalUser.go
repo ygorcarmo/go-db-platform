@@ -18,7 +18,7 @@ var wg sync.WaitGroup
 
 var targetDbs models.TargetDb
 
-func LoadExternalCreateUserPage(w http.ResponseWriter, r *http.Request) {
+func LoadCreateExternalUserPage(w http.ResponseWriter, r *http.Request) {
 	dbs, err := targetDbs.GetAllNames()
 	if err != nil {
 		log.Fatal(err)

@@ -25,7 +25,7 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) {
 	password := r.FormValue("password")
 
 	var currentUser models.AppUser
-	err := currentUser.GetUser(username)
+	err := currentUser.GetUserByUsername(username)
 	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		w.Write([]byte("Invalid Username or Password."))
@@ -40,7 +40,7 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tokenString, err := utils.CreateToken(currentUser.Username)
+	tokenString, err := utils.CreateToken(currentUser.Id)
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusNotFound)
