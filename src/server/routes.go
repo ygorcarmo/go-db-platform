@@ -17,10 +17,12 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
-	router.Get("/", handlers.LoadHomePage)
+
+	router.Get("/sign-in", handlers.LoadSignInPage)
+	router.Post("/sign-in", handlers.HandleSignIn)
 
 	router.Group(func(r chi.Router) {
-		// r.Use(utils.CustomMiddleware())
+		r.Use(customMiddleware())
 
 		r.Get("/", handlers.LoadHomePage)
 
@@ -33,8 +35,6 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Get("/configuration", configPageHandler)
 		r.Post("/db", addDBHandler)
 
-		r.Get("/sign-in", handlers.LoadSignInPage)
-		r.Post("/sign-in", handlers.HandleSignIn)
 	})
 
 	return router

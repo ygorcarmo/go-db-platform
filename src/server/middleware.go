@@ -1,31 +1,32 @@
 package server
 
 import (
+	"custom-db-platform/src/utils"
 	"net/http"
 )
 
 // TODO: Make a custom middleware
-func CustomMiddleware() func(handler http.Handler) http.Handler {
+func customMiddleware() func(handler http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// TODO: Replace clerk authentication logic
-			// compare hashes, create JWT token, check if JWT token is valid
-			// claims, ok := r.Context().Value(clerk.ActiveSessionClaims).(*clerk.SessionClaims)
-			// if !ok || claims == nil {
-			// 	signInTemplate := filepath.Join("src", "web", "signIn.tmpl")
-			// 	baseTemplate := filepath.Join("src", "web", "base.tmpl")
+			jwtToken, err := r.Cookie("token")
 
-			// 	tmpl, err := template.ParseFiles(signInTemplate, baseTemplate)
+			if err != nil {
+				http.Redirect(w, r, "/sign-in", http.StatusFound)
+				// w.WriteHeader(http.StatusUnauthorized)
+				// fmt.Fprint(w, "token")
+				return
+			}
 
-			// 	if err != nil {
-			// 		log.Fatal(err)
-			// 	}
-			// 	err = tmpl.Execute(w, nil)
-			// 	return
-			// }
+			err = utils.VerifyToken(jwtToken.Value)
+			if err != nil {
+				http.Redirect(w, r, "/sign-in", http.StatusFound)
+				// w.WriteHeader(http.StatusUnauthorized)
+				// fmt.Fprint(w, "Invalid token")
+				return
+			}
 
 			next.ServeHTTP(w, r)
-			return
 		})
 	}
 }
