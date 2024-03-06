@@ -27,4 +27,5 @@ func LoadTemplates() {
 	Templates["dbUserFormResponse"] = template.Must(template.ParseFS(templatesFolder, "dbUser/response.tmpl"))
 	Templates["addDb"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbConfig/addDb.tmpl"))
 	Templates["signIn"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "signIn.tmpl"))
+	Templates["resetPassword"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "appUser/resetPassword.tmpl"))
 }

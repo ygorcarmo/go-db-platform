@@ -16,7 +16,7 @@ CREATE TABLE users(
     PRIMARY KEY (id, username)
 );
 
-CREATE TABLE databases (
+CREATE TABLE external_databases(
     id BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     name VARCHAR(255) NOT NULL,
     host VARCHAR(255) NOT NULL,
@@ -26,21 +26,21 @@ CREATE TABLE databases (
     userId BINARY(16),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (name, host, id),
+    PRIMARY KEY (id, name, host),
     FOREIGN KEY (userId) REFERENCES users(id)
 );
 
 CREATE TABLE logs(
     id BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
-    dbId BINARY(16) NOT NULL,
+    dbId BINARY(16),
     newUser VARCHAR(255) NOT NULL,
     wo INT NOT NULL,
-    userId BINARY(16) NOT NULL,
+    userId BINARY(16),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(id),
-    FOREIGN KEY (dbId) REFERENCES databases(id),
-    FOREIGN KEY (userId) REFERENCES users(id)
-)
+    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (dbId) REFERENCES external_databases(id)
+);
 
 INSERT INTO
     users (username, password, isAdmin)
@@ -52,7 +52,7 @@ VALUES
     );
 
 INSERT INTO
-    databases (name, host, port, type, sslMode)
+    external_databases (name, host, port, type, sslMode)
 VALUES
     ("mysql", "localhost", 3001, "mysql", "disable"),
     ("mysql-2", "localhost", 3003, "mysql", "disable"),

@@ -18,7 +18,7 @@ func AddDbFormHanlder(w http.ResponseWriter, r *http.Request) {
 	dbType := r.FormValue("type")
 	sslMode := r.FormValue("sslMode")
 
-	_, err := db.Database.Exec("INSERT INTO databases (name, host, port, type, sslMode) VALUES (?, ?, ?, ?, ?)", name, host, port, dbType, sslMode)
+	_, err := db.Database.Exec("INSERT INTO external_databases (name, host, port, type, sslMode) VALUES (?, ?, ?, ?, ?)", name, host, port, dbType, sslMode)
 
 	if err != nil {
 		w.WriteHeader(http.StatusAlreadyReported)

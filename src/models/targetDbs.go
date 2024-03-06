@@ -16,14 +16,14 @@ type TargetDb struct {
 }
 
 func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {
-	err := db.Database.QueryRow("SELECT * FROM databases WHERE name=?;", name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode)
+	err := db.Database.QueryRow("SELECT * FROM external_databases WHERE name=?;", name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode)
 	return targetDb, err
 }
 
 func (targetDb *TargetDb) GetAllNames() ([]string, error) {
 	var dbs []string
 
-	rows, err := db.Database.Query("SELECT name FROM databases")
+	rows, err := db.Database.Query("SELECT name FROM external_databases")
 
 	if err != nil {
 		return nil, err

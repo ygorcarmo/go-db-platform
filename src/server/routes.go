@@ -39,6 +39,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 		r.Get("/", handlers.LoadHomePage)
 
+		r.Get("/reset-password", handlers.LoadResetPasswordPage)
+
 		r.Route("/db", func(r chi.Router) {
 
 			r.Get("/", handlers.LoadAddDbPage)
