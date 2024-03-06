@@ -39,3 +39,5 @@ To shel into any of the databases use: `docker exec -u "user" -it "container nam
 To build an image of this application use: `docker build --tag "image name" .`
 
 To run the image for this application use: `docker run --rm --name "container name" -e "clerk=clerk key" -p 3000:8080/tcp  "image name" `
+
+Tailwind use: `npx tailwindcss -i ./src/server/assets/css/styles.css -o ./src/server/assets/css/output.css --watch`

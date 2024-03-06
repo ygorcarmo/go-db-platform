@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.my-indicator > svg {
+  display: none;
+}
+
+.htmx-request .my-indicator {
+  background-color: lightslategray;
+}
+
+.htmx-request .my-indicator > svg {
+  display: inline;
+}
+
+.htmx-request.my-indicator {
+  background-color: lightslategray;
+}
+
+.htmx-request.my-indicator > svg {
+  display: inline;
+}

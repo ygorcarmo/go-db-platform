@@ -4,6 +4,7 @@ import (
 	"custom-db-platform/src/handlers"
 	"custom-db-platform/src/models"
 	"custom-db-platform/src/views"
+	"embed"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,10 +13,22 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
+//go:embed assets/**
+var assets embed.FS
+
 func (s *Server) RegisterRoutes() http.Handler {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+
+	// assetsFolder, err := fs.Sub(assets, "assets")
+
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	fs := http.FileServer(http.FS(assets))
+
+	router.Handle("/assets/*", fs)
 
 	router.Get("/sign-in", handlers.LoadSignInPage)
 	router.Post("/sign-in", handlers.HandleSignIn)

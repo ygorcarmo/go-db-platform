@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-//go:embed templates/** assets/**
+//go:embed templates/**
 var assets embed.FS
 
 var Templates map[string]*template.Template
