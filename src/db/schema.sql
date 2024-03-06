@@ -8,13 +8,15 @@ CREATE TABLE users(
     id BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     username VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    supervisor VARCHAR(255),
+    sector VARCHAR(255),
     isAdmin BOOLEAN NOT NULL DEFAULT FALSE, 
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id, username)
 );
 
-CREATE TABLE db_connection_info (
+CREATE TABLE databases (
     id BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     name VARCHAR(255) NOT NULL,
     host VARCHAR(255) NOT NULL,
@@ -28,6 +30,18 @@ CREATE TABLE db_connection_info (
     FOREIGN KEY (userId) REFERENCES users(id)
 );
 
+CREATE TABLE logs(
+    id BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
+    dbId BINARY(16) NOT NULL,
+    newUser VARCHAR(255) NOT NULL,
+    wo INT NOT NULL,
+    userId BINARY(16) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(id),
+    FOREIGN KEY (dbId) REFERENCES databases(id),
+    FOREIGN KEY (userId) REFERENCES users(id)
+)
+
 INSERT INTO
     users (username, password, isAdmin)
 VALUES
@@ -38,7 +52,7 @@ VALUES
     );
 
 INSERT INTO
-    db_connection_info (name, host, port, type, sslMode)
+    databases (name, host, port, type, sslMode)
 VALUES
     ("mysql", "localhost", 3001, "mysql", "disable"),
     ("mysql-2", "localhost", 3003, "mysql", "disable"),
