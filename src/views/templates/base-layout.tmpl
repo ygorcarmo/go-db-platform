@@ -28,21 +28,17 @@
               <a href="/db/delete-user" class="block">Delete Database User</a>
             </li>
             <li>
+              <a href="#" class="block">Reset Password</a>
+            </li>
+            <li>
               <a href="/db" class="block">Add New Database Connection</a>
             </li>
-            {{ if .IsAdmin }}
             <li>
               <a href="#" class="block">Add New Application User</a>
             </li>
             <li>
               <a href="#" class="block">Manage Application Users</a>
             </li>
-            <li>
-              <a href="#" class="block">Reset Password</a>
-            </li>
-            {{
-              end
-            }}
           </ul>
         </div>
         {{ end }}

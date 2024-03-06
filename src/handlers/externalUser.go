@@ -18,13 +18,14 @@ var wg sync.WaitGroup
 
 var targetDbs models.TargetDb
 
-func LoadCreateExternalUserPage(w http.ResponseWriter, r *http.Request) {
+func LoadCreateExternalUser(w http.ResponseWriter, r *http.Request) {
 	dbs, err := targetDbs.GetAllNames()
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Println(dbs)
 
-	views.Templates["createUserPage"].Execute(w, dbs)
+	views.Templates["createDbUser"].Execute(w, dbs)
 }
 
 func CreateExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {

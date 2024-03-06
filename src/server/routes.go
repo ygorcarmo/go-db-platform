@@ -22,20 +22,25 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 	router.Group(func(r chi.Router) {
 		// TODO change this with jwt token decode and only make a few routes available(only admins are able to access)
-		r.Use(customMiddleware())
+		r.Use(verifyUserMiddleware())
 
 		r.Get("/", handlers.LoadHomePage)
 
-		r.Route("/db", func(dbRoute chi.Router) {
+		r.Route("/db", func(r chi.Router) {
 
-			dbRoute.Get("/", handlers.LoadAddDbPage)
-			dbRoute.Post("/", handlers.AddDbFormHanlder)
+			r.Get("/", handlers.LoadAddDbPage)
+			r.Post("/", handlers.AddDbFormHanlder)
 
-			dbRoute.Get("/create-user", handlers.LoadCreateExternalUserPage)
-			dbRoute.Post("/create-user", handlers.CreateExternalUserFormHandler)
+			r.Get("/create-user", handlers.LoadCreateExternalUser)
+			r.Post("/create-user", handlers.CreateExternalUserFormHandler)
 
-			dbRoute.Get("/delete-user", deleteUserPageHandler)
-			dbRoute.Post("/delete-user", deleteUserFormHandler)
+			r.Get("/delete-user", deleteUserPageHandler)
+			r.Post("/delete-user", deleteUserFormHandler)
+		})
+
+		r.Route("/settings", func(adminsOnlyRoute chi.Router) {
+			adminsOnlyRoute.Use(adminsOnlyMiddleware())
+			adminsOnlyRoute.Get("/", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("Welcome")) })
 		})
 	})
 
@@ -50,7 +55,7 @@ func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	views.Templates["deleteUserPage"].Execute(w, dbs)
+	views.Templates["deleteUser "].Execute(w, dbs)
 }
 
 func deleteUserFormHandler(w http.ResponseWriter, r *http.Request) {

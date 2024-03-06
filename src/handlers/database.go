@@ -8,7 +8,7 @@ import (
 )
 
 func LoadAddDbPage(w http.ResponseWriter, r *http.Request) {
-	views.Templates["addDbPage"].Execute(w, nil)
+	views.Templates["addDb"].Execute(w, nil)
 }
 
 func AddDbFormHanlder(w http.ResponseWriter, r *http.Request) {
