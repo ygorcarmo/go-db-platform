@@ -39,6 +39,7 @@ func (s *Server) RegisterRoutes() http.Handler {
 		r.Route("/user", func(userRoute chi.Router) {
 			userRoute.Get("/reset-password", handlers.LoadResetPasswordPage)
 			userRoute.Patch("/reset-password", handlers.ResetPasswordFormHandler)
+			userRoute.Get("/logout", handlers.Logout)
 		})
 
 		r.Route("/db", func(r chi.Router) {

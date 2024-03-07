@@ -54,3 +54,8 @@ func HandleSignIn(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("HX-Redirect", "/")
 	w.Write([]byte("Loged In."))
 }
+
+func Logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{Name: "token", Value: "", Path: "/"})
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}

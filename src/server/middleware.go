@@ -13,7 +13,7 @@ func verifyUserMiddleware() func(handler http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			jwtToken, err := r.Cookie("token")
-			if err != nil {
+			if err != nil || jwtToken.Value == "" {
 				http.Redirect(w, r, "/sign-in", http.StatusFound)
 				return
 			}
