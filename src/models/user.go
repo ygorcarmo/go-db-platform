@@ -1,12 +1,19 @@
 package models
 
-import "custom-db-platform/src/db"
+import (
+	"custom-db-platform/src/db"
+	"time"
+)
 
 type AppUser struct {
-	Id       string
-	Username string
-	Password string
-	IsAdmin  bool
+	Id         string
+	Username   string
+	Password   string
+	Supervisor string
+	Sector     string
+	IsAdmin    bool
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
 func (user *AppUser) GetUserByUsername(username string) error {
@@ -14,7 +21,7 @@ func (user *AppUser) GetUserByUsername(username string) error {
 	return err
 }
 func (user *AppUser) GetUserById(id string) error {
-	err := db.Database.QueryRow("SELECT username, isAdmin FROM users WHERE id=UUID_TO_BIN(?);", id).Scan(&user.Username, &user.IsAdmin)
+	err := db.Database.QueryRow("SELECT username, password, isAdmin FROM users WHERE id=UUID_TO_BIN(?);", id).Scan(&user.Username, &user.Password, &user.IsAdmin)
 	return err
 }
 

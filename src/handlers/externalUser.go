@@ -65,3 +65,13 @@ func CreateExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	views.Templates["dbUserFormResponse"].Execute(w, fResponse)
 }
+
+func LoadDeleteExternalUser(w http.ResponseWriter, r *http.Request) {
+	var dbNames models.TargetDb
+	dbs, err := dbNames.GetAllNames()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	views.Templates["deleteDbUser"].Execute(w, dbs)
+}

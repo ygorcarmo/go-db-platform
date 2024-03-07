@@ -2,11 +2,8 @@ package server
 
 import (
 	"custom-db-platform/src/handlers"
-	"custom-db-platform/src/models"
-	"custom-db-platform/src/views"
 	"embed"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -39,7 +36,10 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 		r.Get("/", handlers.LoadHomePage)
 
-		r.Get("/reset-password", handlers.LoadResetPasswordPage)
+		r.Route("/user", func(userRoute chi.Router) {
+			userRoute.Get("/reset-password", handlers.LoadResetPasswordPage)
+			userRoute.Patch("/reset-password", handlers.ResetPasswordFormHandler)
+		})
 
 		r.Route("/db", func(r chi.Router) {
 
@@ -49,28 +49,23 @@ func (s *Server) RegisterRoutes() http.Handler {
 			r.Get("/create-user", handlers.LoadCreateExternalUser)
 			r.Post("/create-user", handlers.CreateExternalUserFormHandler)
 
-			r.Get("/delete-user", deleteUserPageHandler)
+			r.Get("/delete-user", handlers.LoadDeleteExternalUser)
 			r.Post("/delete-user", deleteUserFormHandler)
 		})
 
-		r.Route("/settings", func(adminsOnlyRoute chi.Router) {
+		r.Group(func(adminsOnlyRoute chi.Router) {
+
 			adminsOnlyRoute.Use(adminsOnlyMiddleware())
-			adminsOnlyRoute.Get("/", func(w http.ResponseWriter, r *http.Request) { w.Write([]byte("Welcome")) })
+
+			adminsOnlyRoute.Route("/settings", func(settingsRoute chi.Router) {
+				settingsRoute.Get("/", handlers.LoadSettings)
+				settingsRoute.Get("/users", handlers.LoadManageUsers)
+				settingsRoute.Get("/dbs", handlers.LoadManageDbs)
+			})
 		})
 	})
 
 	return router
-}
-
-func deleteUserPageHandler(w http.ResponseWriter, r *http.Request) {
-
-	var dbNames models.TargetDb
-	dbs, err := dbNames.GetAllNames()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	views.Templates["deleteUser "].Execute(w, dbs)
 }
 
 func deleteUserFormHandler(w http.ResponseWriter, r *http.Request) {

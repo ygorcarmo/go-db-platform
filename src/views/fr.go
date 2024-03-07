@@ -25,7 +25,11 @@ func LoadTemplates() {
 	Templates["createDbUser"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbUser/createDbUser.tmpl"))
 	Templates["deleteDbUser"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbUser/deleteDbUser.tmpl"))
 	Templates["dbUserFormResponse"] = template.Must(template.ParseFS(templatesFolder, "dbUser/response.tmpl"))
-	Templates["addDb"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "dbConfig/addDb.tmpl"))
 	Templates["signIn"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "signIn.tmpl"))
 	Templates["resetPassword"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "appUser/resetPassword.tmpl"))
+
+	Templates["settings"] = template.Must(template.ParseFS(templatesFolder, "settings/layout.tmpl"))
+	Templates["manageDbs"] = template.Must(template.ParseFS(templatesFolder, "settings/layout.tmpl", "settings/databases.tmpl"))
+	Templates["manageUsers"] = template.Must(template.ParseFS(templatesFolder, "settings/layout.tmpl", "settings/users.tmpl"))
+	Templates["addDb"] = template.Must(template.ParseFS(templatesFolder, "settings/layout.tmpl", "dbConfig/addDb.tmpl"))
 }

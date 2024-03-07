@@ -61,7 +61,5 @@ func DecodeToken(jwtToken string) (string, error) {
 	if !token.Valid {
 		log.Fatal("invalid token")
 	}
-	fmt.Println(userClaim.Id)
-
 	return userClaim.Id, nil
 }
