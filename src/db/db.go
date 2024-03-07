@@ -11,14 +11,6 @@ import (
 
 var Database *sql.DB
 
-type dbDetails struct {
-	Name    string
-	Host    string
-	Port    int
-	DbType  string
-	SslMode string
-}
-
 func ConnectDB() {
 
 	// Capture connection properties.
@@ -30,11 +22,12 @@ func ConnectDB() {
 	// 	DBName: os.Getenv("DB_NAME"),
 	// }
 	cfg := mysql.Config{
-		User:   "root",
-		Passwd: "test",
-		Net:    "tcp",
-		Addr:   "127.0.0.1:3001",
-		DBName: "db_platform",
+		User:      "root",
+		Passwd:    "test",
+		Net:       "tcp",
+		Addr:      "127.0.0.1:3001",
+		DBName:    "db_platform",
+		ParseTime: true,
 	}
 	// Get a database handle.
 	var err error

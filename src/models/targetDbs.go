@@ -5,14 +5,19 @@ import (
 	"database/sql"
 	"fmt"
 	"sync"
+	"time"
 )
 
 type TargetDb struct {
-	Host    string
-	Port    int
-	Type    string
-	SslMode string
-	Name    string
+	Id        string
+	Name      string
+	Host      string
+	Port      int
+	Type      string
+	SslMode   string
+	UserId    string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {

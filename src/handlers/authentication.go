@@ -59,3 +59,20 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{Name: "token", Value: "", Path: "/"})
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+func LoadResetPasswordPage(w http.ResponseWriter, r *http.Request) {
+	views.Templates["resetPassword"].Execute(w, nil)
+}
+
+func ResetPasswordFormHandler(w http.ResponseWriter, r *http.Request) {
+	userId := r.Context().Value("userId").(string)
+
+	var user models.AppUser
+	user.GetUserById(userId)
+
+	currentPassword := r.FormValue("password")
+	fmt.Println(currentPassword)
+	newPassword := r.FormValue("new-password")
+	fmt.Println(newPassword)
+	w.Write([]byte("gogo"))
+}
