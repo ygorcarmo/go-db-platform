@@ -8,11 +8,19 @@ import (
 )
 
 func LoadSettings(w http.ResponseWriter, r *http.Request) {
-	views.Templates["settings"].Execute(w, nil)
+	// views.Templates["settings"].Execute(w, nil)
+	w.Write([]byte("GO"))
 }
 
 func LoadManageDbs(w http.ResponseWriter, r *http.Request) {
-	views.Templates["manageDbs"].Execute(w, nil)
+	var database models.TargetDb
+	databases, err := database.GetAll()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(databases)
+
+	views.Templates["manageDbs"].Execute(w, databases)
 }
 
 func LoadManageUsers(w http.ResponseWriter, r *http.Request) {
@@ -22,5 +30,5 @@ func LoadManageUsers(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	fmt.Println(res)
-	views.Templates["manageUsers"].Execute(w, nil)
+	views.Templates["manageUsers"].Execute(w, res)
 }

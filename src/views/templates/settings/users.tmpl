@@ -1,3 +1,32 @@
 {{ define "main"}}
 <h1>Manage User</h1>
+<a
+  href="/settings/create-user"
+  class="bg-blue-400 py-2 px-4 rounded spinner my-indicator"
+  >Create New User</a
+>
+<table>
+  <thead>
+    <tr>
+      <th>Username</th>
+      <th>Supervisor</th>
+      <th>Sector</th>
+      <th>Admin</th>
+      <th>Id</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .}}
+    <tr>
+      <td>{{.Username}}</td>
+      <td>{{.Supervisor}}</td>
+      <td>{{.Sector}}</td>
+      <td>{{.IsAdmin}}</td>
+      <td>{{.Id}}</td>
+    </tr>
+    {{
+      end
+    }}
+  </tbody>
+</table>
 {{ end }}

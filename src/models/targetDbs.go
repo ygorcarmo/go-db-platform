@@ -25,7 +25,7 @@ func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {
 	return targetDb, err
 }
 
-func (targetDb *TargetDb) GetAllNames() ([]string, error) {
+func (*TargetDb) GetAllNames() ([]string, error) {
 	var dbs []string
 
 	rows, err := db.Database.Query("SELECT name FROM external_databases")
@@ -50,6 +50,28 @@ func (targetDb *TargetDb) GetAllNames() ([]string, error) {
 	}
 
 	return dbs, nil
+}
+
+func (*TargetDb) GetAll() ([]TargetDb, error) {
+	var databases []TargetDb
+
+	rows, err := db.Database.Query("SELECT BIN_TO_UUID(id), name, host, port, type, sslMode FROM external_databases;")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var database TargetDb
+		if err := rows.Scan(&database.Id, &database.Name, &database.Host, &database.Port, &database.Type, &database.SslMode); err != nil {
+			return nil, err
+		}
+		databases = append(databases, database)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return databases, nil
 }
 
 func (targetDb TargetDb) ConnectToDBAndCreateUser(newUser string, c chan TargetDbsRepose, wg *sync.WaitGroup) {

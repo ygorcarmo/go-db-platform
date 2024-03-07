@@ -1,3 +1,35 @@
 {{ define "main"}}
 <h1>Manage Databases</h1>
+<a
+  href="/settings/create-db"
+  class="bg-blue-400 py-2 px-4 rounded spinner my-indicator"
+>
+  Create New Database</a
+>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Host</th>
+      <th>Port</th>
+      <th>Type</th>
+      <th>Ssl Mode</th>
+      <th>Id</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .}}
+    <tr>
+      <td>{{.Name}}</td>
+      <td>{{.Host}}</td>
+      <td>{{.Port}}</td>
+      <td>{{.Type}}</td>
+      <td>{{.SslMode}}</td>
+      <td>{{.Id}}</td>
+    </tr>
+    {{
+      end
+    }}
+  </tbody>
+</table>
 {{ end }}
