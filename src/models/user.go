@@ -2,6 +2,7 @@ package models
 
 import (
 	"custom-db-platform/src/db"
+	"fmt"
 	"time"
 )
 
@@ -22,6 +23,7 @@ func (user *AppUser) GetUserByUsername(username string) error {
 }
 func (user *AppUser) GetUserById(id string) error {
 	err := db.Database.QueryRow("SELECT username, password, isAdmin FROM users WHERE id=UUID_TO_BIN(?);", id).Scan(&user.Username, &user.Password, &user.IsAdmin)
+	user.Id = id
 	return err
 }
 
@@ -50,4 +52,11 @@ func (*AppUser) GetAllUsers() ([]AppUser, error) {
 		return nil, err
 	}
 	return users, nil
+}
+
+func (user *AppUser) UpdatePassword(hashedNewPassword string) error {
+	fmt.Println("userid")
+	fmt.Println(user.Id)
+	_, err := db.Database.Exec("UPDATE users SET password = ? WHERE id = UUID_TO_BIN(?);", hashedNewPassword, user.Id)
+	return err
 }

@@ -71,8 +71,36 @@ func ResetPasswordFormHandler(w http.ResponseWriter, r *http.Request) {
 	user.GetUserById(userId)
 
 	currentPassword := r.FormValue("password")
-	fmt.Println(currentPassword)
 	newPassword := r.FormValue("new-password")
-	fmt.Println(newPassword)
-	w.Write([]byte("gogo"))
+	reEnteredPassword := r.FormValue("re-password")
+
+	match, err := hashParams.ComparePasswordAndHash(currentPassword, user.Password)
+	if err != nil || !match {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Invalid Password."))
+		return
+	}
+
+	if newPassword != reEnteredPassword {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Passwords do not match."))
+		return
+	}
+
+	hashedNewPassword, err := hashParams.HashPasword(newPassword)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(hashedNewPassword)
+
+	passwdErr := user.UpdatePassword(hashedNewPassword)
+	if passwdErr != nil {
+		fmt.Println(passwdErr)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong"))
+		return
+	}
+
+	w.Write([]byte("password updated"))
 }

@@ -10,6 +10,7 @@
     <title>DB PLatform</title>
   </head>
   <body>
+    {{ block "body" . }}
     {{ block "navbar" .}}
     <nav class="bg-slate-300">
       <ul class="flex justify-between p-6">
@@ -18,7 +19,6 @@
       </ul>
     </nav>
     {{ end }}
-    {{ block "body" . }}
     <main>
       <div class="grid grid-cols-[300px_auto] h-screen">
         {{ block "sideBar" . }}
@@ -36,6 +36,7 @@
             <li>
               <a href="/user/reset-password" class="block">Reset Password</a>
             </li>
+            <li><a href="/user/logout" class="block">Logout</a></li>
           </ul>
         </div>
         {{ end }}

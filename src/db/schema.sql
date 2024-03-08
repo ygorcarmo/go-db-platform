@@ -57,7 +57,14 @@ VALUES
 
 -- Get the ID of the newly inserted user
 SET
-    @userId = LAST_INSERT_ID();
+    @userId = (
+        SELECT
+            id
+        FROM
+            users
+        WHERE
+            username = "test"
+    );
 
 -- Insert into external_databases table using the obtained user ID
 INSERT INTO
