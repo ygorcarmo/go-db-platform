@@ -10,10 +10,11 @@ CREATE TABLE users(
     password VARCHAR(255) NOT NULL,
     supervisor VARCHAR(255),
     sector VARCHAR(255),
-    isAdmin BOOLEAN NOT NULL DEFAULT FALSE, 
+    isAdmin BOOLEAN NOT NULL DEFAULT FALSE,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id, username)
+    PRIMARY KEY (id, username),
+    UNIQUE KEY (username) -- This ensures unique usernames
 );
 
 CREATE TABLE external_databases(
@@ -26,7 +27,9 @@ CREATE TABLE external_databases(
     userId BINARY(16),
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id, name, host),
+    PRIMARY KEY (id),
+    UNIQUE KEY (name, host, id),
+    -- This ensures unique combination of name, host, and id
     FOREIGN KEY (userId) REFERENCES users(id)
 );
 
@@ -35,13 +38,14 @@ CREATE TABLE logs(
     dbId BINARY(16),
     newUser VARCHAR(255) NOT NULL,
     wo INT NOT NULL,
-    userId BINARY(16),
+    userId BINARY(16) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(id),
     FOREIGN KEY (userId) REFERENCES users(id),
     FOREIGN KEY (dbId) REFERENCES external_databases(id)
 );
 
+-- Insert the user and get its ID
 INSERT INTO
     users (username, password, isAdmin)
 VALUES
@@ -51,25 +55,67 @@ VALUES
         TRUE
     );
 
+-- Get the ID of the newly inserted user
+SET
+    @userId = LAST_INSERT_ID();
+
+-- Insert into external_databases table using the obtained user ID
 INSERT INTO
-    external_databases (name, host, port, type, sslMode)
+    external_databases (name, host, port, type, sslMode, userId)
 VALUES
-    ("mysql", "localhost", 3001, "mysql", "disable"),
-    ("mysql-2", "localhost", 3003, "mysql", "disable"),
-    ("mysql-3", "localhost", 3004, "mysql", "disable"),
-    ("maria", "localhost", 3002, "mysql", "disable"),
-    ("maria-2", "localhost", 3005, "mysql", "disable"),
+    (
+        "mysql",
+        "localhost",
+        3001,
+        "mysql",
+        "disable",
+        @userId
+    ),
+    (
+        "mysql-2",
+        "localhost",
+        3003,
+        "mysql",
+        "disable",
+        @userId
+    ),
+    (
+        "mysql-3",
+        "localhost",
+        3004,
+        "mysql",
+        "disable",
+        @userId
+    ),
+    (
+        "maria",
+        "localhost",
+        3002,
+        "mysql",
+        "disable",
+        @userId
+    ),
+    (
+        "maria-2",
+        "localhost",
+        3005,
+        "mysql",
+        "disable",
+        @userId
+    ),
     (
         "postgres",
         "localhost",
         5432,
         "postgres",
-        "disable"
+        "disable",
+        @userId
     ),
     (
         "postgres-2",
         "localhost",
         5433,
         "postgres",
-        "disable"
+        "disable",
+        @userId
     );
