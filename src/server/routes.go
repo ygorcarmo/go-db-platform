@@ -49,9 +49,11 @@ func (s *Server) RegisterRoutes() http.Handler {
 				settingsRoute.Get("/", handlers.LoadSettings)
 				settingsRoute.Get("/users", handlers.LoadManageUsers)
 				settingsRoute.Get("/create-user", handlers.LoadCreateAppUser)
+				settingsRoute.Post("/create-user", handlers.AddAppUserFormHanlder)
 
 				settingsRoute.Get("/dbs", handlers.LoadManageDbs)
 				settingsRoute.Get("/create-db", handlers.LoadAddDb)
+				settingsRoute.Post("/create-db", handlers.AddDbFormHanlder)
 			})
 		})
 	})

@@ -4,7 +4,6 @@ import (
 	"context"
 	"custom-db-platform/src/models"
 	"custom-db-platform/src/utils"
-	"fmt"
 	"net/http"
 )
 
@@ -38,7 +37,6 @@ func adminsOnlyMiddleware() func(handler http.Handler) http.Handler {
 
 			var user models.AppUser
 			user.GetUserById(userId)
-			fmt.Println(user.IsAdmin)
 			if !user.IsAdmin {
 				http.Redirect(w, r, "/", http.StatusMovedPermanently)
 				return

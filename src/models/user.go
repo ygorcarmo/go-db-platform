@@ -10,8 +10,8 @@ type AppUser struct {
 	Id         string
 	Username   string
 	Password   string
-	Supervisor interface{}
-	Sector     interface{}
+	Supervisor string
+	Sector     string
 	IsAdmin    bool
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
@@ -28,7 +28,7 @@ func (user *AppUser) GetUserById(id string) error {
 }
 
 func (user *AppUser) CreateUser() error {
-	_, err := db.Database.Exec(`INSERT INTO users (username, password, isAdmin) VALUES ($1, $2, $3);`, user.Username, user.Password, user.IsAdmin)
+	_, err := db.Database.Exec(`INSERT INTO users (username, password, supervisor, sector, isAdmin) VALUES (?, ?, ?, ?, ?);`, user.Username, user.Password, user.Supervisor, user.Sector, user.IsAdmin)
 	return err
 }
 
