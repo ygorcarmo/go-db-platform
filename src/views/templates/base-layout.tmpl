@@ -10,12 +10,20 @@
     <title>DB PLatform</title>
   </head>
   <body>
+    {{ block "navbar" .}}
+    <nav class="bg-slate-300">
+      <ul class="flex justify-between p-6">
+        <li>Logo</li>
+        <a href="/settings/dbs" class="block">Settings</a>
+      </ul>
+    </nav>
+    {{ end }}
     {{ block "body" . }}
     <main>
       <div class="grid grid-cols-[300px_auto] h-screen">
         {{ block "sideBar" . }}
         <div class="border-gray-600 border-r-2">
-          <ul class="p-5 grid gap-3">
+          <ul class="p-5 grid gap-3" hx-boost="true">
             <li>
               <a href="/" class="block">Home</a>
             </li>
@@ -28,21 +36,10 @@
             <li>
               <a href="/user/reset-password" class="block">Reset Password</a>
             </li>
-            <li>
-              <a href="/settings/dbs" class="block">Settings</a>
-            </li>
-            <li>
-              <a href="/user/logout" class="block">Logout</a>
-            </li>
           </ul>
         </div>
         {{ end }}
         <div class="grid grid-rows-[70px_auto]">
-          {{ block "settings" .}}
-          <div class="h-full bg-slate-300">
-            <div>setting button here?</div>
-          </div>
-          {{ end }}
           <div class="h-full p-4">
             {{ block "main" .}}
             <h1 class="text-2xl">Sistema de cadastro de usuarios</h1>

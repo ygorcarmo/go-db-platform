@@ -75,3 +75,12 @@ func LoadDeleteExternalUser(w http.ResponseWriter, r *http.Request) {
 
 	views.Templates["deleteDbUser"].Execute(w, dbs)
 }
+
+func DeleteExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	username := r.FormValue("username")
+	wo := r.FormValue("wo")
+	databases := r.Form["databases"]
+
+	fmt.Printf("username: %s, wo: %s, databases: %v\n", username, wo, databases)
+}

@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-func LoadAddDbPage(w http.ResponseWriter, r *http.Request) {
+func LoadAddDb(w http.ResponseWriter, r *http.Request) {
 	views.Templates["addDb"].Execute(w, nil)
 }
 

@@ -38,7 +38,7 @@ func main() {
 	// fmt.Printf("Match: %v\n", match)
 
 	webServer := server.NewServer()
-	err := webServer.ListenAndServe()
+	err := webServer.ListenAndServeTLS("", "")
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		panic("Cannot Start Server")
