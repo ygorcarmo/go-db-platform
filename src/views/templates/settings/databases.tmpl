@@ -21,10 +21,16 @@
         <th scope="col" class="px-6 py-3">Port</th>
         <th scope="col" class="px-6 py-3">Type</th>
         <th scope="col" class="px-6 py-3">Ssl Mode</th>
-        <th scope="col" class="px-6 py-3">Id</th>
+        <th scope="col" class="px-6 py-3">Created By</th>
+        <th scope="col" class="px-6 py-3"></th>
+        <th scope="col" class="px-6 py-3"></th>
       </tr>
     </thead>
-    <tbody>
+    <tbody
+      hx-confirm="Are you sure?"
+      hx-target="closest tr"
+      hx-swap="outerHTML swap:1s"
+    >
       {{ range .}}
       <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
         <td
@@ -36,7 +42,20 @@
         <td class="px-6 py-4">{{.Port}}</td>
         <td class="px-6 py-4">{{.Type}}</td>
         <td class="px-6 py-4">{{.SslMode}}</td>
-        <td class="px-6 py-4">{{.Id}}</td>
+        <td class="px-6 py-4">{{.CreatedBy}}</td>
+        <td class="px-6 py-4">
+          <a class="border rounded py-2 px-4" href="/settings/update-db/{{.Id}}"
+            >Edit</a
+          >
+        </td>
+        <td>
+          <button
+            class="bg-red-400 text-white py-2 px-4 rounded"
+            hx-delete="/settings/db/{{.Id}}"
+          >
+            Delete
+          </button>
+        </td>
       </tr>
       {{
         end

@@ -2,9 +2,12 @@ package handlers
 
 import (
 	"custom-db-platform/src/db"
+	"custom-db-platform/src/models"
 	"custom-db-platform/src/views"
 	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func LoadAddDb(w http.ResponseWriter, r *http.Request) {
@@ -27,4 +30,25 @@ func AddDbFormHanlder(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(fmt.Sprintf("<div class=\"border border-green-500 bg-green-300 w-fit p-2 rounded\">%s has been created successfully.</div>", name)))
+}
+
+func LoadEditDb(w http.ResponseWriter, r *http.Request) {
+	dbId := chi.URLParam(r, "id")
+	var db models.TargetDb
+	db.GetByid(dbId)
+	views.Templates["editDb"].Execute(w, db)
+}
+
+func DeleteDb(w http.ResponseWriter, r *http.Request) {
+	dbId := chi.URLParam(r, "id")
+
+	_, err := db.Database.Exec("DELETE FROM external_databases WHERE id=UUID_TO_BIN(?)", dbId)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("somthing went wrong"))
+	}
+
+	w.WriteHeader(http.StatusOK)
+
 }

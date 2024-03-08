@@ -16,12 +16,25 @@ type TargetDb struct {
 	Type      string
 	SslMode   string
 	UserId    string
+	CreatedBy string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
 func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {
-	err := db.Database.QueryRow("SELECT * FROM external_databases WHERE name=?;", name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode)
+	err := db.Database.QueryRow(`SELECT 
+	    ed.name AS external_database_name,
+    ed.host AS external_database_host,
+    ed.port AS external_database_port,
+    ed.type AS external_database_type,
+    ed.sslMode AS external_database_sslMode,
+FROM 
+    external_databases ed WHERE name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode)
+	return targetDb, err
+}
+func (targetDb *TargetDb) GetByid(id string) (*TargetDb, error) {
+	err := db.Database.QueryRow(`SELECT name, host,	port, type,	sslMode FROM external_databases WHERE id=UUID_TO_BIN(?);`,
+		id).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode)
 	return targetDb, err
 }
 
@@ -55,7 +68,18 @@ func (*TargetDb) GetAllNames() ([]string, error) {
 func (*TargetDb) GetAll() ([]TargetDb, error) {
 	var databases []TargetDb
 
-	rows, err := db.Database.Query("SELECT BIN_TO_UUID(id), name, host, port, type, sslMode FROM external_databases;")
+	rows, err := db.Database.Query(`SELECT 
+    BIN_TO_UUID(ed.id) AS external_database_id,
+    ed.name AS external_database_name,
+    ed.host AS external_database_host,
+    ed.port AS external_database_port,
+    ed.type AS external_database_type,
+    ed.sslMode AS external_database_sslMode,
+    u.username AS user_username
+FROM 
+    external_databases ed
+JOIN 
+    users u ON ed.userId = u.id;`)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +87,7 @@ func (*TargetDb) GetAll() ([]TargetDb, error) {
 
 	for rows.Next() {
 		var database TargetDb
-		if err := rows.Scan(&database.Id, &database.Name, &database.Host, &database.Port, &database.Type, &database.SslMode); err != nil {
+		if err := rows.Scan(&database.Id, &database.Name, &database.Host, &database.Port, &database.Type, &database.SslMode, &database.CreatedBy); err != nil {
 			return nil, err
 		}
 		databases = append(databases, database)

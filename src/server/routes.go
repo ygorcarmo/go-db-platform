@@ -48,12 +48,16 @@ func (s *Server) RegisterRoutes() http.Handler {
 			adminsOnlyRoute.Route("/settings", func(settingsRoute chi.Router) {
 				settingsRoute.Get("/", handlers.LoadSettings)
 				settingsRoute.Get("/users", handlers.LoadManageUsers)
+				settingsRoute.Delete("/user/{id}", handlers.DeleteAppUser)
 				settingsRoute.Get("/create-user", handlers.LoadCreateAppUser)
 				settingsRoute.Post("/create-user", handlers.AddAppUserFormHanlder)
+				settingsRoute.Get("/update-user/{id}", handlers.LoadEditAppUser)
 
 				settingsRoute.Get("/dbs", handlers.LoadManageDbs)
+				settingsRoute.Delete("/db/{id}", handlers.DeleteDb)
 				settingsRoute.Get("/create-db", handlers.LoadAddDb)
 				settingsRoute.Post("/create-db", handlers.AddDbFormHanlder)
+				settingsRoute.Get("/update-db/{id}", handlers.LoadEditDb)
 			})
 		})
 	})

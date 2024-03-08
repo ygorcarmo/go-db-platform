@@ -1,11 +1,14 @@
 package handlers
 
 import (
+	"custom-db-platform/src/db"
 	"custom-db-platform/src/models"
 	"custom-db-platform/src/views"
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 func LoadCreateAppUser(w http.ResponseWriter, r *http.Request) {
@@ -49,4 +52,24 @@ func AddAppUserFormHanlder(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte("user created"))
 
+}
+
+func LoadEditAppUser(w http.ResponseWriter, r *http.Request) {
+	userId := chi.URLParam(r, "id")
+
+	var user models.AppUser
+	user.GetUserById(userId)
+	views.Templates["editAppUser"].Execute(w, user)
+}
+
+func DeleteAppUser(w http.ResponseWriter, r *http.Request) {
+	userId := chi.URLParam(r, "id")
+
+	_, err := db.Database.Exec("DELETE FROM users WHERE id = UUID_TO_BIN(?);", userId)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("somthing went wrong"))
+	}
+	w.WriteHeader(http.StatusOK)
 }

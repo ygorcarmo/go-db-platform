@@ -22,7 +22,7 @@ func (user *AppUser) GetUserByUsername(username string) error {
 	return err
 }
 func (user *AppUser) GetUserById(id string) error {
-	err := db.Database.QueryRow("SELECT username, password, isAdmin FROM users WHERE id=UUID_TO_BIN(?);", id).Scan(&user.Username, &user.Password, &user.IsAdmin)
+	err := db.Database.QueryRow("SELECT username, password, isAdmin, supervisor, sector FROM users WHERE id=UUID_TO_BIN(?);", id).Scan(&user.Username, &user.Password, &user.IsAdmin, &user.Supervisor, &user.Sector)
 	user.Id = id
 	return err
 }

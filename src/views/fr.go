@@ -32,5 +32,7 @@ func LoadTemplates() {
 	Templates["manageDbs"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "settings/sideBar.tmpl", "settings/databases.tmpl"))
 	Templates["manageUsers"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "settings/sideBar.tmpl", "settings/users.tmpl"))
 	Templates["addDb"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "settings/sideBar.tmpl", "settings/addDb.tmpl"))
+	Templates["editDb"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "settings/sideBar.tmpl", "settings/editDb.tmpl"))
 	Templates["addAppUser"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "settings/sideBar.tmpl", "settings/addAppUser.tmpl"))
+	Templates["editAppUser"] = template.Must(template.ParseFS(templatesFolder, "base-layout.tmpl", "settings/sideBar.tmpl", "settings/editAppUser.tmpl"))
 }
