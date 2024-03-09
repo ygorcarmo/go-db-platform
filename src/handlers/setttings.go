@@ -32,3 +32,13 @@ func LoadManageUsers(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(res)
 	views.Templates["manageUsers"].Execute(w, res)
 }
+
+func LoadManageLogs(w http.ResponseWriter, r *http.Request) {
+	var log models.Log
+	logs, err := log.GetAllLogsPretty()
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(logs)
+	views.Templates["manageLogs"].Execute(w, logs)
+}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"sync"
 )
 
@@ -34,6 +35,13 @@ func CreateExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	wo := r.FormValue("wo")
 	databases := r.Form["databases"]
 
+	woInt, err := strconv.Atoi(wo)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	userId := r.Context().Value("userId").(string)
+
 	var results []models.TargetDbsRepose
 
 	c := make(chan models.TargetDbsRepose)
@@ -48,7 +56,7 @@ func CreateExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, currentDb)
-		go currentDb.ConnectToDBAndCreateUser(username, c, &wg)
+		go currentDb.ConnectToDBAndCreateUser(username, userId, woInt, c, &wg)
 		msg := <-c
 		results = append(results, msg)
 	}

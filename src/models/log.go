@@ -22,14 +22,15 @@ type LogResponse struct {
 	CreatedAt time.Time
 }
 
-func (log *Log) CreateLog() (*Log, error) {
-	return nil, nil
+func (log *Log) CreateLog() error {
+	_, err := db.Database.Exec("INSERT INTO logs (dbId, newUser, wo, userId) VALUES (UUID_TO_BIN(?),?,?,UUID_TO_BIN(?));", log.DbId, log.NewUser, log.WO, log.UserId)
+	return err
 }
 
 func (*Log) GetAllLogsPretty() ([]LogResponse, error) {
 	var logs []LogResponse
 
-	rows, err := db.Database.Query("SELECT l.newUser, ed.name AS external_database_name, l.wo, u.username, l.createdAt FROM logs l JOIN users u ON l.userId = u.id JOIN external_databases ed ON l.dbId = ed.id")
+	rows, err := db.Database.Query("SELECT l.newUser, ed.name AS external_database_name, l.wo, u.username, l.createdAt FROM logs l JOIN users u ON l.userId = u.id JOIN external_databases ed ON l.dbId = ed.id ORDER BY l.createdAt DESC;")
 	if err != nil {
 		return nil, err
 	}

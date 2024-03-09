@@ -34,9 +34,10 @@ func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {
     ed.host AS external_database_host,
     ed.port AS external_database_port,
     ed.type AS external_database_type,
-    ed.sslMode AS external_database_sslMode
+    ed.sslMode AS external_database_sslMode,
+	BIN_TO_UUID(ed.id) as external_database_id
 FROM 
-    external_databases ed WHERE name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode)
+    external_databases ed WHERE name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode, &targetDb.Id)
 	return targetDb, err
 }
 func (targetDb *TargetDb) GetByid(id string) (*TargetDb, error) {
@@ -110,13 +111,13 @@ func (*TargetDb) DeleteDbById(dbId string) error {
 	return err
 }
 
-func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUser string, c chan TargetDbsRepose, wg *sync.WaitGroup) {
+func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUser, currentUserId string, wo int, c chan TargetDbsRepose, wg *sync.WaitGroup) {
 	defer wg.Done()
 	if targetDb.Type == "postgres" {
-		c <- targetDb.connectToPostgreAndCreateUser(newUser)
+		c <- targetDb.connectToPostgreAndCreateUser(newUser, currentUserId, wo)
 		return
 	} else if targetDb.Type == "mysql" {
-		c <- targetDb.connectToSQLAndCreateUser(newUser)
+		c <- targetDb.connectToSQLAndCreateUser(newUser, currentUserId, wo)
 		return
 	} else {
 		c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: DB Type not Supported", newUser, targetDb.Name), Success: false}
@@ -124,7 +125,7 @@ func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUser string, c chan Target
 	}
 }
 
-func (targetdb *TargetDb) connectToSQLAndCreateUser(newUser string) TargetDbsRepose {
+func (targetdb *TargetDb) connectToSQLAndCreateUser(newUser, currentUserId string, wo int) TargetDbsRepose {
 	cfg := mysql.Config{
 		User:                 "root",
 		Passwd:               "test",
@@ -150,10 +151,19 @@ func (targetdb *TargetDb) connectToSQLAndCreateUser(newUser string) TargetDbsRep
 		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetdb.Name, err), Success: false}
 	}
 
+	log := Log{
+		DbId:    targetdb.Id,
+		NewUser: newUser,
+		WO:      wo,
+		UserId:  currentUserId,
+	}
+
+	go log.CreateLog()
+
 	return TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUser, targetdb.Name), Success: true}
 }
 
-func (targetDb *TargetDb) connectToPostgreAndCreateUser(newUser string) TargetDbsRepose {
+func (targetDb *TargetDb) connectToPostgreAndCreateUser(newUser, currentUserId string, wo int) TargetDbsRepose {
 	connectionStr := fmt.Sprintf("postgres://postgres:test@%s:%d/?sslmode=%s", targetDb.Host, targetDb.Port, targetDb.SslMode)
 
 	database, err := sql.Open(targetDb.Type, connectionStr)
@@ -170,5 +180,15 @@ func (targetDb *TargetDb) connectToPostgreAndCreateUser(newUser string) TargetDb
 	if err != nil {
 		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
 	}
+
+	log := Log{
+		DbId:    targetDb.Id,
+		NewUser: newUser,
+		WO:      wo,
+		UserId:  currentUserId,
+	}
+
+	go log.CreateLog()
+
 	return TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUser, targetDb.Name), Success: true}
 }

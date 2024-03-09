@@ -58,6 +58,8 @@ func (s *Server) RegisterRoutes() http.Handler {
 				settingsRoute.Get("/create-db", handlers.LoadAddDb)
 				settingsRoute.Post("/create-db", handlers.AddDbFormHanlder)
 				settingsRoute.Get("/update-db/{id}", handlers.LoadEditDb)
+
+				settingsRoute.Get("/logs", handlers.LoadManageLogs)
 			})
 		})
 	})
