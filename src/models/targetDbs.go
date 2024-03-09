@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sync"
 	"time"
+
+	"github.com/go-sql-driver/mysql"
 )
 
 type TargetDb struct {
@@ -19,6 +21,11 @@ type TargetDb struct {
 	CreatedBy string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+type TargetDbsRepose struct {
+	Message string
+	Success bool
 }
 
 func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {
@@ -103,57 +110,65 @@ func (*TargetDb) DeleteDbById(dbId string) error {
 	return err
 }
 
-func (targetDb TargetDb) ConnectToDBAndCreateUser(newUser string, c chan TargetDbsRepose, wg *sync.WaitGroup) {
+func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUser string, c chan TargetDbsRepose, wg *sync.WaitGroup) {
 	defer wg.Done()
-	var connectionStr string
 	if targetDb.Type == "postgres" {
-		connectionStr = fmt.Sprintf("postgres://postgres:test@%s:%d/?sslmode=%s", targetDb.Host, targetDb.Port, targetDb.SslMode)
+		c <- targetDb.connectToPostgreAndCreateUser(newUser)
+		return
 	} else if targetDb.Type == "mysql" {
-		connectionStr = fmt.Sprintf("root:test@tcp(%s:%d)/", targetDb.Host, targetDb.Port)
+		c <- targetDb.connectToSQLAndCreateUser(newUser)
+		return
 	} else {
 		c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: DB Type not Supported", newUser, targetDb.Name), Success: false}
 		return
 	}
+}
 
-	localdb, err := sql.Open(targetDb.Type, connectionStr)
-	if err != nil {
-		// log.Fatal(err)
-		c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
-		return
+func (targetdb *TargetDb) connectToSQLAndCreateUser(newUser string) TargetDbsRepose {
+	cfg := mysql.Config{
+		User:                 "root",
+		Passwd:               "test",
+		Net:                  "tcp",
+		Addr:                 fmt.Sprintf("%s:%d", targetdb.Host, targetdb.Port),
+		ParseTime:            true,
+		AllowNativePasswords: true,
 	}
 
-	defer localdb.Close()
-
-	pingErr := localdb.Ping()
-	if pingErr != nil {
-		// log.Fatal(pingErr)
-		c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
-
-		return
+	database, err := sql.Open("mysql", cfg.FormatDSN())
+	if err != nil {
+		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetdb.Name, err), Success: false}
+	}
+	err = database.Ping()
+	if err != nil {
+		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetdb.Name, err), Success: false}
 	}
 	fmt.Println("Connected!")
+	defer database.Close()
 
-	if targetDb.Type == "postgres" {
-
-		_, err := localdb.Exec(fmt.Sprintf("CREATE USER %s PASSWORD '1234';", newUser))
-		if err != nil {
-			// log.Fatal(err)
-			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
-
-			return
-		}
+	_, err = database.Exec("CREATE USER '" + newUser + "'@'localhost' IDENTIFIED BY 'password';")
+	if err != nil {
+		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetdb.Name, err), Success: false}
 	}
 
-	if targetDb.Type == "mysql" {
+	return TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUser, targetdb.Name), Success: true}
+}
 
-		_, err := localdb.Exec(fmt.Sprintf("CREATE USER '%s'@'localhost' IDENTIFIED BY 'password';", newUser))
-		if err != nil {
-			// log.Fatal(err)
-			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
+func (targetDb *TargetDb) connectToPostgreAndCreateUser(newUser string) TargetDbsRepose {
+	connectionStr := fmt.Sprintf("postgres://postgres:test@%s:%d/?sslmode=%s", targetDb.Host, targetDb.Port, targetDb.SslMode)
 
-			return
-		}
+	database, err := sql.Open(targetDb.Type, connectionStr)
+	if err != nil {
+		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
 	}
-
-	c <- TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUser, targetDb.Name), Success: true}
+	err = database.Ping()
+	if err != nil {
+		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
+	}
+	fmt.Println("Connected!")
+	defer database.Close()
+	_, err = database.Exec("CREATE USER " + newUser + " WITH PASSWORD '1234';")
+	if err != nil {
+		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
+	}
+	return TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUser, targetDb.Name), Success: true}
 }
