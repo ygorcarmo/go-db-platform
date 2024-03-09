@@ -42,7 +42,8 @@ func LoadEditDb(w http.ResponseWriter, r *http.Request) {
 func DeleteDb(w http.ResponseWriter, r *http.Request) {
 	dbId := chi.URLParam(r, "id")
 
-	_, err := db.Database.Exec("DELETE FROM external_databases WHERE id=UUID_TO_BIN(?)", dbId)
+	var db models.TargetDb
+	err := db.DeleteDbById(dbId)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

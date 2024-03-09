@@ -27,7 +27,7 @@ func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {
     ed.host AS external_database_host,
     ed.port AS external_database_port,
     ed.type AS external_database_type,
-    ed.sslMode AS external_database_sslMode,
+    ed.sslMode AS external_database_sslMode
 FROM 
     external_databases ed WHERE name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode)
 	return targetDb, err
@@ -96,6 +96,11 @@ JOIN
 		return nil, err
 	}
 	return databases, nil
+}
+
+func (*TargetDb) DeleteDbById(dbId string) error {
+	_, err := db.Database.Exec("DELETE FROM external_databases WHERE id=UUID_TO_BIN(?)", dbId)
+	return err
 }
 
 func (targetDb TargetDb) ConnectToDBAndCreateUser(newUser string, c chan TargetDbsRepose, wg *sync.WaitGroup) {

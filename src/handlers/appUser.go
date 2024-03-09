@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"custom-db-platform/src/db"
 	"custom-db-platform/src/models"
 	"custom-db-platform/src/views"
 	"fmt"
@@ -65,7 +64,8 @@ func LoadEditAppUser(w http.ResponseWriter, r *http.Request) {
 func DeleteAppUser(w http.ResponseWriter, r *http.Request) {
 	userId := chi.URLParam(r, "id")
 
-	_, err := db.Database.Exec("DELETE FROM users WHERE id = UUID_TO_BIN(?);", userId)
+	var user models.AppUser
+	err := user.DeleteUserById(userId)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

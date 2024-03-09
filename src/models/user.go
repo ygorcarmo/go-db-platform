@@ -60,3 +60,8 @@ func (user *AppUser) UpdatePassword(hashedNewPassword string) error {
 	_, err := db.Database.Exec("UPDATE users SET password = ? WHERE id = UUID_TO_BIN(?);", hashedNewPassword, user.Id)
 	return err
 }
+
+func (*AppUser) DeleteUserById(userId string) error {
+	_, err := db.Database.Exec("DELETE FROM users WHERE id = UUID_TO_BIN(?);", userId)
+	return err
+}
