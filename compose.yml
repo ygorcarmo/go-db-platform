@@ -1,6 +1,5 @@
 version: "3.5"
 
-
 services:
   db:
     image: mysql
@@ -17,6 +16,8 @@ services:
     restart: on-failure
     container_name: web
     hostname: web
+    ports:
+      - "3000:3000"
     depends_on:
       db:
         condition: service_completed_successfully
