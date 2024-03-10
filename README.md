@@ -12,16 +12,17 @@ This is a custom platform for multiple databases users administration.
     go mod download
     go run .
 
+# Docker Image
 
-# Docker Image 
 ## Enviroment variables
-    - CLERK=clerk api key
+
     - DB_NAME=db name
     - DB_USER=db user
     - DB_PASSWORD=db password
     - DB_ADDRESS=db address
 
 sample:
+
 ```
     User:   "root",
     Passwd: "test",
