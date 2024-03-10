@@ -61,6 +61,37 @@ func LoadEditAppUser(w http.ResponseWriter, r *http.Request) {
 	views.Templates["editAppUser"].Execute(w, user)
 }
 
+func UpdateAppUser(w http.ResponseWriter, r *http.Request) {
+	admin := r.FormValue("admin")
+
+	var isAdmin bool
+
+	if admin == "" {
+		isAdmin = false
+	} else {
+		isAdmin = true
+	}
+
+	user := models.AppUser{
+		Id:         chi.URLParam(r, "id"),
+		Username:   r.FormValue("username"),
+		Supervisor: r.FormValue("supervisor"),
+		Sector:     r.FormValue("sector"),
+		IsAdmin:    isAdmin,
+	}
+	err := user.UpdateAppUser()
+
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("somthing went wrong"))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("user was updated"))
+}
+
 func DeleteAppUser(w http.ResponseWriter, r *http.Request) {
 	userId := chi.URLParam(r, "id")
 

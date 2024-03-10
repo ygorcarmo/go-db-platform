@@ -2,7 +2,6 @@ package models
 
 import (
 	"custom-db-platform/src/db"
-	"fmt"
 	"time"
 )
 
@@ -55,13 +54,20 @@ func (*AppUser) GetAllUsers() ([]AppUser, error) {
 }
 
 func (user *AppUser) UpdatePassword(hashedNewPassword string) error {
-	fmt.Println("userid")
-	fmt.Println(user.Id)
 	_, err := db.Database.Exec("UPDATE users SET password = ? WHERE id = UUID_TO_BIN(?);", hashedNewPassword, user.Id)
 	return err
 }
 
 func (*AppUser) DeleteUserById(userId string) error {
 	_, err := db.Database.Exec("DELETE FROM users WHERE id = UUID_TO_BIN(?);", userId)
+	return err
+}
+
+func (user *AppUser) UpdateAppUser() error {
+	_, err := db.Database.Exec(`
+		UPDATE users
+		SET username = ?, supervisor = ?, sector = ?, isAdmin = ?
+		WHERE id = UUID_TO_BIN(?) 
+	`, user.Username, user.Supervisor, user.Sector, user.IsAdmin, user.Id)
 	return err
 }

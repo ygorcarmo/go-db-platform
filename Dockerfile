@@ -13,9 +13,9 @@ FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=builder /app/src/web ./src/web
+# COPY --from=builder /app/src/web ./src/web
 COPY --from=builder /app/db-platform .
 
-EXPOSE 8080/tcp
+EXPOSE 3000/tcp
 
 CMD ["./db-platform"]

@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
+	go_ora "github.com/sijms/go-ora/v2"
 )
 
 type TargetDb struct {
@@ -130,6 +132,8 @@ func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUser, currentUserId string
 	} else if targetDb.Type == "mysql" {
 		c <- targetDb.connectToSQLAndCreateUser(newUser, currentUserId, wo)
 		return
+	} else if targetDb.Type == "oracle" {
+		c <- targetDb.connectToOracleAndCreateUser(newUser, currentUserId, wo)
 	} else {
 		c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: DB Type not Supported", newUser, targetDb.Name), Success: false}
 		return
@@ -188,6 +192,36 @@ func (targetDb *TargetDb) connectToPostgreAndCreateUser(newUser, currentUserId s
 	fmt.Println("Connected!")
 	defer database.Close()
 	_, err = database.Exec("CREATE USER " + newUser + " WITH PASSWORD '1234';")
+	if err != nil {
+		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
+	}
+
+	log := Log{
+		DbId:    targetDb.Id,
+		NewUser: newUser,
+		WO:      wo,
+		UserId:  currentUserId,
+	}
+
+	go log.CreateLog()
+
+	return TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUser, targetDb.Name), Success: true}
+}
+
+func (targetDb *TargetDb) connectToOracleAndCreateUser(newUser, currentUserId string, wo int) TargetDbsRepose {
+	connectionStr := go_ora.BuildUrl(targetDb.Host, targetDb.Port, targetDb.Name, "teste", "teste", nil)
+	database, err := sql.Open(targetDb.Type, connectionStr)
+	if err != nil {
+		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
+	}
+	err = database.Ping()
+	if err != nil {
+		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
+	}
+	fmt.Println("Connected!")
+	defer database.Close()
+
+	_, err = database.Exec("CREATE USER " + newUser + " IDENTIFIED BY new_password")
 	if err != nil {
 		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
 	}
