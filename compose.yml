@@ -1,0 +1,28 @@
+version: "3.5"
+
+
+services:
+  db:
+    image: mysql
+    container_name: db
+    hostname: db
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=test
+    volumes:
+      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
+  web:
+    image: new_db
+    restart: on-failure
+    container_name: web
+    hostname: web
+    depends_on:
+      db:
+        condition: service_completed_successfully
+        restart: true
+
+networks:
+  default:
+    driver: bridge
+    name: db-platform
