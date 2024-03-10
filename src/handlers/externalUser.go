@@ -56,7 +56,14 @@ func CreateExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, currentDb)
-		go currentDb.ConnectToDBAndCreateUser(username, userId, woInt, c, &wg)
+
+		newUser := models.NewDbUserProps{
+			Username:      username,
+			CurrentUserId: userId,
+			WO:            woInt,
+		}
+
+		go currentDb.ConnectToDBAndCreateUser(newUSer, c, &wg)
 		msg := <-c
 		results = append(results, msg)
 	}
