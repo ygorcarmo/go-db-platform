@@ -192,6 +192,64 @@ func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUserProps NewDbUserProps, 
 	return
 }
 
+func (targetDb *TargetDb) ConnectToDBAndDeleteUser(newUserProps NewDbUserProps, c chan TargetDbsRepose, wg *sync.WaitGroup) {
+	defer wg.Done()
+	if targetDb.Type == "postgres" {
+		pg, err := targetDb.connectToPostgre()
+		if err != nil {
+			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when deleting %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
+			return
+		}
+		defer pg.Close()
+
+		_, err = pg.Exec("DROP USER IF EXISTS " + newUserProps.Username + ";")
+		if err != nil {
+			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when deleting %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
+			return
+		}
+	} else if targetDb.Type == "mysql" {
+		database, err := targetDb.connectToSQL()
+		if err != nil {
+			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when deleting %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
+			return
+		}
+		defer database.Close()
+
+		_, err = database.Exec("DROP USER IF EXISTS '" + newUserProps.Username + "'@'" + targetDb.Host + "';")
+		if err != nil {
+			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when deleting %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
+			return
+		}
+	} else if targetDb.Type == "oracle" {
+		oracledb, err := targetDb.connectToOracle()
+		if err != nil {
+			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when deleting %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
+			return
+		}
+		defer oracledb.Close()
+
+		_, err = oracledb.Exec("DROP USER " + newUserProps.Username + ";")
+		if err != nil {
+			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when deleting %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
+			return
+		}
+	} else {
+		c <- TargetDbsRepose{Message: fmt.Sprintf("Error when deleting %s at %s: DB Type not Supported", newUserProps.Username, targetDb.Name), Success: false}
+		return
+	}
+
+	log := Log{
+		DbId:    targetDb.Id,
+		NewUser: newUserProps.Username,
+		WO:      newUserProps.WO,
+		UserId:  newUserProps.CurrentUserId,
+	}
+	go log.CreateLog()
+
+	c <- TargetDbsRepose{Message: fmt.Sprintf("User %s has been deleted successfully at %s \n", newUserProps.Username, targetDb.Name), Success: true}
+	return
+}
+
 func (targetdb *TargetDb) connectToSQLAndCreateUser(newUser, currentUserId string, wo int) TargetDbsRepose {
 	cfg := mysql.Config{
 		User:                 "root",

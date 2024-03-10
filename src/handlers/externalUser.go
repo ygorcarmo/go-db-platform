@@ -63,7 +63,7 @@ func CreateExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 			WO:            woInt,
 		}
 
-		go currentDb.ConnectToDBAndCreateUser(newUSer, c, &wg)
+		go currentDb.ConnectToDBAndCreateUser(newUser, c, &wg)
 		msg := <-c
 		results = append(results, msg)
 	}
@@ -97,5 +97,48 @@ func DeleteExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 	wo := r.FormValue("wo")
 	databases := r.Form["databases"]
 
-	fmt.Printf("username: %s, wo: %s, databases: %v\n", username, wo, databases)
+	woInt, err := strconv.Atoi(wo)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	userId := r.Context().Value("userId").(string)
+
+	var results []models.TargetDbsRepose
+
+	c := make(chan models.TargetDbsRepose)
+
+	for _, database := range databases {
+		wg.Add(1)
+		var currentDb models.TargetDb
+		_, err := currentDb.GetByName(database)
+
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("username: %s, wo: %s, database: %v\n", username, wo, currentDb)
+
+		newUser := models.NewDbUserProps{
+			Username:      username,
+			CurrentUserId: userId,
+			WO:            woInt,
+		}
+
+		go currentDb.ConnectToDBAndDeleteUser(newUser, c, &wg)
+		msg := <-c
+		results = append(results, msg)
+	}
+	wg.Wait()
+
+	var fResponse filteredResults
+
+	for _, result := range results {
+		if result.Success {
+			fResponse.Sucesses = append(fResponse.Sucesses, result.Message)
+		} else {
+			fResponse.Errors = append(fResponse.Errors, result.Message)
+		}
+	}
+	views.Templates["dbUserFormResponse"].Execute(w, fResponse)
 }
