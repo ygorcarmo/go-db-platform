@@ -6,6 +6,7 @@ import (
 	"custom-db-platform/src/views"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -37,6 +38,33 @@ func LoadEditDb(w http.ResponseWriter, r *http.Request) {
 	var db models.TargetDb
 	db.GetByid(dbId)
 	views.Templates["editDb"].Execute(w, db)
+}
+
+func UpdateDb(w http.ResponseWriter, r *http.Request) {
+	var db models.TargetDb
+
+	db.GetByid(chi.URLParam(r, "id"))
+	db.Id = chi.URLParam(r, "id")
+	db.Name = r.FormValue("name")
+	db.Host = r.FormValue("host")
+	db.Type = r.FormValue("type")
+	db.SslMode = r.FormValue("sslMode")
+
+	port, err := strconv.Atoi(r.FormValue("port"))
+	if err != nil {
+		fmt.Println(err)
+	}
+	db.Port = port
+
+	err = db.Update()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("somthing went wrong"))
+	}
+
+	// maybe do a redirect to db info page
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("db info has been updated."))
 }
 
 func DeleteDb(w http.ResponseWriter, r *http.Request) {

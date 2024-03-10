@@ -52,12 +52,14 @@ func (s *Server) RegisterRoutes() http.Handler {
 				settingsRoute.Get("/create-user", handlers.LoadCreateAppUser)
 				settingsRoute.Post("/create-user", handlers.AddAppUserFormHanlder)
 				settingsRoute.Get("/update-user/{id}", handlers.LoadEditAppUser)
+				// settingsRoute.Put("/update-user/{id}", handlers.UpdateDb)
 
 				settingsRoute.Get("/dbs", handlers.LoadManageDbs)
 				settingsRoute.Delete("/db/{id}", handlers.DeleteDb)
 				settingsRoute.Get("/create-db", handlers.LoadAddDb)
 				settingsRoute.Post("/create-db", handlers.AddDbFormHanlder)
 				settingsRoute.Get("/update-db/{id}", handlers.LoadEditDb)
+				settingsRoute.Put("/update-db/{id}", handlers.UpdateDb)
 
 				settingsRoute.Get("/logs", handlers.LoadManageLogs)
 			})

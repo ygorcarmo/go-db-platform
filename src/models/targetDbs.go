@@ -40,7 +40,9 @@ FROM
     external_databases ed WHERE name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode, &targetDb.Id)
 	return targetDb, err
 }
+
 func (targetDb *TargetDb) GetByid(id string) (*TargetDb, error) {
+	targetDb.Id = id
 	err := db.Database.QueryRow(`SELECT name, host,	port, type,	sslMode FROM external_databases WHERE id=UUID_TO_BIN(?);`,
 		id).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode)
 	return targetDb, err
@@ -71,6 +73,15 @@ func (*TargetDb) GetAllNames() ([]string, error) {
 	}
 
 	return dbs, nil
+}
+
+func (targetDb *TargetDb) Update() error {
+	_, err := db.Database.Exec(`
+		UPDATE external_databases
+		SET name = ?, host = ?, port = ?, type = ?, sslMode = ?
+		WHERE id = UUID_TO_BIN(?);
+	`, targetDb.Name, targetDb.Host, targetDb.Port, targetDb.Type, targetDb.SslMode, targetDb.Id)
+	return err
 }
 
 func (*TargetDb) GetAll() ([]TargetDb, error) {
