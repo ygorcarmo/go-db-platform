@@ -31,13 +31,16 @@ func (params *HashParams) HashPasword(password string) (encodedHash string, err 
 		return "", err
 	}
 
+	// TODO PEPPER THIS MF AFTER HASING https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+	// https://pkg.go.dev/crypto/hmac
 	hash := argon2.IDKey([]byte(password), salt, params.Iterations, params.Memory, params.Parallelism, params.KeyLength)
 
 	// Base64 encode the salt and hashed password.
 	b64Salt := base64.RawStdEncoding.EncodeToString(salt)
 	b64Hash := base64.RawStdEncoding.EncodeToString(hash)
 
-	hashWithDetails := fmt.Sprintf("$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s", argon2.Version, params.Memory, params.Iterations, params.Parallelism, b64Salt, b64Hash)
+	// TODO remove all this rubish and only keep hash and salt
+	hashWithDetails := fmt.Sprintf("$%s$%s", b64Salt, b64Hash)
 
 	encodedHash = base64.RawStdEncoding.EncodeToString([]byte(hashWithDetails))
 
@@ -66,39 +69,24 @@ func (params *HashParams) ComparePasswordAndHash(password, encodedHash string) (
 }
 
 func (params *HashParams) DecodeHash(encodedHash string) (salt, hash []byte, err error) {
-
+	// TODO remove all this rubish and only keep hash and salt
 	decodedHash, err := base64.RawStdEncoding.Strict().DecodeString(encodedHash)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	values := strings.Split(string(decodedHash), "$")
-	if len(values) != 6 {
+	if len(values) != 2 {
 		return nil, nil, ErrInvalidHash
 	}
 
-	var version int
-	_, err = fmt.Sscanf(values[2], "v=%d", &version)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if version != argon2.Version {
-		return nil, nil, ErrIncompatibleVersion
-	}
-
-	_, err = fmt.Sscanf(values[3], "m=%d,t=%d,p=%d", &params.Memory, &params.Iterations, &params.Parallelism)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	salt, err = base64.RawStdEncoding.Strict().DecodeString(values[4])
+	salt, err = base64.RawStdEncoding.Strict().DecodeString(values[0])
 	if err != nil {
 		return nil, nil, err
 	}
 	params.SaltLength = uint32(len(salt))
 
-	hash, err = base64.RawStdEncoding.Strict().DecodeString(values[5])
+	hash, err = base64.RawStdEncoding.Strict().DecodeString(values[1])
 	if err != nil {
 		return nil, nil, err
 	}
