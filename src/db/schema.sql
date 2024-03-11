@@ -39,6 +39,7 @@ CREATE TABLE logs(
     newUser VARCHAR(255) NOT NULL,
     wo INT NOT NULL,
     userId BINARY(16) NOT NULL,
+    action VARCHAR(255) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(id),
     FOREIGN KEY (userId) REFERENCES users(id),
@@ -52,7 +53,7 @@ INSERT INTO
 VALUES
     (
         "test",
-        "JGFyZ29uMmlkJHY9MTkkbT02NTUzNix0PTMscD0yJFovVGJ0Q3V4b0dBOWowQzNsR2ttK0EkaGhqVjJGdTQ3WWdFU2RqSm1BQTN6ZTNsM2ZtaGQvcVduNWlscVQ2THE4OA",
+        "JFVMdGtBaXgxcHVmdTlYeTFuV0hkckEkYjFpdUtJRHc2Z0o5cCtMeFh3THA5Yll4QitSVnNjaGJpK3VnY0paaGRyaw",
         TRUE
     );
 

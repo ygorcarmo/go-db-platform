@@ -4,6 +4,7 @@ import (
 	"custom-db-platform/src/db"
 	"database/sql"
 	"fmt"
+	"os"
 	"sync"
 	"time"
 
@@ -34,6 +35,22 @@ type NewDbUserProps struct {
 	Username      string
 	CurrentUserId string
 	WO            int
+}
+
+type externalDBUser struct {
+	Username   string
+	Password   string
+	NewUserPWD string
+}
+
+var eDbUser externalDBUser
+
+func init() {
+	eDbUser = externalDBUser{
+		Username:   os.Getenv("GLOBAL_DB_USER"),
+		Password:   os.Getenv("GLOBAL_USER_PWD"),
+		NewUserPWD: os.Getenv("NEW_USER_PWD"),
+	}
 }
 
 func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {
@@ -136,6 +153,7 @@ func (*TargetDb) DeleteDbById(dbId string) error {
 
 func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUserProps NewDbUserProps, c chan TargetDbsRepose, wg *sync.WaitGroup) {
 	defer wg.Done()
+	fmt.Println(eDbUser)
 	if targetDb.Type == "postgres" {
 		pg, err := targetDb.connectToPostgre()
 		if err != nil {
@@ -144,7 +162,7 @@ func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUserProps NewDbUserProps, 
 		}
 		defer pg.Close()
 
-		_, err = pg.Exec("CREATE USER " + newUserProps.Username + " WITH PASSWORD '1234';")
+		_, err = pg.Exec("CREATE USER " + newUserProps.Username + " WITH PASSWORD '" + eDbUser.NewUserPWD + "';")
 		if err != nil {
 			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
 			return
@@ -157,7 +175,7 @@ func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUserProps NewDbUserProps, 
 		}
 		defer database.Close()
 
-		_, err = database.Exec("CREATE USER '" + newUserProps.Username + "'@'localhost' IDENTIFIED BY 'password';")
+		_, err = database.Exec("CREATE USER '" + newUserProps.Username + "'@'localhost' IDENTIFIED BY '" + eDbUser.NewUserPWD + "';")
 		if err != nil {
 			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
 			return
@@ -170,7 +188,7 @@ func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUserProps NewDbUserProps, 
 		}
 		defer oracledb.Close()
 
-		_, err = oracledb.Exec("CREATE USER " + newUserProps.Username + " IDENTIFIED BY new_password")
+		_, err = oracledb.Exec("CREATE USER " + newUserProps.Username + " IDENTIFIED BY " + eDbUser.NewUserPWD)
 		if err != nil {
 			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
 			return
@@ -185,11 +203,11 @@ func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUserProps NewDbUserProps, 
 		NewUser: newUserProps.Username,
 		WO:      newUserProps.WO,
 		UserId:  newUserProps.CurrentUserId,
+		Action:  "CREATE",
 	}
 	go log.CreateLog()
 
 	c <- TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUserProps.Username, targetDb.Name), Success: true}
-	return
 }
 
 func (targetDb *TargetDb) ConnectToDBAndDeleteUser(newUserProps NewDbUserProps, c chan TargetDbsRepose, wg *sync.WaitGroup) {
@@ -228,7 +246,7 @@ func (targetDb *TargetDb) ConnectToDBAndDeleteUser(newUserProps NewDbUserProps, 
 		}
 		defer oracledb.Close()
 
-		_, err = oracledb.Exec("DROP USER " + newUserProps.Username + ";")
+		_, err = oracledb.Exec("DROP USER " + newUserProps.Username + " CASCADE ")
 		if err != nil {
 			c <- TargetDbsRepose{Message: fmt.Sprintf("Error when deleting %s at %s: %v", newUserProps.Username, targetDb.Name, err), Success: false}
 			return
@@ -243,55 +261,17 @@ func (targetDb *TargetDb) ConnectToDBAndDeleteUser(newUserProps NewDbUserProps, 
 		NewUser: newUserProps.Username,
 		WO:      newUserProps.WO,
 		UserId:  newUserProps.CurrentUserId,
+		Action:  "DROP",
 	}
 	go log.CreateLog()
 
 	c <- TargetDbsRepose{Message: fmt.Sprintf("User %s has been deleted successfully at %s \n", newUserProps.Username, targetDb.Name), Success: true}
-	return
-}
-
-func (targetdb *TargetDb) connectToSQLAndCreateUser(newUser, currentUserId string, wo int) TargetDbsRepose {
-	cfg := mysql.Config{
-		User:                 "root",
-		Passwd:               "test",
-		Net:                  "tcp",
-		Addr:                 fmt.Sprintf("%s:%d", targetdb.Host, targetdb.Port),
-		ParseTime:            true,
-		AllowNativePasswords: true,
-	}
-
-	database, err := sql.Open("mysql", cfg.FormatDSN())
-	if err != nil {
-		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetdb.Name, err), Success: false}
-	}
-	err = database.Ping()
-	if err != nil {
-		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetdb.Name, err), Success: false}
-	}
-	fmt.Println("Connected!")
-	defer database.Close()
-
-	_, err = database.Exec("CREATE USER '" + newUser + "'@'localhost' IDENTIFIED BY 'password';")
-	if err != nil {
-		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetdb.Name, err), Success: false}
-	}
-
-	log := Log{
-		DbId:    targetdb.Id,
-		NewUser: newUser,
-		WO:      wo,
-		UserId:  currentUserId,
-	}
-
-	go log.CreateLog()
-
-	return TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUser, targetdb.Name), Success: true}
 }
 
 func (targetDb *TargetDb) connectToSQL() (*sql.DB, error) {
 	cfg := mysql.Config{
-		User:                 "root",
-		Passwd:               "test",
+		User:                 eDbUser.Username,
+		Passwd:               eDbUser.Password,
 		Net:                  "tcp",
 		Addr:                 fmt.Sprintf("%s:%d", targetDb.Host, targetDb.Port),
 		ParseTime:            true,
@@ -311,38 +291,8 @@ func (targetDb *TargetDb) connectToSQL() (*sql.DB, error) {
 	return database, nil
 }
 
-func (targetDb *TargetDb) connectToPostgreAndCreateUser(newUser, currentUserId string, wo int) TargetDbsRepose {
-	connectionStr := fmt.Sprintf("postgres://postgres:test@%s:%d/?sslmode=%s", targetDb.Host, targetDb.Port, targetDb.SslMode)
-
-	database, err := sql.Open(targetDb.Type, connectionStr)
-	if err != nil {
-		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
-	}
-	err = database.Ping()
-	if err != nil {
-		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
-	}
-	fmt.Println("Connected!")
-	defer database.Close()
-	_, err = database.Exec("CREATE USER " + newUser + " WITH PASSWORD '1234';")
-	if err != nil {
-		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
-	}
-
-	log := Log{
-		DbId:    targetDb.Id,
-		NewUser: newUser,
-		WO:      wo,
-		UserId:  currentUserId,
-	}
-
-	go log.CreateLog()
-
-	return TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUser, targetDb.Name), Success: true}
-}
-
 func (targetDb *TargetDb) connectToPostgre() (*sql.DB, error) {
-	connectionStr := fmt.Sprintf("postgres://postgres:test@%s:%d/?sslmode=%s", targetDb.Host, targetDb.Port, targetDb.SslMode)
+	connectionStr := fmt.Sprintf("postgres://%s:%s@%s:%d/?sslmode=%s", eDbUser.Username, eDbUser.Password, targetDb.Host, targetDb.Port, targetDb.SslMode)
 
 	database, err := sql.Open(targetDb.Type, connectionStr)
 	if err != nil {
@@ -356,38 +306,8 @@ func (targetDb *TargetDb) connectToPostgre() (*sql.DB, error) {
 	return database, nil
 }
 
-func (targetDb *TargetDb) connectToOracleAndCreateUser(newUser, currentUserId string, wo int) TargetDbsRepose {
-	connectionStr := go_ora.BuildUrl(targetDb.Host, targetDb.Port, targetDb.Name, "teste", "teste", nil)
-	database, err := sql.Open(targetDb.Type, connectionStr)
-	if err != nil {
-		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
-	}
-	err = database.Ping()
-	if err != nil {
-		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
-	}
-	fmt.Println("Connected!")
-	defer database.Close()
-
-	_, err = database.Exec("CREATE USER " + newUser + " IDENTIFIED BY new_password")
-	if err != nil {
-		return TargetDbsRepose{Message: fmt.Sprintf("Error when adding %s at %s: %v", newUser, targetDb.Name, err), Success: false}
-	}
-
-	log := Log{
-		DbId:    targetDb.Id,
-		NewUser: newUser,
-		WO:      wo,
-		UserId:  currentUserId,
-	}
-
-	go log.CreateLog()
-
-	return TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUser, targetDb.Name), Success: true}
-}
-
 func (targetDb *TargetDb) connectToOracle() (*sql.DB, error) {
-	connectionStr := go_ora.BuildUrl(targetDb.Host, targetDb.Port, targetDb.Name, "teste", "teste", nil)
+	connectionStr := go_ora.BuildUrl(targetDb.Host, targetDb.Port, targetDb.Name, eDbUser.Username, eDbUser.Password, nil)
 	database, err := sql.Open(targetDb.Type, connectionStr)
 	if err != nil {
 		return nil, err
@@ -396,6 +316,6 @@ func (targetDb *TargetDb) connectToOracle() (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Connected to %s!\n", targetDb.Name)
+	fmt.Printf("Connected to %s!\n", targetDb.Name)
 	return database, nil
 }

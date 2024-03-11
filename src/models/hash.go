@@ -69,24 +69,23 @@ func (params *HashParams) ComparePasswordAndHash(password, encodedHash string) (
 }
 
 func (params *HashParams) DecodeHash(encodedHash string) (salt, hash []byte, err error) {
-	// TODO remove all this rubish and only keep hash and salt
 	decodedHash, err := base64.RawStdEncoding.Strict().DecodeString(encodedHash)
 	if err != nil {
 		return nil, nil, err
 	}
 
 	values := strings.Split(string(decodedHash), "$")
-	if len(values) != 2 {
+	if len(values) != 3 {
 		return nil, nil, ErrInvalidHash
 	}
 
-	salt, err = base64.RawStdEncoding.Strict().DecodeString(values[0])
+	salt, err = base64.RawStdEncoding.Strict().DecodeString(values[1])
 	if err != nil {
 		return nil, nil, err
 	}
 	params.SaltLength = uint32(len(salt))
 
-	hash, err = base64.RawStdEncoding.Strict().DecodeString(values[1])
+	hash, err = base64.RawStdEncoding.Strict().DecodeString(values[2])
 	if err != nil {
 		return nil, nil, err
 	}

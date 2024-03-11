@@ -8,20 +8,94 @@ services:
     ports:
       - 3306:3306
     environment:
-      - MYSQL_ROOT_PASSWORD=test
+      - MYSQL_USER=teste
+      - MYSQL_PASSWORD=teste
+      - MYSQL_ROOT_PASSWORD=teste
     volumes:
       - ./src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
   web:
-    image: new_db
+    # image: new_db
+    build: .
     restart: on-failure
     container_name: web
     hostname: web
     ports:
       - 3000:3000
+    environment:
+      - DB_USER=root
+      - DB_PASSWORD=teste
+      - DB_ADDRESS=db:3306
+      - DB_NAME=db_platform
+      - GLOBAL_DB_USER=teste
+      - GLOBAL_USER_PWD=teste
+      - NEW_USER_PWD=teste
     depends_on:
       db:
         condition: service_completed_successfully
         restart: true
+  mysql:
+    image: mysql
+    ports:
+      - 3001:3306
+    environment:
+      - MYSQL_USER=teste
+      - MYSQL_PASSWORD=teste      
+      - MYSQL_ROOT_PASSWORD=dahsduhasudh
+    volumes:
+      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
+
+  mysql-dois:
+    image: mysql
+    ports:
+      - 3003:3306
+    environment:
+      - MYSQL_USER=teste
+      - MYSQL_PASSWORD=teste      
+      - MYSQL_ROOT_PASSWORD=asdhasudhaushdu
+
+  mysql-three:
+    image: mysql
+    ports:
+      - 3004:3306
+    environment:
+      - MYSQL_USER=teste
+      - MYSQL_PASSWORD=teste      
+      - MYSQL_ROOT_PASSWORD=asduashduahsduhasud
+
+  postgres:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=teste
+      - POSTGRES_PASSWORD=teste
+
+  postgres-dois:
+    image: postgres
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=teste
+      - POSTGRES_PASSWORD=teste
+
+  mariadb:
+    image: mariadb
+    ports:
+      - 3002:3306
+    environment:
+      - MARIADB_USER=teste
+      - MARIADB_PASSWORD=teste
+      - MARIADB_ROOT_PASSWORD=asdasdasdasdas
+
+  mariadb-que:
+    image: mariadb
+    ports:
+      - 3005:3306
+    environment:
+      - MARIADB_USER=teste
+      - MARIADB_PASSWORD=teste
+      - MARIADB_ROOT_PASSWORD=asdasdasdasdas
+
 
 networks:
   default:
