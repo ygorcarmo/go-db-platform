@@ -35,6 +35,8 @@ services:
         restart: true
   mysql:
     image: mysql
+    container_name: mysql
+    hostname: mysql
     ports:
       - 3001:3306
     environment:
@@ -44,8 +46,10 @@ services:
     volumes:
       - ./src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
 
-  mysql-dois:
+  mysqldois:
     image: mysql
+    container_name: mysqldois
+    hostname: mysqldois
     ports:
       - 3003:3306
     environment:
@@ -53,8 +57,10 @@ services:
       - MYSQL_PASSWORD=teste      
       - MYSQL_ROOT_PASSWORD=asdhasudhaushdu
 
-  mysql-three:
+  mysqlthree:
     image: mysql
+    container_name: mysqlthree
+    hostname: mysqlthree
     ports:
       - 3004:3306
     environment:
@@ -64,14 +70,18 @@ services:
 
   postgres:
     image: postgres
+    container_name: postgres
+    hostname: postgres
     ports:
       - 5432:5432
     environment:
       - POSTGRES_USER=teste
       - POSTGRES_PASSWORD=teste
 
-  postgres-dois:
+  postgresdois:
     image: postgres
+    container_name: postgresdois
+    hostname: postgresdois
     ports:
       - 5433:5432
     environment:
@@ -80,6 +90,8 @@ services:
 
   mariadb:
     image: mariadb
+    container_name: mariadb
+    hostname: mariadb
     ports:
       - 3002:3306
     environment:
@@ -87,8 +99,10 @@ services:
       - MARIADB_PASSWORD=teste
       - MARIADB_ROOT_PASSWORD=asdasdasdasdas
 
-  mariadb-que:
+  mariadbque:
     image: mariadb
+    container_name: mariaque
+    hostname: mariaque
     ports:
       - 3005:3306
     environment:

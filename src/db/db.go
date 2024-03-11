@@ -15,11 +15,12 @@ func ConnectDB() {
 
 	// Capture connection properties.
 	cfg := mysql.Config{
-		User:   os.Getenv("DB_USER"),
-		Passwd: os.Getenv("DB_PASSWORD"),
-		Net:    "tcp",
-		Addr:   os.Getenv("DB_ADDRESS"),
-		DBName: os.Getenv("DB_NAME"),
+		User:      os.Getenv("DB_USER"),
+		Passwd:    os.Getenv("DB_PASSWORD"),
+		Net:       "tcp",
+		Addr:      os.Getenv("DB_ADDRESS"),
+		DBName:    os.Getenv("DB_NAME"),
+		ParseTime: true,
 	}
 	// cfg := mysql.Config{
 	// 	User:      "root",

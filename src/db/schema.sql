@@ -74,7 +74,7 @@ INSERT INTO
 VALUES
     (
         "mysql",
-        "localhost",
+        "mysql",
         3001,
         "mysql",
         "disable",
@@ -82,7 +82,7 @@ VALUES
     ),
     (
         "mysql-2",
-        "localhost",
+        "mysql-dois",
         3003,
         "mysql",
         "disable",
@@ -90,7 +90,7 @@ VALUES
     ),
     (
         "mysql-3",
-        "localhost",
+        "mysql-three",
         3004,
         "mysql",
         "disable",
@@ -98,7 +98,7 @@ VALUES
     ),
     (
         "maria",
-        "localhost",
+        "mariadb",
         3002,
         "mysql",
         "disable",
@@ -106,7 +106,7 @@ VALUES
     ),
     (
         "maria-2",
-        "localhost",
+        "mariaque",
         3005,
         "mysql",
         "disable",
@@ -114,7 +114,7 @@ VALUES
     ),
     (
         "postgres",
-        "localhost",
+        "postgres",
         5432,
         "postgres",
         "disable",
@@ -122,7 +122,7 @@ VALUES
     ),
     (
         "postgres-2",
-        "localhost",
+        "postgresdois",
         5433,
         "postgres",
         "disable",
