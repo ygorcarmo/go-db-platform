@@ -1,12 +1,73 @@
 version: "3.5"
 
 services:
+  dbsql:
+    image: mysql
+    container_name: dbsql
+    hostname: dbsql
+    environment:
+      - MYSQL_USER=teste
+      - MYSQL_PASSWORD=teste
+      - MYSQL_ROOT_PASSWORD=teste
+    volumes:
+      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
+
+  db-sql-02:
+    image: mysql
+    container_name: db-sql-02
+    hostname: db-sql-02
+    environment:
+      - MYSQL_USER=teste
+      - MYSQL_PASSWORD=teste
+      - MYSQL_ROOT_PASSWORD=teste
+
+  db-sql-03:
+    image: mysql
+    container_name: db-sql-03
+    hostname: db-sql-03
+    environment:
+      - MYSQL_USER=teste
+      - MYSQL_PASSWORD=teste
+      - MYSQL_ROOT_PASSWORD=teste
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    hostname: postgres
+    environment:
+      - POSTGRES_USER=teste
+      - POSTGRES_PASSWORD=teste
+
+  pg:
+    image: postgres
+    container_name: pg
+    hostname: pg
+    environment:
+      - POSTGRES_USER=teste
+      - POSTGRES_PASSWORD=teste
+
+  db-maria:
+    image: mariadb
+    container_name: db-maria
+    hostname: db-maria
+    environment:
+      - MARIADB_USER=teste
+      - MARIADB_PASSWORD=teste
+      - MARIADB_ROOT_PASSWORD=asdasdasdasdas
+
+  db-maria-02:
+    image: mariadb
+    container_name: db-maria-02
+    hostname: db-maria-02
+    environment:
+      - MARIADB_USER=teste
+      - MARIADB_PASSWORD=teste
+      - MARIADB_ROOT_PASSWORD=asdasdasdasdas
+
   db:
     image: mysql
     container_name: db
     hostname: db
-    ports:
-      - 3306:3306
     environment:
       - MYSQL_USER=teste
       - MYSQL_PASSWORD=teste
@@ -20,11 +81,11 @@ services:
     container_name: web
     hostname: web
     ports:
-      - 3000:3000
+      - "3000:3000"
     environment:
       - DB_USER=root
       - DB_PASSWORD=teste
-      - DB_ADDRESS=db:3306
+      - DB_ADDRESS=dbsql:3306
       - DB_NAME=db_platform
       - GLOBAL_DB_USER=teste
       - GLOBAL_USER_PWD=teste
@@ -33,83 +94,9 @@ services:
       db:
         condition: service_completed_successfully
         restart: true
-  mysql:
-    image: mysql
-    container_name: mysql
-    hostname: mysql
-    ports:
-      - 3001:3306
-    environment:
-      - MYSQL_USER=teste
-      - MYSQL_PASSWORD=teste      
-      - MYSQL_ROOT_PASSWORD=dahsduhasudh
-    volumes:
-      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
-
-  mysqldois:
-    image: mysql
-    container_name: mysqldois
-    hostname: mysqldois
-    ports:
-      - 3003:3306
-    environment:
-      - MYSQL_USER=teste
-      - MYSQL_PASSWORD=teste      
-      - MYSQL_ROOT_PASSWORD=asdhasudhaushdu
-
-  mysqlthree:
-    image: mysql
-    container_name: mysqlthree
-    hostname: mysqlthree
-    ports:
-      - 3004:3306
-    environment:
-      - MYSQL_USER=teste
-      - MYSQL_PASSWORD=teste      
-      - MYSQL_ROOT_PASSWORD=asduashduahsduhasud
-
-  postgres:
-    image: postgres
-    container_name: postgres
-    hostname: postgres
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=teste
-      - POSTGRES_PASSWORD=teste
-
-  postgresdois:
-    image: postgres
-    container_name: postgresdois
-    hostname: postgresdois
-    ports:
-      - 5433:5432
-    environment:
-      - POSTGRES_USER=teste
-      - POSTGRES_PASSWORD=teste
-
-  mariadb:
-    image: mariadb
-    container_name: mariadb
-    hostname: mariadb
-    ports:
-      - 3002:3306
-    environment:
-      - MARIADB_USER=teste
-      - MARIADB_PASSWORD=teste
-      - MARIADB_ROOT_PASSWORD=asdasdasdasdas
-
-  mariadbque:
-    image: mariadb
-    container_name: mariaque
-    hostname: mariaque
-    ports:
-      - 3005:3306
-    environment:
-      - MARIADB_USER=teste
-      - MARIADB_PASSWORD=teste
-      - MARIADB_ROOT_PASSWORD=asdasdasdasdas
-
+      dbsql:
+        condition: service_completed_successfully
+        restart: true
 
 networks:
   default:

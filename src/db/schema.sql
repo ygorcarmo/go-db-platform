@@ -74,40 +74,40 @@ INSERT INTO
 VALUES
     (
         "mysql",
-        "mysql",
-        3001,
+        "dbsql",
+        3306,
         "mysql",
         "disable",
         @userId
     ),
     (
         "mysql-2",
-        "mysql-dois",
-        3003,
+        "db-sql-02",
+        3306,
         "mysql",
         "disable",
         @userId
     ),
     (
         "mysql-3",
-        "mysql-three",
-        3004,
+        "db-sql-03",
+        3306,
         "mysql",
         "disable",
         @userId
     ),
     (
         "maria",
-        "mariadb",
-        3002,
+        "db-maria",
+        3306,
         "mysql",
         "disable",
         @userId
     ),
     (
         "maria-2",
-        "mariaque",
-        3005,
+        "db-maria-02",
+        3306,
         "mysql",
         "disable",
         @userId
@@ -121,9 +121,17 @@ VALUES
         @userId
     ),
     (
+        "XEPDB1",
+        "172.21.192.1",
+        1521,
+        "oracle",
+        "disable",
+        @userId
+    ),
+    (
         "postgres-2",
-        "postgresdois",
-        5433,
+        "pg",
+        5432,
         "postgres",
         "disable",
         @userId
