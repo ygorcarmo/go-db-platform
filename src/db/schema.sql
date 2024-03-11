@@ -45,7 +45,8 @@ CREATE TABLE logs(
     FOREIGN KEY (dbId) REFERENCES external_databases(id)
 );
 
--- Insert the user and get its ID
+-- Insert the user and get its ID 
+-- TODO change this password as the auth has changed
 INSERT INTO
     users (username, password, isAdmin)
 VALUES
