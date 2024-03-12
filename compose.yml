@@ -20,6 +20,8 @@ services:
       - MYSQL_USER=teste
       - MYSQL_PASSWORD=teste
       - MYSQL_ROOT_PASSWORD=teste
+    volumes:
+      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/sqlteste.sql:rw
 
   db-sql-03:
     image: mysql
@@ -29,6 +31,8 @@ services:
       - MYSQL_USER=teste
       - MYSQL_PASSWORD=teste
       - MYSQL_ROOT_PASSWORD=teste
+    volumes:
+      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/sqlteste.sql:rw
 
   postgres:
     image: postgres
@@ -54,6 +58,8 @@ services:
       - MARIADB_USER=teste
       - MARIADB_PASSWORD=teste
       - MARIADB_ROOT_PASSWORD=asdasdasdasdas
+    volumes:
+      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/sqlteste.sql:rw
 
   db-maria-02:
     image: mariadb
@@ -63,6 +69,8 @@ services:
       - MARIADB_USER=teste
       - MARIADB_PASSWORD=teste
       - MARIADB_ROOT_PASSWORD=asdasdasdasdas
+    volumes:
+      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/sqlteste.sql:rw
 
   db:
     image: mysql
@@ -73,7 +81,7 @@ services:
       - MYSQL_PASSWORD=teste
       - MYSQL_ROOT_PASSWORD=teste
     volumes:
-      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
+      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/schema.sql:rw
   web:
     # image: new_db
     build: .

@@ -1,0 +1,5 @@
+CREATE USER 'teste' @'localhost' IDENTIFIED BY 'teste';
+
+GRANT ALL PRIVILEGES ON *.* TO 'teste' @'localhost' WITH GRANT OPTION;
+
+GRANT ALL PRIVILEGES ON *.* TO 'teste' @'%' WITH GRANT OPTION;
