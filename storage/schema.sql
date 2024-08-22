@@ -2,7 +2,7 @@ CREATE USER 'teste' @'localhost' IDENTIFIED BY 'teste';
 
 GRANT ALL PRIVILEGES ON *.* TO 'teste' @'localhost' WITH GRANT OPTION;
 
-GRANT ALL PRIVILEGES ON *.* TO 'teste' @'%' WITH GRANT OPTION;
+-- GRANT ALL PRIVILEGES ON *.* TO 'teste' @'%' WITH GRANT OPTION;
 
 DROP DATABASE IF EXISTS db_platform;
 
@@ -20,7 +20,8 @@ CREATE TABLE users(
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id, username),
-    UNIQUE KEY (username) -- This ensures unique usernames
+    UNIQUE KEY (username), -- This ensures unique usernames
+    UNIQUE KEY (id) 
 );
 
 CREATE TABLE external_databases(

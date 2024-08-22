@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .my-indicator > svg {
+    display: none;
+  }
+
+  .htmx-request .my-indicator {
+    background-color: lightslategray;
+  }
+
+  .htmx-request .my-indicator > svg {
+    display: inline;
+  }
+
+  .htmx-request.my-indicator {
+    background-color: lightslategray;
+  }
+
+  .htmx-request.my-indicator > svg {
+    display: inline;
+  }
+
+  tr.htmx-swapping td {
+    opacity: 0;
+    transition: opacity 1s ease-out;
+  }
+}
