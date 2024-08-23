@@ -31,13 +31,12 @@ CREATE TABLE external_databases(
     port INT NOT NULL,
     type VARCHAR(50) NOT NULL,
     sslMode VARCHAR(50) NOT NULL,
-    userId BINARY(16) NOT NULL,
+    createdBy BINARY(16) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
-    UNIQUE KEY (name, host, id),
-    -- This ensures unique combination of name, host, and id
-    FOREIGN KEY (userId) REFERENCES users(id)
+    UNIQUE KEY (name, host, id), -- This ensures unique combination of name, host, and id
+    FOREIGN KEY (createdBy) REFERENCES users(id)
 );
 
 CREATE TABLE logs(
@@ -45,16 +44,16 @@ CREATE TABLE logs(
     dbId BINARY(16),
     newUser VARCHAR(255) NOT NULL,
     wo INT NOT NULL,
-    userId BINARY(16) NOT NULL,
+    createdBy BINARY(16) NOT NULL,
     action VARCHAR(255) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    success BOOLEAN NOT NULL,
     PRIMARY KEY(id),
-    FOREIGN KEY (userId) REFERENCES users(id),
+    FOREIGN KEY (createdBy) REFERENCES users(id),
     FOREIGN KEY (dbId) REFERENCES external_databases(id)
 );
 
--- Insert the user and get its ID 
--- TODO change this password as the auth has changed
+-- Insert the user and get its ID
 INSERT INTO
     users (username, password, isAdmin)
 VALUES
@@ -63,3 +62,8 @@ VALUES
         "JFVMdGtBaXgxcHVmdTlYeTFuV0hkckEkYjFpdUtJRHc2Z0o5cCtMeFh3THA5Yll4QitSVnNjaGJpK3VnY0paaGRyaw",
         TRUE
     );
+
+-- Add username and password fields to external_databases table
+ALTER TABLE external_databases
+ADD COLUMN username VARCHAR(255) NOT NULL,
+ADD COLUMN password VARCHAR(255) NOT NULL;

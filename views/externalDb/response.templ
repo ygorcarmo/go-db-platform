@@ -1,0 +1,18 @@
+package externaldb
+
+templ Response(sucess []string, err []string) {
+	if len(sucess) > 0 {
+		<div class="border border-green-500 bg-green-300 w-fit p-2 rounded">
+			for _, s:= range sucess {
+				<p>{ s } </p>
+			}
+		</div>
+	}
+	if len(err) > 0 {
+		<div class="border border-red-500 bg-red-300 w-fit p-2 rounded">
+			for _, r := range err {
+				<p>{ r } </p>
+			}
+		</div>
+	}
+}

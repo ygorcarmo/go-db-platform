@@ -15,5 +15,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/lib/pq v1.10.9
+	github.com/sijms/go-ora/v2 v2.8.19
 	golang.org/x/crypto v0.26.0
 )

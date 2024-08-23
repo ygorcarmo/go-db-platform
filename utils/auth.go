@@ -3,13 +3,13 @@ package utils
 import (
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// TODO: this should be an enviroment variable
-var jwtKey = []byte("secret-key")
+var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 
 type UserClaim struct {
 	jwt.RegisteredClaims
