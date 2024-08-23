@@ -47,19 +47,24 @@ func (s *Server) RegisterRoutes() http.Handler {
 
 			adminsOnlyRoute.Route("/settings", func(settingsRoute chi.Router) {
 				settingsRoute.Get("/", handlers.LoadSettings)
-				settingsRoute.Get("/users", handlers.LoadManageUsers)
-				settingsRoute.Delete("/user/{id}", handlers.DeleteAppUser)
-				settingsRoute.Get("/create-user", handlers.LoadCreateAppUser)
-				settingsRoute.Post("/create-user", handlers.AddAppUserFormHanlder)
-				settingsRoute.Get("/update-user/{id}", handlers.LoadEditAppUser)
-				settingsRoute.Put("/update-user/{id}", handlers.UpdateAppUser)
 
-				settingsRoute.Get("/dbs", handlers.LoadManageDbs)
-				settingsRoute.Delete("/db/{id}", handlers.DeleteDb)
-				settingsRoute.Get("/create-db", handlers.LoadAddDb)
-				settingsRoute.Post("/create-db", handlers.AddDbFormHanlder)
-				settingsRoute.Get("/update-db/{id}", handlers.LoadEditDb)
-				settingsRoute.Put("/update-db/{id}", handlers.UpdateDb)
+				settingsRoute.Route("/user", func(user chi.Router) {
+					user.Get("/", handlers.LoadManageUsers)
+					user.Delete("/{id}", handlers.DeleteAppUser)
+					user.Get("/create-user", handlers.LoadCreateAppUser)
+					user.Post("/create-user", handlers.AddAppUserFormHanlder)
+					user.Get("/update-user/{id}", handlers.LoadEditAppUser)
+					user.Put("/update-user/{id}", handlers.UpdateAppUser)
+				})
+
+				settingsRoute.Route("/db", func(db chi.Router) {
+					db.Get("/", handlers.LoadManageDbs)
+					db.Get("/create-db", handlers.LoadAddDb)
+					db.Delete("/{id}", handlers.DeleteDb)
+					db.Post("/create-db", handlers.AddDbFormHanlder)
+					db.Get("/update-db/{id}", handlers.LoadEditDb)
+					db.Put("/update-db/{id}", handlers.UpdateDb)
+				})
 
 				settingsRoute.Get("/logs", handlers.LoadManageLogs)
 			})

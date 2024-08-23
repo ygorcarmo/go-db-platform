@@ -1,4 +1,4 @@
-run: build
+zrun: build
 	@./bin/app
 
 build: 
@@ -10,8 +10,8 @@ css:
 templ:
 	templ generate --watch --proxy=http://localhost:3000
 
-dev: 
-	air &
-	@while ! nc -z localhost 3000; do sleep 1; done
-	$(MAKE) css & $(MAKE) templ
-	@wait
+dev:
+	$(MAKE) css &  # Start CSS processing in the background
+	air &  # Start air in the background
+	$(MAKE) templ &  # Start templ in the background
+	@wait  # Wait for all background processes to finish

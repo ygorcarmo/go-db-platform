@@ -1,8 +1,8 @@
-CREATE USER 'teste' @'localhost' IDENTIFIED BY 'teste';
+CREATE USER 'apt_db_platform'@'%' IDENTIFIED BY '1qaz!EDC';
 
-GRANT ALL PRIVILEGES ON *.* TO 'teste' @'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'apt_db_platform'@'%' WITH GRANT OPTION;
 
--- GRANT ALL PRIVILEGES ON *.* TO 'teste' @'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
 
 DROP DATABASE IF EXISTS db_platform;
 
@@ -59,87 +59,7 @@ INSERT INTO
     users (username, password, isAdmin)
 VALUES
     (
-        "test",
+        "admin",
         "JFVMdGtBaXgxcHVmdTlYeTFuV0hkckEkYjFpdUtJRHc2Z0o5cCtMeFh3THA5Yll4QitSVnNjaGJpK3VnY0paaGRyaw",
         TRUE
-    );
-
--- Get the ID of the newly inserted user
-SET
-    @userId = (
-        SELECT
-            id
-        FROM
-            users
-        WHERE
-            username = "test"
-    );
-
--- Insert into external_databases table using the obtained user ID
-INSERT INTO
-    external_databases (name, host, port, type, sslMode, userId)
-VALUES
-    (
-        "mysql",
-        "dbsql",
-        3306,
-        "mysql",
-        "disable",
-        @userId
-    ),
-    (
-        "mysql-2",
-        "db-sql-02",
-        3306,
-        "mysql",
-        "disable",
-        @userId
-    ),
-    (
-        "mysql-3",
-        "db-sql-03",
-        3306,
-        "mysql",
-        "disable",
-        @userId
-    ),
-    (
-        "maria",
-        "db-maria",
-        3306,
-        "mysql",
-        "disable",
-        @userId
-    ),
-    (
-        "maria-2",
-        "db-maria-02",
-        3306,
-        "mysql",
-        "disable",
-        @userId
-    ),
-    (
-        "postgres",
-        "postgres",
-        5432,
-        "postgres",
-        "disable",
-        @userId
-    ),
-    (
-        "XEPDB1",
-        "172.21.192.1",
-        1521,
-        "oracle",
-        "disable",
-        @userId
-    ),
-    (
-        "postgres-2",
-        "pg",
-        5432,
-        "postgres",
-        "disable",
-        @userId
     );

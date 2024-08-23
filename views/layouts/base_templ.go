@@ -26,7 +26,7 @@ func Base() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" type=\"text/css\" href=\"/public/css/styles.css\"><script src=\"/public/js/htmx.min.js\"></script><title>DB PLatform</title></head><body><nav class=\"bg-slate-300\"><ul class=\"flex justify-between items-center p-6\"><li><img src=\"/public/img/logo.png\" alt=\"logo\" class=\"max-w-36\"></li><li><a href=\"/settings/dbs\" class=\"block\">Settings</a></li></ul></nav><main><div class=\"grid grid-cols-[300px_auto] h-screen\"><div class=\"border-gray-600 border-r-2\"><ul class=\"p-5 grid gap-3\" hx-boost=\"true\"><li><a href=\"/\" class=\"block\">Home</a></li><li><a href=\"/db/create-user\" class=\"block\">Create Database User</a></li><li><a href=\"/db/delete-user\" class=\"block\">Delete Database User</a></li><li><a href=\"/user/reset-password\" class=\"block\">Reset Password</a></li><li><a href=\"/user/logout\" class=\"block\">Logout</a></li></ul></div><div class=\"grid grid-rows-[70px_auto]\"><div class=\"h-full p-4\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -34,13 +34,7 @@ func Base() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if ctx.Value("isLoggedIn").(bool) {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div>logged in t</div>")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div><script src=\"https://unpkg.com/htmx.org/dist/ext/disable-element.js\"></script></main></body></html>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

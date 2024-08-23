@@ -12,3 +12,7 @@ type AppUser struct {
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }
+
+type contextKey string
+
+const UserCtx contextKey = "user"

@@ -4,7 +4,7 @@ services:
     ports:
       - 3001:3306
     environment:
-      - MYSQL_ROOT_PASSWORD=test
+      - MYSQL_ROOT_PASSWORD=1qaz#EDC
     volumes:
       - ../storage/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
   # mysql-dois:

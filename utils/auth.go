@@ -8,6 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+// TODO: this should be an enviroment variable
 var jwtKey = []byte("secret-key")
 
 type UserClaim struct {

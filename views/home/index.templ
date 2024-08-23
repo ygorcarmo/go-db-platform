@@ -1,9 +1,12 @@
 package home
 
-import "github.com/ygorcarmo/db-platform/views/layouts"
+import (
+	"github.com/ygorcarmo/db-platform/models"
+	"github.com/ygorcarmo/db-platform/views/layouts"
+)
 
 templ Index() {
 	@layouts.Base() {
-		<div>Hello</div>
+		<h1>Welcome back { ctx.Value(models.UserCtx).(*models.AppUser).Username }</h1>
 	}
 }

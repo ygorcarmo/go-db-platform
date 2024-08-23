@@ -6,4 +6,6 @@ import (
 
 type Storage interface {
 	GetUserById(string) (*models.AppUser, error)
+	GetUserByUsername(string) (*models.AppUser, error)
+	GetAvailableDbs() ([]string, error)
 }

@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/ygorcarmo/db-platform/handlers"
 	"github.com/ygorcarmo/db-platform/storage"
-	"github.com/ygorcarmo/db-platform/views/login"
 )
 
 type Server struct {
@@ -26,13 +26,29 @@ func (s *Server) Start() error {
 
 	router.Handle("/*", public())
 
-	router.Get("/login", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		login.Index().Render(r.Context(), w)
-	}))
+	router.Get("/login", handlers.GetLoginPage)
+	router.Post("/login", func(w http.ResponseWriter, r *http.Request) { handlers.HandleLogin(w, r, s.store) })
+	router.Get("/logout", handlers.Logout)
+
+	router.Group(func(r chi.Router) {
+		r.Use(s.authentication)
+		r.Get("/", handlers.GetHomePage)
+
+		r.Route("/db", func(dbroute chi.Router) {
+			dbroute.Get("/create-user", func(w http.ResponseWriter, r *http.Request) { handlers.GetCreateDbUserPage(w, r, s.store) })
+
+			dbroute.Get("/delete-user", func(w http.ResponseWriter, r *http.Request) { handlers.GetDeleteDbUserPage(w, r, s.store) })
+		})
+
+		r.Route("/user", func(userRoute chi.Router) {
+			userRoute.Get("/reset-password", handlers.GetResetPasswordPage)
+		})
+
+	})
 
 	// router.Use(authentication)
 
-	router.Get("/test", make(s.handleHome))
+	// router.Get("/test", func(w http.ResponseWriter, r *http.Request) { handlers.HandleHome(w, r, s.store) })
 	slog.Info("Server is running on: ", "listenAddr", s.listenAddr)
 	return http.ListenAndServe(s.listenAddr, router)
 }
