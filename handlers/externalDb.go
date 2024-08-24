@@ -48,7 +48,8 @@ func GetDeleteDbUserPage(w http.ResponseWriter, r *http.Request, db storage.Stor
 	}
 }
 
-func CreateDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage, a models.ActionType) {
+
 	r.ParseForm()
 	username := r.FormValue("username")
 	wo := r.FormValue("wo")
@@ -80,7 +81,14 @@ func CreateDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Stora
 
 		go func() {
 			defer wg.Done()
-			currentDb.ConnectAndCreateUser(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt}, &results)
+			switch a {
+			case models.Create:
+				currentDb.ConnectAndCreateUser(&models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt}, &results)
+			case models.Delete:
+				currentDb.ConnectAndDeleteUser(&models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt}, &results)
+			default:
+				fmt.Println("Action Type not supported")
+			}
 		}()
 	}
 
@@ -89,7 +97,7 @@ func CreateDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Stora
 	var fResponse filteredResults
 
 	for _, result := range results {
-		go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: models.Create, Sucess: result.IsSuccess})
+		go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: a, Sucess: result.IsSuccess})
 		if result.IsSuccess {
 			fResponse.Sucesses = append(fResponse.Sucesses, result.Message)
 		} else {

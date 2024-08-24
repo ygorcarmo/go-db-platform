@@ -6,7 +6,7 @@ templ ExternalUserForm(dbs []string, shouldCreate bool) {
 		if shouldCreate {
 			hx-post="/db/create-user"
 		} else {
-			hx-delete="/db/user"
+			hx-post="/db/delete-user"
 		}
 		hx-target="#response"
 		hx-ext="disable-element"

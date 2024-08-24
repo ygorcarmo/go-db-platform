@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/ygorcarmo/db-platform/handlers"
+	"github.com/ygorcarmo/db-platform/models"
 	"github.com/ygorcarmo/db-platform/storage"
 )
 
@@ -38,9 +39,15 @@ func (s *Server) Start() error {
 
 		r.Route("/db", func(dbroute chi.Router) {
 			dbroute.Get("/create-user", func(w http.ResponseWriter, r *http.Request) { handlers.GetCreateDbUserPage(w, r, s.store) })
-			dbroute.Post("/create-user", func(w http.ResponseWriter, r *http.Request) { handlers.CreateDBUserHandler(w, r, s.store) })
+			dbroute.Post("/create-user", func(w http.ResponseWriter, r *http.Request) {
+				handlers.ExternalDBUserHandler(w, r, s.store, models.Create)
+			})
 
 			dbroute.Get("/delete-user", func(w http.ResponseWriter, r *http.Request) { handlers.GetDeleteDbUserPage(w, r, s.store) })
+			dbroute.Post("/delete-user", func(w http.ResponseWriter, r *http.Request) {
+				handlers.ExternalDBUserHandler(w, r, s.store, models.Delete)
+			})
+
 		})
 
 		r.Route("/user", func(userRoute chi.Router) {

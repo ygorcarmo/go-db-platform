@@ -1,6 +1,6 @@
 <form class=\"border rounded border-gray-500 p-5 w-fit flex flex-col gap-2\"
  hx-post=\"/db/create-user\"
- hx-delete=\"/db/user\"
+ hx-post=\"/db/delete-user\"
  hx-target=\"#response\" hx-ext=\"disable-element\" hx-disable-element=\"#button\" hx-indicator=\".spinner\"><div class=\"grid grid-cols-2 gap-y-2\"><label for=\"username\" class=\"col-start-1\">Username: </label> <input type=\"text\" name=\"username\" id=\"username\" class=\"border border-slate-400 rounded p-2\" required> <label for=\"wo\" class=\"col-start-1\">WO: </label> <input type=\"text\" name=\"wo\" id=\"wo\" class=\"border border-slate-400 rounded p-2\" required></div><label for=\"databases\">Select the following databases: </label><div id=\"databases\" class=\"flex flex-col gap-2\">
 <div><input type=\"checkbox\" name=\"databases\" value=\"
 \" id=\"

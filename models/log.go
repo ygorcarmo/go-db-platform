@@ -2,11 +2,11 @@ package models
 
 import "time"
 
-type actionType string
+type ActionType string
 
 const (
-	Create actionType = "CREATE"
-	Delete actionType = "DELETE"
+	Create ActionType = "CREATE"
+	Delete ActionType = "DELETE"
 )
 
 type Log struct {
@@ -16,6 +16,6 @@ type Log struct {
 	WO        int
 	CreateBy  string
 	CreatedAt time.Time
-	Action    actionType
+	Action    ActionType
 	Sucess    bool
 }
