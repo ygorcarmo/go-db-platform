@@ -89,8 +89,8 @@ func CreateDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Stora
 	var fResponse filteredResults
 
 	for _, result := range results {
-		go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: models.Create, Sucess: result.Success})
-		if result.Success {
+		go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: models.Create, Sucess: result.IsSuccess})
+		if result.IsSuccess {
 			fResponse.Sucesses = append(fResponse.Sucesses, result.Message)
 		} else {
 			fResponse.Errors = append(fResponse.Errors, result.Message)
