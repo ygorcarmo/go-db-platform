@@ -3,7 +3,6 @@ package models
 import (
 	"database/sql"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -17,8 +16,6 @@ const (
 	postgres dbType = "postgres"
 	mySQL    dbType = "mysql"
 	oracle   dbType = "oracle"
-	// This passwd should come from the user
-	passwd string = "THISISASECRET"
 )
 
 type TargetDb struct {
@@ -41,28 +38,27 @@ type NewDbUserProps struct {
 	WO            int
 }
 type TargetDbsResponse struct {
-	Message string
-	Success bool
-	DbId    string
+	Message   string
+	IsSuccess bool
+	DbId      string
 }
 
-func (t *TargetDb) ConnectAndCreateUser(user NewDbUserProps, c chan TargetDbsResponse, wg *sync.WaitGroup) {
-	defer wg.Done()
+func (t *TargetDb) ConnectAndCreateUser(user NewDbUserProps, r *[]TargetDbsResponse) {
 
 	switch t.Type {
 	case postgres:
 		pg, err := t.connectToPostgresql()
 
 		if err != nil {
-			c <- TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), Success: false, DbId: t.Id}
+			*r = append(*r, TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), IsSuccess: false, DbId: t.Id})
 			return
 		}
 		defer pg.Close()
 
-		_, err = pg.Exec("CREATE USER " + user.Username + " WITH PASSWORD '" + passwd + "';")
+		_, err = pg.Exec("CREATE USER " + user.Username + " WITH PASSWORD '" + t.Password + "';")
 
 		if err != nil {
-			c <- TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), Success: false, DbId: t.Id}
+			*r = append(*r, TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), IsSuccess: false, DbId: t.Id})
 			return
 		}
 
@@ -70,49 +66,37 @@ func (t *TargetDb) ConnectAndCreateUser(user NewDbUserProps, c chan TargetDbsRes
 		mysql, err := t.connectToSQL()
 
 		if err != nil {
-			c <- TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), Success: false, DbId: t.Id}
+			*r = append(*r, TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), IsSuccess: false, DbId: t.Id})
 			return
 		}
 		defer mysql.Close()
 
-		_, err = mysql.Exec("CREATE USER '" + user.Username + "'@'localhost' IDENTIFIED BY '" + passwd + "';")
+		_, err = mysql.Exec("CREATE USER '" + user.Username + "'@'localhost' IDENTIFIED BY '" + t.Password + "';")
 		if err != nil {
-			c <- TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), Success: false, DbId: t.Id}
+			*r = append(*r, TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), IsSuccess: false, DbId: t.Id})
 			return
 		}
 
 	case oracle:
 		db, err := t.connectToOracle()
 		if err != nil {
-			c <- TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), Success: false, DbId: t.Id}
+			*r = append(*r, TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), IsSuccess: false, DbId: t.Id})
 			return
 		}
 		defer db.Close()
 
-		_, err = db.Exec("CREATE USER " + user.Username + " IDENTIFIED BY " + passwd)
+		_, err = db.Exec("CREATE USER " + user.Username + " IDENTIFIED BY " + t.Password)
 		if err != nil {
-			c <- TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), Success: false, DbId: t.Id}
+			*r = append(*r, TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err), IsSuccess: false, DbId: t.Id})
 			return
 		}
 
 	default:
-		c <- TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, fmt.Errorf("DB type %s not supported", t.Type)), Success: false, DbId: t.Id}
+		*r = append(*r, TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, fmt.Errorf("DB type %s not supported", t.Type)), IsSuccess: false, DbId: t.Id})
 		return
 	}
 
-	// log := Log{
-	// 	DbId:     t.Id,
-	// 	NewUser:  user.Username,
-	// 	WO:       user.WO,
-	// 	CreateBy: user.CurrentUserId,
-	// 	Action:   create,
-	// }
-
-	// create a log when the thing gets returned
-	// go s.CreateLog(log)
-
-	c <- TargetDbsResponse{Message: fmt.Sprintf("User %s has been created successfully at %s \n", user.Username, t.Name), Success: true, DbId: t.Id}
-
+	*r = append(*r, TargetDbsResponse{Message: fmt.Sprintf("User %s has been created successfully at %s \n", user.Username, t.Name), IsSuccess: true, DbId: t.Id})
 }
 
 func (targetDb *TargetDb) connectToPostgresql() (*sql.DB, error) {

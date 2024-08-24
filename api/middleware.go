@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -30,7 +29,6 @@ func (s *Server) authentication(next http.Handler) http.Handler {
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
-		fmt.Println(user)
 		ctx := context.WithValue(r.Context(), models.UserCtx, user)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})

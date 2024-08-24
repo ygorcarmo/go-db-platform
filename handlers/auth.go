@@ -6,8 +6,10 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ygorcarmo/db-platform/models"
 	"github.com/ygorcarmo/db-platform/storage"
 	"github.com/ygorcarmo/db-platform/utils"
+	"github.com/ygorcarmo/db-platform/views/components"
 	"github.com/ygorcarmo/db-platform/views/login"
 )
 
@@ -34,23 +36,20 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 
 	user, err := s.GetUserByUsername(username)
 	if err != nil {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Invalid Username or Password."))
+		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
 	match, err := hashParams.ComparePasswordAndHash(p, user.Password)
 	if err != nil || !match {
 		fmt.Println(err)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Invalid Username or Password."))
+		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
 
 	tokenString, err := utils.CreateToken(user.Id)
 	if err != nil {
 		fmt.Println(err)
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("Invalid Username or Password."))
+		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
 

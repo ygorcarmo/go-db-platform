@@ -54,6 +54,11 @@ func CreateDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Stora
 	wo := r.FormValue("wo")
 	dbNames := r.Form["databases"]
 
+	if len(dbNames) < 1 {
+		externaldb.Response([]string{}, []string{"Please select a database"}).Render(r.Context(), w)
+		return
+	}
+
 	woInt, err := strconv.Atoi(wo)
 	if err != nil {
 		fmt.Println(err)
@@ -61,9 +66,9 @@ func CreateDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Stora
 
 	user := r.Context().Value(models.UserCtx).(*models.AppUser)
 
-	var results []models.TargetDbsResponse
+	results := []models.TargetDbsResponse{}
 
-	c := make(chan models.TargetDbsResponse)
+	fmt.Println("Adding users: ", dbNames)
 
 	for _, dbName := range dbNames {
 		wg.Add(1)
@@ -73,9 +78,10 @@ func CreateDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Stora
 			log.Fatal(err)
 		}
 
-		go currentDb.ConnectAndCreateUser(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt}, c, &wg)
-		msg := <-c
-		results = append(results, msg)
+		go func() {
+			defer wg.Done()
+			currentDb.ConnectAndCreateUser(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt}, &results)
+		}()
 	}
 
 	wg.Wait()

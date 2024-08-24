@@ -58,7 +58,7 @@ func (db *MySQLStorage) Seed() error {
         INSERT INTO
             external_databases (name, host, port, type, sslMode, createdBy, username, password)
         VALUES
-            ("mysql","dbsql",3306,"mysql","disable",?,"user", "CHANGEME"),
+            ("mysql","localhost",3306,"mysql","disable",?,"apt_db_platform", "1qaz!EDC"),
             ("mysql-2","db-sql-02",3306,"mysql","disable",?,"user", "CHANGEME"),
             ("mysql-3","db-sql-03",3306,"mysql","disable",?,"user", "CHANGEME"),
             ("maria","db-maria",3306,"mysql","disable",?,"user", "CHANGEME"),
@@ -127,11 +127,13 @@ func (db *MySQLStorage) GetDbByName(name string) (*models.TargetDb, error) {
     	ed.port AS external_database_port,
     	ed.type AS external_database_type,
     	ed.sslMode AS external_database_sslMode,
-		BIN_TO_UUID(ed.id) as external_database_id
+		BIN_TO_UUID(ed.id) as external_database_id,
+		ed.username,
+		ed.password
 	FROM 
     	external_databases ed 
 	WHERE 
-		name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode, &targetDb.Id)
+		name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode, &targetDb.Id, &targetDb.Username, &targetDb.Password)
 	if err != nil {
 		return nil, err
 	}
