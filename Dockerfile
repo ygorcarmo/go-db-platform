@@ -6,7 +6,7 @@ COPY . .
 
 RUN go mod download
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o db-platform
+RUN CGO_ENABLED=0 GOOS=linux go build -tags prod -o db-platform
 
 
 FROM registry.access.redhat.com/ubi9-minimal:latest

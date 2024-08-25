@@ -12,11 +12,6 @@ import (
 	externaldb "github.com/ygorcarmo/db-platform/views/externalDb"
 )
 
-type filteredResults struct {
-	Sucesses []string
-	Errors   []string
-}
-
 var wg sync.WaitGroup
 
 func GetCreateDbUserPage(w http.ResponseWriter, r *http.Request, db storage.Storage) {
@@ -50,8 +45,10 @@ func GetDeleteDbUserPage(w http.ResponseWriter, r *http.Request, db storage.Stor
 
 func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage, a models.ActionType) {
 
+	// TODO: add server side validation
 	r.ParseForm()
 	username := r.FormValue("username")
+	password := r.FormValue("password")
 	wo := r.FormValue("wo")
 	dbNames := r.Form["databases"]
 
@@ -67,9 +64,8 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 
 	user := r.Context().Value(models.UserCtx).(*models.AppUser)
 
-	results := []models.TargetDbsResponse{}
-
-	fmt.Println("Adding users: ", dbNames)
+	successr := []string{}
+	failr := []string{}
 
 	for _, dbName := range dbNames {
 		wg.Add(1)
@@ -81,29 +77,28 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 
 		go func() {
 			defer wg.Done()
+			result := models.TargetDbsResponse{}
 			switch a {
 			case models.Create:
-				currentDb.ConnectAndCreateUser(&models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt}, &results)
+				result = currentDb.ConnectAndCreateUser(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt, Password: password})
 			case models.Delete:
-				currentDb.ConnectAndDeleteUser(&models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt}, &results)
+				result = currentDb.ConnectAndDeleteUser(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt})
 			default:
 				fmt.Println("Action Type not supported")
+				result = models.TargetDbsResponse{Message: "Action type not supported", IsSuccess: false, DbId: "NOTVALID"}
+			}
+
+			go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: a, Sucess: result.IsSuccess})
+
+			if result.IsSuccess {
+				successr = append(successr, result.Message)
+			} else {
+				failr = append(failr, result.Message)
 			}
 		}()
 	}
 
 	wg.Wait()
 
-	var fResponse filteredResults
-
-	for _, result := range results {
-		go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: a, Sucess: result.IsSuccess})
-		if result.IsSuccess {
-			fResponse.Sucesses = append(fResponse.Sucesses, result.Message)
-		} else {
-			fResponse.Errors = append(fResponse.Errors, result.Message)
-		}
-	}
-
-	externaldb.Response(fResponse.Sucesses, fResponse.Errors).Render(r.Context(), w)
+	externaldb.Response(successr, failr).Render(r.Context(), w)
 }
