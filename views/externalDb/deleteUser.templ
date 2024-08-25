@@ -6,7 +6,7 @@ import (
 )
 
 templ DeleteUserPage(dbs []string) {
-	@layouts.Base() {
+	@layouts.Home() {
 		<h1 class="text-2xl text-red-500">Delete User</h1>
 		@components.ExternalUserForm(dbs, false)
 	}

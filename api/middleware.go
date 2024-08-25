@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"log"
 	"net/http"
 
 	"github.com/ygorcarmo/db-platform/models"
@@ -36,15 +35,8 @@ func (s *Server) authentication(next http.Handler) http.Handler {
 
 func (s *Server) adminsOnly(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userId := r.Context().Value("userId").(string)
+		user := r.Context().Value(models.UserCtx).(*models.AppUser)
 
-		// var user models.AppUser
-		// user.GetUserById(userId)
-		user, err := s.store.GetUserById(userId)
-		if err != nil {
-			log.Fatal("How Did this user get here without auth?")
-			return
-		}
 		if !user.IsAdmin {
 			http.Redirect(w, r, "/", http.StatusMovedPermanently)
 			return

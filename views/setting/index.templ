@@ -1,0 +1,12 @@
+package setting
+
+import (
+	"github.com/ygorcarmo/db-platform/models"
+	"github.com/ygorcarmo/db-platform/views/layouts"
+)
+
+templ Index() {
+	@layouts.Setting() {
+		<h1>Hello { ctx.Value(models.UserCtx).(*models.AppUser).Username }, be careful with your next movements. Some data might be unrecoverable.</h1>
+	}
+}

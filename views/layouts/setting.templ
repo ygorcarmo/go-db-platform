@@ -1,0 +1,9 @@
+package layouts
+
+import "github.com/ygorcarmo/db-platform/views/components"
+
+templ Setting() {
+	@Base(components.SettingSideBar()) {
+		{ children... }
+	}
+}

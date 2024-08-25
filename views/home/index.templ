@@ -6,7 +6,7 @@ import (
 )
 
 templ Index() {
-	@layouts.Base() {
+	@layouts.Home() {
 		<h1>Welcome back { ctx.Value(models.UserCtx).(*models.AppUser).Username }</h1>
 	}
 }

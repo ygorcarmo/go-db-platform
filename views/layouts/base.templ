@@ -1,6 +1,6 @@
 package layouts
 
-templ Base() {
+templ Base(sideBar templ.Component) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -17,7 +17,7 @@ templ Base() {
 						<img src="/public/img/logo.png" alt="logo" class="max-w-36"/>
 					</li>
 					<li>
-						<a href="/settings/dbs" class="block">Settings</a>
+						<a href="/settings" class="block">Settings</a>
 					</li>
 				</ul>
 			</nav>
@@ -25,19 +25,7 @@ templ Base() {
 				<div class="grid grid-cols-[300px_auto] h-screen">
 					<div class="border-gray-600 border-r-2">
 						<ul class="p-5 grid gap-3" hx-boost="true">
-							<li>
-								<a href="/" class="block">Home</a>
-							</li>
-							<li>
-								<a href="/db/create-user" class="block">Create Database User</a>
-							</li>
-							<li>
-								<a href="/db/delete-user" class="block">Delete Database User</a>
-							</li>
-							<li>
-								<a href="/user/reset-password" class="block">Reset Password</a>
-							</li>
-							<li><a href="/logout" class="block">Logout</a></li>
+							@sideBar
 						</ul>
 					</div>
 					<div class="grid grid-rows-[70px_auto]">

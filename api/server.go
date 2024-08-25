@@ -54,6 +54,14 @@ func (s *Server) Start() error {
 			userRoute.Get("/reset-password", handlers.GetResetPasswordPage)
 		})
 
+		r.Group(func(adminR chi.Router) {
+			adminR.Use(s.adminsOnly)
+
+			adminR.Route("/settings", func(settingsR chi.Router) {
+				settingsR.Get("/", handlers.GetSettingsPage)
+			})
+		})
+
 	})
 
 	// router.Use(authentication)
