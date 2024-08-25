@@ -83,7 +83,6 @@ services:
     volumes:
       - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/schema.sql:rw
   web:
-    # image: new_db
     build: .
     restart: on-failure
     container_name: web
