@@ -16,6 +16,11 @@ type MySQLStorage struct {
 	connection *sql.DB
 }
 
+// schCreateExternalDb implements Storage.
+func (db *MySQLStorage) schCreateExternalDb(models.TargetDb) error {
+	panic("unimplemented")
+}
+
 func NewMySQLStorage(user string, password string, address string, dbName string) *MySQLStorage {
 	log.Println("Creating db")
 	cfg := mysql.Config{
