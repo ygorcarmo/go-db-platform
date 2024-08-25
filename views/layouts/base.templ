@@ -51,30 +51,46 @@ templ Base(sideBar templ.Component) {
 				</div>
 				<script src="https://unpkg.com/htmx.org/dist/ext/disable-element.js"></script>
 				<script>
-					document.addEventListener('DOMContentLoaded', function() {
-				    	const menuButton = document.getElementById('menu-button');
-				    	const menu = menuButton.nextElementSibling;
-
-				    	menuButton.addEventListener('click', function() {
-				    	    const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
-				    	    menuButton.setAttribute('aria-expanded', !isExpanded);
-				    	    menu.classList.toggle('hidden');
-				    	    menu.classList.toggle('opacity-0');
-				    	    menu.classList.toggle('transform');
-				    	    menu.classList.toggle('scale-95');
-				    	});
-
-				    	// Close the menu if clicked outside
-				    	document.addEventListener('click', function(event) {
-				    	    if (!menuButton.contains(event.target) && !menu.contains(event.target)) {
-				    	        menuButton.setAttribute('aria-expanded', 'false');
-				    	        menu.classList.add('hidden');
-				    	        menu.classList.add('opacity-0');
-				    	        menu.classList.add('transform');
-				    	        menu.classList.add('scale-95');
-				    	    }
-				    	});
-					});
+    				document.addEventListener('DOMContentLoaded', function() {
+    				    // Event delegation on the document for the menu button
+    				    document.addEventListener('click', function(event) {
+    				        const menuButton = document.getElementById('menu-button');
+    				        const menu = menuButton ? menuButton.nextElementSibling : null;
+				
+    				        if (!menuButton || !menu) return;
+				
+    				        if (menuButton.contains(event.target)) {
+    				            // Toggle the dropdown when the button is clicked
+    				            const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+    				            menuButton.setAttribute('aria-expanded', !isExpanded);
+    				            menu.classList.toggle('hidden');
+    				            menu.classList.toggle('opacity-0');
+    				            menu.classList.toggle('transform');
+    				            menu.classList.toggle('scale-95');
+    				        } else if (!menu.contains(event.target)) {
+    				            // Close the menu if clicked outside
+    				            menuButton.setAttribute('aria-expanded', 'false');
+    				            menu.classList.add('hidden');
+    				            menu.classList.add('opacity-0');
+    				            menu.classList.add('transform');
+    				            menu.classList.add('scale-95');
+    				        }
+    				    });
+    				});
+				
+    				// Reattach the event listener after an HTMX content swap
+    				document.body.addEventListener('htmx:afterSettle', function() {
+    				    const menuButton = document.getElementById('menu-button');
+    				    const menu = menuButton ? menuButton.nextElementSibling : null;
+				
+    				    if (menuButton && menu) {
+    				        menuButton.setAttribute('aria-expanded', 'false');
+    				        menu.classList.add('hidden');
+    				        menu.classList.add('opacity-0');
+    				        menu.classList.add('transform');
+    				        menu.classList.add('scale-95');
+    				    }
+    				});
 				</script>
 			</main>
 		</body>
