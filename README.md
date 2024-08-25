@@ -22,6 +22,7 @@ This is a custom platform for multiple databases users administration.
     - DB_ADDRESS="localhost:3001"
     - DB_NAME="db_platform"
     - JWT_SECRET="DONOTSHOWTHISTOANYONE"
+    - CRYPTO_SECRET="DONOTSHARETHIS"
 
 To run the test databases go to the sample folder and run: `docker compose up`
 
