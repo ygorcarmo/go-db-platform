@@ -19,9 +19,8 @@ CREATE TABLE users(
     isAdmin BOOLEAN NOT NULL DEFAULT FALSE,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY (id, username),
-    UNIQUE KEY (username), -- This ensures unique usernames
-    UNIQUE KEY (id) 
+    PRIMARY KEY (id),
+    UNIQUE KEY (username) -- This ensures unique usernames
 );
 
 CREATE TABLE external_databases(
@@ -36,6 +35,7 @@ CREATE TABLE external_databases(
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE KEY (name, host, id), -- This ensures unique combination of name, host, and id
+    UNIQUE KEY (name),
     FOREIGN KEY (createdBy) REFERENCES users(id)
 );
 

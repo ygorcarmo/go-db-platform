@@ -13,9 +13,9 @@ import (
 type dbType string
 
 const (
-	postgres dbType = "postgres"
-	mySQL    dbType = "mysql"
-	oracle   dbType = "oracle"
+	Postgres dbType = "postgres"
+	MySQL    dbType = "mysql"
+	Oracle   dbType = "oracle"
 )
 
 type TargetDb struct {
@@ -44,9 +44,22 @@ type TargetDbsResponse struct {
 	DbId      string
 }
 
+func ToDbType(t string) (dbType, error) {
+	switch t {
+	case "mysql":
+		return MySQL, nil
+	case "postgres":
+		return Postgres, nil
+	case "oracle":
+		return Oracle, nil
+	default:
+		return "", fmt.Errorf("invalid dbType: %s", t)
+	}
+}
+
 func (t *TargetDb) ConnectAndCreateUser(user NewDbUserProps) TargetDbsResponse {
 	switch t.Type {
-	case postgres:
+	case Postgres:
 		pg, err := t.connectToPostgresql()
 
 		if err != nil {
@@ -60,7 +73,7 @@ func (t *TargetDb) ConnectAndCreateUser(user NewDbUserProps) TargetDbsResponse {
 			return TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
 		}
 
-	case mySQL:
+	case MySQL:
 		mysql, err := t.connectToSQL()
 
 		if err != nil {
@@ -73,7 +86,7 @@ func (t *TargetDb) ConnectAndCreateUser(user NewDbUserProps) TargetDbsResponse {
 			return TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
 		}
 
-	case oracle:
+	case Oracle:
 		db, err := t.connectToOracle()
 		if err != nil {
 			return TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
@@ -94,7 +107,7 @@ func (t *TargetDb) ConnectAndCreateUser(user NewDbUserProps) TargetDbsResponse {
 
 func (t *TargetDb) ConnectAndDeleteUser(user NewDbUserProps) TargetDbsResponse {
 	switch t.Type {
-	case postgres:
+	case Postgres:
 		pg, err := t.connectToPostgresql()
 
 		if err != nil {
@@ -108,7 +121,7 @@ func (t *TargetDb) ConnectAndDeleteUser(user NewDbUserProps) TargetDbsResponse {
 			return TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
 		}
 
-	case mySQL:
+	case MySQL:
 		mysql, err := t.connectToSQL()
 
 		if err != nil {
@@ -121,7 +134,7 @@ func (t *TargetDb) ConnectAndDeleteUser(user NewDbUserProps) TargetDbsResponse {
 			return TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
 		}
 
-	case oracle:
+	case Oracle:
 		db, err := t.connectToOracle()
 		if err != nil {
 			return TargetDbsResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}

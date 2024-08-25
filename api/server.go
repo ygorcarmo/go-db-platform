@@ -35,7 +35,6 @@ func (s *Server) Start() error {
 		r.Use(s.authentication)
 		r.Get("/", handlers.GetHomePage)
 		// THIS is only for DEV
-		r.Get("/seed", func(w http.ResponseWriter, r *http.Request) { handlers.SeedHandler(w, r, s.store) })
 
 		r.Route("/db", func(dbroute chi.Router) {
 			dbroute.Get("/create-user", func(w http.ResponseWriter, r *http.Request) { handlers.GetCreateDbUserPage(w, r, s.store) })
@@ -59,7 +58,21 @@ func (s *Server) Start() error {
 
 			adminR.Route("/settings", func(settingsR chi.Router) {
 				settingsR.Get("/", handlers.GetSettingsPage)
+
+				settingsR.Route("/users", func(sur chi.Router) {
+					sur.Get("/", func(w http.ResponseWriter, r *http.Request) { handlers.GetAllUserSettingsPage(w, r, s.store) })
+				})
+
+				settingsR.Route("/dbs", func(sdr chi.Router) {
+					sdr.Get("/", func(w http.ResponseWriter, r *http.Request) { handlers.GetDatabasesConfigPage(w, r, s.store) })
+					sdr.Get("/create", handlers.GetCreateExternalDbPage)
+					sdr.Post("/create", func(w http.ResponseWriter, r *http.Request) { handlers.CreateExternalDbHandler(w, r, s.store) })
+				})
+
 			})
+
+			adminR.Get("/seed", func(w http.ResponseWriter, r *http.Request) { handlers.SeedHandler(w, r, s.store) })
+
 		})
 
 	})

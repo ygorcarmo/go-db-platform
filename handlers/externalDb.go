@@ -9,13 +9,15 @@ import (
 
 	"github.com/ygorcarmo/db-platform/models"
 	"github.com/ygorcarmo/db-platform/storage"
+	"github.com/ygorcarmo/db-platform/views/components"
 	externaldb "github.com/ygorcarmo/db-platform/views/externalDb"
+	"github.com/ygorcarmo/db-platform/views/setting"
 )
 
 var wg sync.WaitGroup
 
 func GetCreateDbUserPage(w http.ResponseWriter, r *http.Request, db storage.Storage) {
-	data, derr := db.GetAvailableDbs()
+	data, derr := db.GetDbsName()
 	if derr != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Something Went Wrong"))
@@ -30,7 +32,7 @@ func GetCreateDbUserPage(w http.ResponseWriter, r *http.Request, db storage.Stor
 }
 
 func GetDeleteDbUserPage(w http.ResponseWriter, r *http.Request, db storage.Storage) {
-	data, derr := db.GetAvailableDbs()
+	data, derr := db.GetDbsName()
 	if derr != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Something Went Wrong"))
@@ -101,4 +103,61 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 	wg.Wait()
 
 	externaldb.Response(successr, failr).Render(r.Context(), w)
+}
+
+func GetDatabasesConfigPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	dbs, err := s.GetAllDbs()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Somthing went wrong"))
+		return
+	}
+
+	renderErr := setting.DatabasesPage(dbs).Render(r.Context(), w)
+	if renderErr != nil {
+		log.Fatalln("Something went wrong went trying to render the dbs config page")
+	}
+}
+
+func GetCreateExternalDbPage(w http.ResponseWriter, r *http.Request) {
+	err := externaldb.ExternalDbPage().Render(r.Context(), w)
+	if err != nil {
+		log.Fatal("Error when trying to render create external db page")
+	}
+}
+
+func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	user := r.Context().Value(models.UserCtx).(*models.AppUser)
+
+	// TODO: add server side validation
+	u := r.FormValue("username")
+	p := r.FormValue("password")
+	d := r.FormValue("name")
+	h := r.FormValue("host")
+	dp := r.FormValue("port")
+	t := r.FormValue("type")
+	m := r.FormValue("sslMode")
+
+	dType, err := models.ToDbType(t)
+	if err != nil {
+		components.Response(models.Response{Message: err.Error(), IsSuccess: false}).Render(r.Context(), w)
+		return
+	}
+
+	dPort, err := strconv.Atoi(dp)
+	if err != nil {
+		components.Response(models.Response{Message: "Invalid Port. It should be a valid number"}).Render(r.Context(), w)
+		return
+	}
+
+	config := models.TargetDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Id}
+
+	err = s.CreateExternalDb(config)
+
+	if err != nil {
+		components.Response(models.Response{Message: err.Error(), IsSuccess: false}).Render(r.Context(), w)
+		return
+	}
+
+	components.Response(models.Response{Message: "DB Connection config has been created", IsSuccess: true}).Render(r.Context(), w)
 }

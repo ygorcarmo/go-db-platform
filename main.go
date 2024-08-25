@@ -20,7 +20,6 @@ func main() {
 		os.Getenv("DB_ADDRESS"),
 		os.Getenv("DB_NAME"),
 	)
-	// store.Seed()
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	s := api.NewServer(listenAddr, store)
