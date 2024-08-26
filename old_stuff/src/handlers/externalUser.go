@@ -17,7 +17,7 @@ type filteredResults struct {
 
 var wg sync.WaitGroup
 
-var targetDbs models.TargetDb
+var targetDbs models.ExternalDb
 
 func LoadCreateExternalUser(w http.ResponseWriter, r *http.Request) {
 	dbs, err := targetDbs.GetAllNames()
@@ -48,7 +48,7 @@ func CreateExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, database := range databases {
 		wg.Add(1)
-		var currentDb models.TargetDb
+		var currentDb models.ExternalDb
 		_, err := currentDb.GetByName(database)
 
 		if err != nil {
@@ -82,7 +82,7 @@ func CreateExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoadDeleteExternalUser(w http.ResponseWriter, r *http.Request) {
-	var dbNames models.TargetDb
+	var dbNames models.ExternalDb
 	dbs, err := dbNames.GetAllNames()
 	if err != nil {
 		log.Fatal(err)
@@ -110,7 +110,7 @@ func DeleteExternalUserFormHandler(w http.ResponseWriter, r *http.Request) {
 
 	for _, database := range databases {
 		wg.Add(1)
-		var currentDb models.TargetDb
+		var currentDb models.ExternalDb
 		_, err := currentDb.GetByName(database)
 
 		if err != nil {

@@ -16,13 +16,7 @@ type MySQLStorage struct {
 	connection *sql.DB
 }
 
-// schCreateExternalDb implements Storage.
-func (db *MySQLStorage) schCreateExternalDb(models.TargetDb) error {
-	panic("unimplemented")
-}
-
 func NewMySQLStorage(user string, password string, address string, dbName string) *MySQLStorage {
-	log.Println("Creating db")
 	cfg := mysql.Config{
 		User:      user,
 		Passwd:    password,
@@ -31,7 +25,7 @@ func NewMySQLStorage(user string, password string, address string, dbName string
 		DBName:    dbName,
 		ParseTime: true,
 	}
-	fmt.Println(cfg)
+
 	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		log.Fatal(err)
@@ -60,7 +54,7 @@ func (db *MySQLStorage) Seed() error {
 		return err
 	}
 
-	dbConnections := []models.TargetDb{
+	dbConnections := []models.ExternalDb{
 		{Name: "mysql", Host: "localhost", Port: 3001, Type: models.MySQL, SslMode: "disable", Username: "apt_db_platform", Password: "1qaz!EDC", CreatedBy: userId},
 		{Name: "mysql-2", Host: "db-sql-02", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: userId},
 		{Name: "mysql-3", Host: "db-sql-03", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: userId},
@@ -161,6 +155,16 @@ func (db *MySQLStorage) CreateApplicationUser(u models.AppUser) error {
 	return err
 }
 
+func (db *MySQLStorage) GetDbById(i string) (*models.ExternalDb, error) {
+	r := models.ExternalDb{Id: i}
+	err := db.connection.QueryRow("SELECT name, host, port, type, sslMode from external_databases WHERE id = UUID_TO_BIN(?);",
+		i).Scan(&r.Name, &r.Host, &r.Port, &r.Type, &r.SslMode)
+	if err != nil {
+		return nil, err
+	}
+	return &r, nil
+}
+
 func (db *MySQLStorage) GetDbsName() ([]string, error) {
 	var names []string
 
@@ -185,8 +189,8 @@ func (db *MySQLStorage) GetDbsName() ([]string, error) {
 	return names, nil
 }
 
-func (db *MySQLStorage) GetAllDbs() ([]models.TargetDb, error) {
-	databasesConfig := []models.TargetDb{}
+func (db *MySQLStorage) GetAllDbs() ([]models.ExternalDb, error) {
+	databasesConfig := []models.ExternalDb{}
 
 	rows, err := db.connection.Query(`
 		SELECT 
@@ -209,7 +213,7 @@ func (db *MySQLStorage) GetAllDbs() ([]models.TargetDb, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		config := models.TargetDb{}
+		config := models.ExternalDb{}
 		if err := rows.Scan(&config.Id, &config.Name, &config.Host, &config.Port, &config.Type, &config.SslMode, &config.CreatedBy); err != nil {
 			return nil, err
 		}
@@ -221,8 +225,8 @@ func (db *MySQLStorage) GetAllDbs() ([]models.TargetDb, error) {
 	return databasesConfig, nil
 }
 
-func (db *MySQLStorage) GetDbByName(name string) (*models.TargetDb, error) {
-	targetDb := models.TargetDb{Name: name}
+func (db *MySQLStorage) GetDbByName(name string) (*models.ExternalDb, error) {
+	targetDb := models.ExternalDb{Name: name}
 	err := db.connection.QueryRow(`
 	SELECT 
 	    ed.name AS external_database_name,
@@ -262,7 +266,17 @@ func (db *MySQLStorage) GetDbByName(name string) (*models.TargetDb, error) {
 
 	return &targetDb, nil
 }
-func (db *MySQLStorage) CreateExternalDb(edb models.TargetDb) error {
+
+func (db *MySQLStorage) UpdateExternalDb(e models.ExternalDb) error {
+	_, err := db.connection.Exec(`
+		UPDATE external_databases
+		SET name=?, host=?, port=?, type=?, sslMode=?
+		WHERE id = UUID_TO_BIN(?);
+	`, e.Name, e.Host, e.Port, e.Type, e.SslMode, e.Id)
+	return err
+}
+
+func (db *MySQLStorage) CreateExternalDb(edb models.ExternalDb) error {
 	eService, err := utils.NewEncryptionService()
 	if err != nil {
 		return err

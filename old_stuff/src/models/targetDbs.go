@@ -13,7 +13,7 @@ import (
 	go_ora "github.com/sijms/go-ora/v2"
 )
 
-type TargetDb struct {
+type ExternalDb struct {
 	Id        string
 	Name      string
 	Host      string
@@ -53,7 +53,7 @@ func init() {
 	}
 }
 
-func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {
+func (targetDb *ExternalDb) GetByName(name string) (*ExternalDb, error) {
 	err := db.Database.QueryRow(`
 	SELECT 
 	    ed.name AS external_database_name,
@@ -69,14 +69,14 @@ func (targetDb *TargetDb) GetByName(name string) (*TargetDb, error) {
 	return targetDb, err
 }
 
-func (targetDb *TargetDb) GetByid(id string) (*TargetDb, error) {
+func (targetDb *ExternalDb) GetByid(id string) (*ExternalDb, error) {
 	targetDb.Id = id
 	err := db.Database.QueryRow(`SELECT name, host,	port, type,	sslMode FROM external_databases WHERE id=UUID_TO_BIN(?);`,
 		id).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode)
 	return targetDb, err
 }
 
-func (*TargetDb) GetAllNames() ([]string, error) {
+func (*ExternalDb) GetAllNames() ([]string, error) {
 	var dbs []string
 
 	rows, err := db.Database.Query("SELECT name FROM external_databases")
@@ -103,7 +103,7 @@ func (*TargetDb) GetAllNames() ([]string, error) {
 	return dbs, nil
 }
 
-func (targetDb *TargetDb) Update() error {
+func (targetDb *ExternalDb) Update() error {
 	_, err := db.Database.Exec(`
 		UPDATE external_databases
 		SET name = ?, host = ?, port = ?, type = ?, sslMode = ?
@@ -112,8 +112,8 @@ func (targetDb *TargetDb) Update() error {
 	return err
 }
 
-func (*TargetDb) GetAll() ([]TargetDb, error) {
-	var databases []TargetDb
+func (*ExternalDb) GetAll() ([]ExternalDb, error) {
+	var databases []ExternalDb
 
 	rows, err := db.Database.Query(`
 	SELECT 
@@ -134,7 +134,7 @@ func (*TargetDb) GetAll() ([]TargetDb, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		var database TargetDb
+		var database ExternalDb
 		if err := rows.Scan(&database.Id, &database.Name, &database.Host, &database.Port, &database.Type, &database.SslMode, &database.CreatedBy); err != nil {
 			return nil, err
 		}
@@ -146,12 +146,12 @@ func (*TargetDb) GetAll() ([]TargetDb, error) {
 	return databases, nil
 }
 
-func (*TargetDb) DeleteDbById(dbId string) error {
+func (*ExternalDb) DeleteDbById(dbId string) error {
 	_, err := db.Database.Exec("DELETE FROM external_databases WHERE id=UUID_TO_BIN(?)", dbId)
 	return err
 }
 
-func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUserProps NewDbUserProps, c chan TargetDbsRepose, wg *sync.WaitGroup) {
+func (targetDb *ExternalDb) ConnectToDBAndCreateUser(newUserProps NewDbUserProps, c chan TargetDbsRepose, wg *sync.WaitGroup) {
 	defer wg.Done()
 	fmt.Println(eDbUser)
 	if targetDb.Type == "postgres" {
@@ -210,7 +210,7 @@ func (targetDb *TargetDb) ConnectToDBAndCreateUser(newUserProps NewDbUserProps, 
 	c <- TargetDbsRepose{Message: fmt.Sprintf("User %s has been created successfully at %s \n", newUserProps.Username, targetDb.Name), Success: true}
 }
 
-func (targetDb *TargetDb) ConnectToDBAndDeleteUser(newUserProps NewDbUserProps, c chan TargetDbsRepose, wg *sync.WaitGroup) {
+func (targetDb *ExternalDb) ConnectToDBAndDeleteUser(newUserProps NewDbUserProps, c chan TargetDbsRepose, wg *sync.WaitGroup) {
 	defer wg.Done()
 	if targetDb.Type == "postgres" {
 		pg, err := targetDb.connectToPostgre()
@@ -268,7 +268,7 @@ func (targetDb *TargetDb) ConnectToDBAndDeleteUser(newUserProps NewDbUserProps, 
 	c <- TargetDbsRepose{Message: fmt.Sprintf("User %s has been deleted successfully at %s \n", newUserProps.Username, targetDb.Name), Success: true}
 }
 
-func (targetDb *TargetDb) connectToSQL() (*sql.DB, error) {
+func (targetDb *ExternalDb) connectToSQL() (*sql.DB, error) {
 	cfg := mysql.Config{
 		User:                 eDbUser.Username,
 		Passwd:               eDbUser.Password,
@@ -291,7 +291,7 @@ func (targetDb *TargetDb) connectToSQL() (*sql.DB, error) {
 	return database, nil
 }
 
-func (targetDb *TargetDb) connectToPostgre() (*sql.DB, error) {
+func (targetDb *ExternalDb) connectToPostgre() (*sql.DB, error) {
 	connectionStr := fmt.Sprintf("postgres://%s:%s@%s:%d/?sslmode=%s", eDbUser.Username, eDbUser.Password, targetDb.Host, targetDb.Port, targetDb.SslMode)
 
 	database, err := sql.Open(targetDb.Type, connectionStr)
@@ -306,7 +306,7 @@ func (targetDb *TargetDb) connectToPostgre() (*sql.DB, error) {
 	return database, nil
 }
 
-func (targetDb *TargetDb) connectToOracle() (*sql.DB, error) {
+func (targetDb *ExternalDb) connectToOracle() (*sql.DB, error) {
 	connectionStr := go_ora.BuildUrl(targetDb.Host, targetDb.Port, targetDb.Name, eDbUser.Username, eDbUser.Password, nil)
 	database, err := sql.Open(targetDb.Type, connectionStr)
 	if err != nil {

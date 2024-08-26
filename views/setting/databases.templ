@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-templ DatabasesPage(dbs []models.TargetDb) {
+templ DatabasesPage(dbs []models.ExternalDb) {
 	@layouts.Setting() {
 		<div class="flex flex-row justify-between p-3">
 			<h1>Manage Databases</h1>
@@ -53,7 +53,7 @@ templ DatabasesPage(dbs []models.TargetDb) {
 							<td class="px-6 py-4">{ db.SslMode }</td>
 							<td class="px-6 py-4">{ db.CreatedBy }</td>
 							<td class="px-6 py-4">
-								<a class="border rounded py-2 px-4" href={ templ.SafeURL("/settings/update-db/" + db.Id) }>Edit</a>
+								<a class="border rounded py-2 px-4" href={ templ.SafeURL("/settings/dbs/edit/" + db.Id) }>Edit</a>
 							</td>
 							<td>
 								<button

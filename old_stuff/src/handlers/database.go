@@ -40,13 +40,13 @@ func AddDbFormHanlder(w http.ResponseWriter, r *http.Request) {
 
 func LoadEditDb(w http.ResponseWriter, r *http.Request) {
 	dbId := chi.URLParam(r, "id")
-	var db models.TargetDb
+	var db models.ExternalDb
 	db.GetByid(dbId)
 	views.Templates["editDb"].Execute(w, db)
 }
 
 func UpdateDb(w http.ResponseWriter, r *http.Request) {
-	var db models.TargetDb
+	var db models.ExternalDb
 
 	db.GetByid(chi.URLParam(r, "id"))
 	db.Id = chi.URLParam(r, "id")
@@ -75,7 +75,7 @@ func UpdateDb(w http.ResponseWriter, r *http.Request) {
 func DeleteDb(w http.ResponseWriter, r *http.Request) {
 	dbId := chi.URLParam(r, "id")
 
-	var db models.TargetDb
+	var db models.ExternalDb
 	err := db.DeleteDbById(dbId)
 
 	if err != nil {

@@ -69,6 +69,8 @@ func (s *Server) Start() error {
 					sdr.Get("/", func(w http.ResponseWriter, r *http.Request) { handlers.GetDatabasesConfigPage(w, r, s.store) })
 					sdr.Get("/create", handlers.GetCreateExternalDbPage)
 					sdr.Post("/create", func(w http.ResponseWriter, r *http.Request) { handlers.CreateExternalDbHandler(w, r, s.store) })
+					sdr.Get("/edit/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.GetEditExternalDbConfigPage(w, r, s.store) })
+					sdr.Put("/edit/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateExternalDbHandler(w, r, s.store) })
 				})
 
 			})

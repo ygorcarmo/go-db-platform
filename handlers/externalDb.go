@@ -7,10 +7,11 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/go-chi/chi"
 	"github.com/ygorcarmo/db-platform/models"
 	"github.com/ygorcarmo/db-platform/storage"
 	"github.com/ygorcarmo/db-platform/views/components"
-	externaldb "github.com/ygorcarmo/db-platform/views/externalDb"
+	"github.com/ygorcarmo/db-platform/views/externalDb"
 	"github.com/ygorcarmo/db-platform/views/setting"
 )
 
@@ -24,7 +25,7 @@ func GetCreateDbUserPage(w http.ResponseWriter, r *http.Request, db storage.Stor
 		return
 	}
 
-	err := externaldb.CreateUserPage(data).Render(r.Context(), w)
+	err := externalDb.CreateUserPage(data).Render(r.Context(), w)
 
 	if err != nil {
 		log.Fatal("Error when rendering Create DB User Page")
@@ -39,14 +40,13 @@ func GetDeleteDbUserPage(w http.ResponseWriter, r *http.Request, db storage.Stor
 		return
 	}
 
-	err := externaldb.DeleteUserPage(data).Render(r.Context(), w)
+	err := externalDb.DeleteUserPage(data).Render(r.Context(), w)
 	if err != nil {
 		log.Fatal("Error when rendering delete db user page")
 	}
 }
 
 func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage, a models.ActionType) {
-
 	// TODO: add server side validation
 	r.ParseForm()
 	username := r.FormValue("username")
@@ -55,7 +55,7 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 	dbNames := r.Form["databases"]
 
 	if len(dbNames) < 1 {
-		externaldb.Response([]string{}, []string{"Please select a database"}).Render(r.Context(), w)
+		externalDb.Response([]string{}, []string{"Please select a database"}).Render(r.Context(), w)
 		return
 	}
 
@@ -79,7 +79,7 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 
 		go func() {
 			defer wg.Done()
-			result := models.TargetDbsResponse{}
+			result := models.ExternalDbResponse{}
 			switch a {
 			case models.Create:
 				result = currentDb.ConnectAndCreateUser(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt, Password: password})
@@ -87,7 +87,7 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 				result = currentDb.ConnectAndDeleteUser(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt})
 			default:
 				fmt.Println("Action Type not supported")
-				result = models.TargetDbsResponse{Message: "Action type not supported", IsSuccess: false, DbId: "NOTVALID"}
+				result = models.ExternalDbResponse{Message: "Action type not supported", IsSuccess: false, DbId: "NOTVALID"}
 			}
 
 			go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: a, Sucess: result.IsSuccess})
@@ -102,7 +102,7 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 
 	wg.Wait()
 
-	externaldb.Response(successr, failr).Render(r.Context(), w)
+	externalDb.Response(successr, failr).Render(r.Context(), w)
 }
 
 func GetDatabasesConfigPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
@@ -120,7 +120,7 @@ func GetDatabasesConfigPage(w http.ResponseWriter, r *http.Request, s storage.St
 }
 
 func GetCreateExternalDbPage(w http.ResponseWriter, r *http.Request) {
-	err := externaldb.ExternalDbPage().Render(r.Context(), w)
+	err := externalDb.ExternalDbPage().Render(r.Context(), w)
 	if err != nil {
 		log.Fatal("Error when trying to render create external db page")
 	}
@@ -150,7 +150,7 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	config := models.TargetDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Id}
+	config := models.ExternalDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Id}
 
 	err = s.CreateExternalDb(config)
 
@@ -160,4 +160,47 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 	}
 
 	components.Response(models.Response{Message: "DB Connection config has been created", IsSuccess: true}).Render(r.Context(), w)
+}
+
+func GetEditExternalDbConfigPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	i := chi.URLParam(r, "id")
+	d, err := s.GetDbById(i)
+	if err != nil {
+		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
+		return
+	}
+
+	err = externalDb.EditDbConfigPage(d).Render(r.Context(), w)
+	if err != nil {
+		fmt.Println("something went wrong when rendering edit db config page")
+	}
+}
+
+func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	i := chi.URLParam(r, "id")
+	n := r.FormValue("name")
+	h := r.FormValue("host")
+	p := r.FormValue("port")
+	t := r.FormValue("type")
+	m := r.FormValue("sslMode")
+
+	port, err := strconv.Atoi(p)
+	if err != nil {
+		components.Response(models.CreateResponse("Invalid port number", false)).Render(r.Context(), w)
+		return
+	}
+
+	dbType, err := models.ToDbType(t)
+	if err != nil {
+		components.Response(models.CreateResponse("Invalid db type", false)).Render(r.Context(), w)
+		return
+	}
+
+	err = s.UpdateExternalDb(models.ExternalDb{Id: i, Name: n, Host: h, Port: port, Type: dbType, SslMode: m})
+	if err != nil {
+		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
+		return
+	}
+
+	components.Response(models.CreateResponse("Database config updated successfully", true)).Render(r.Context(), w)
 }

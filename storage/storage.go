@@ -10,9 +10,11 @@ type Storage interface {
 	GetAllUsers() ([]models.AppUser, error)
 	GetUserByUsername(string) (*models.AppUser, error)
 	CreateApplicationUser(models.AppUser) error
+	GetDbById(string) (*models.ExternalDb, error)
 	GetDbsName() ([]string, error)
-	GetDbByName(string) (*models.TargetDb, error)
-	GetAllDbs() ([]models.TargetDb, error)
-	CreateExternalDb(models.TargetDb) error
+	GetDbByName(string) (*models.ExternalDb, error)
+	GetAllDbs() ([]models.ExternalDb, error)
+	UpdateExternalDb(models.ExternalDb) error
+	CreateExternalDb(models.ExternalDb) error
 	CreateLog(models.Log) error
 }

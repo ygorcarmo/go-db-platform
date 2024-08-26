@@ -13,7 +13,7 @@ func LoadSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoadManageDbs(w http.ResponseWriter, r *http.Request) {
-	var database models.TargetDb
+	var database models.ExternalDb
 	databases, err := database.GetAll()
 	if err != nil {
 		fmt.Println(err)
