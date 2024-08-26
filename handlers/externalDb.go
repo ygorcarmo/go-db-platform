@@ -90,7 +90,7 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 				result = models.ExternalDbResponse{Message: "Action type not supported", IsSuccess: false, DbId: "NOTVALID"}
 			}
 
-			go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: a, Sucess: result.IsSuccess})
+			go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: a, Success: result.IsSuccess})
 
 			if result.IsSuccess {
 				successr = append(successr, result.Message)

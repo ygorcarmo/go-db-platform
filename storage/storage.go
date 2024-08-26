@@ -19,4 +19,5 @@ type Storage interface {
 	UpdateExternalDbCredentials(id string, username string, password string) error
 	CreateExternalDb(models.ExternalDb) error
 	CreateLog(models.Log) error
+	GetAllLogs() ([]models.LogResponse, error)
 }

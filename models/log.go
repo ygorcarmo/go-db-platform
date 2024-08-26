@@ -17,5 +17,15 @@ type Log struct {
 	CreateBy  string
 	CreatedAt time.Time
 	Action    ActionType
-	Sucess    bool
+	Success   bool
+}
+
+type LogResponse struct {
+	NewUser   string
+	WO        int
+	CreatedBy string
+	Database  string
+	CreatedAt time.Time
+	Action    ActionType
+	Success   bool
 }

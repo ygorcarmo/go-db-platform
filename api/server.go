@@ -78,6 +78,7 @@ func (s *Server) Start() error {
 					sdr.Post("/{id}/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateExternalDbCredHandler(w, r, s.store) })
 				})
 
+				settingsR.Get("/logs", func(w http.ResponseWriter, r *http.Request) { handlers.GetLogsPage(w, r, s.store) })
 			})
 
 			adminR.Get("/seed", func(w http.ResponseWriter, r *http.Request) { handlers.SeedHandler(w, r, s.store) })
