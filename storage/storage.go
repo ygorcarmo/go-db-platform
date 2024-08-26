@@ -9,6 +9,7 @@ type Storage interface {
 	GetUserById(string) (*models.AppUser, error)
 	GetAllUsers() ([]models.AppUser, error)
 	GetUserByUsername(string) (*models.AppUser, error)
+	CreateApplicationUser(models.AppUser) error
 	GetDbsName() ([]string, error)
 	GetDbByName(string) (*models.TargetDb, error)
 	GetAllDbs() ([]models.TargetDb, error)

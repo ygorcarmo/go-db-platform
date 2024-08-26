@@ -154,6 +154,13 @@ func (db *MySQLStorage) GetAllUsers() ([]models.AppUser, error) {
 	return users, nil
 }
 
+func (db *MySQLStorage) CreateApplicationUser(u models.AppUser) error {
+	_, err := db.connection.Exec("INSERT INTO users (username, password, supervisor, sector, isAdmin) VALUES (?, ?, ?, ?, ?);",
+		u.Username, u.Password, u.Supervisor, u.Sector, u.IsAdmin)
+
+	return err
+}
+
 func (db *MySQLStorage) GetDbsName() ([]string, error) {
 	var names []string
 

@@ -61,6 +61,8 @@ func (s *Server) Start() error {
 
 				settingsR.Route("/users", func(sur chi.Router) {
 					sur.Get("/", func(w http.ResponseWriter, r *http.Request) { handlers.GetAllUserSettingsPage(w, r, s.store) })
+					sur.Get("/create", handlers.GetCreateUserPage)
+					sur.Post("/create", func(w http.ResponseWriter, r *http.Request) { handlers.CreateUserHandler(w, r, s.store) })
 				})
 
 				settingsR.Route("/dbs", func(sdr chi.Router) {
