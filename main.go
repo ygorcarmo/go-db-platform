@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -10,8 +11,9 @@ import (
 )
 
 func main() {
+
 	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
+		fmt.Println("Unable to load .env")
 	}
 
 	store := storage.NewMySQLStorage(

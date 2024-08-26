@@ -1,8 +1,7 @@
 package utils
 
 import (
-	"fmt"
-	"log"
+	"errors"
 	"os"
 	"time"
 
@@ -42,7 +41,7 @@ func VerifyToken(tokenString string) error {
 	}
 
 	if !token.Valid {
-		return fmt.Errorf("invalid token")
+		return errors.New("invalid token")
 	}
 
 	return nil
@@ -55,12 +54,12 @@ func DecodeToken(jwtToken string) (string, error) {
 		return []byte(jwtKey), nil
 	})
 	if err != nil {
-		log.Fatal(err)
+		return "", err
 	}
 
 	// Checking token validity
 	if !token.Valid {
-		log.Fatal("invalid token")
+		return "", errors.New("invalid token")
 	}
 	return userClaim.Id, nil
 }

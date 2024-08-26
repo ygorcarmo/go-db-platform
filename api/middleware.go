@@ -19,6 +19,7 @@ func (s *Server) authentication(next http.Handler) http.Handler {
 
 		userId, err := utils.DecodeToken(jwtToken.Value)
 		if err != nil {
+			http.SetCookie(w, &http.Cookie{Name: "token", Value: "", Path: "/"})
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}

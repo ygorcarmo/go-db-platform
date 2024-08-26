@@ -6,82 +6,62 @@ services:
     container_name: dbsql
     hostname: dbsql
     environment:
-      - MYSQL_USER=teste
-      - MYSQL_PASSWORD=teste
-      - MYSQL_ROOT_PASSWORD=teste
+      # - MYSQL_USER=apt_db_platform
+      # - MYSQL_PASSWORD=1qaz!EDC
+      - MYSQL_ROOT_PASSWORD=VERYSECRET
+    ports:
+      - 3008:3306
     volumes:
-      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
+      - ./storage/schema.sql:/docker-entrypoint-initdb.d/schema.sql:rw
 
   db-sql-02:
     image: mysql
     container_name: db-sql-02
     hostname: db-sql-02
     environment:
-      - MYSQL_USER=teste
-      - MYSQL_PASSWORD=teste
-      - MYSQL_ROOT_PASSWORD=teste
-    volumes:
-      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/sqlteste.sql:rw
+      - MYSQL_ROOT_PASSWORD=VERYSECRET
 
   db-sql-03:
     image: mysql
     container_name: db-sql-03
     hostname: db-sql-03
     environment:
-      - MYSQL_USER=teste
-      - MYSQL_PASSWORD=teste
-      - MYSQL_ROOT_PASSWORD=teste
-    volumes:
-      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/sqlteste.sql:rw
+      - MYSQL_ROOT_PASSWORD=VERYSECRET
 
   postgres:
     image: postgres
     container_name: postgres
     hostname: postgres
     environment:
-      - POSTGRES_USER=teste
-      - POSTGRES_PASSWORD=teste
+      - POSTGRES_PASSWORD=VERYSECRET
 
   pg:
     image: postgres
     container_name: pg
     hostname: pg
     environment:
-      - POSTGRES_USER=teste
-      - POSTGRES_PASSWORD=teste
+      - POSTGRES_PASSWORD=VERYSECRET
 
   db-maria:
     image: mariadb
     container_name: db-maria
     hostname: db-maria
     environment:
-      - MARIADB_USER=teste
-      - MARIADB_PASSWORD=teste
-      - MARIADB_ROOT_PASSWORD=asdasdasdasdas
-    volumes:
-      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/sqlteste.sql:rw
+      - MARIADB_ROOT_PASSWORD=VERYSECRET
 
   db-maria-02:
     image: mariadb
     container_name: db-maria-02
     hostname: db-maria-02
     environment:
-      - MARIADB_USER=teste
-      - MARIADB_PASSWORD=teste
-      - MARIADB_ROOT_PASSWORD=asdasdasdasdas
-    volumes:
-      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/sqlteste.sql:rw
+      - MARIADB_ROOT_PASSWORD=VERYSECRET
 
   db:
     image: mysql
     container_name: db
     hostname: db
     environment:
-      - MYSQL_USER=teste
-      - MYSQL_PASSWORD=teste
-      - MYSQL_ROOT_PASSWORD=teste
-    volumes:
-      - ./src/db/sqlteste.sql:/docker-entrypoint-initdb.d/schema.sql:rw
+      - MYSQL_ROOT_PASSWORD=VERYSECRET
   web:
     build: .
     restart: on-failure
@@ -90,22 +70,18 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - DB_USER=root
-      - DB_PASSWORD=teste
+      - LISTEN_ADDR=:3000
+      - DB_USER=apt_db_platform
+      - DB_PASSWORD=1qaz!EDC
       - DB_ADDRESS=dbsql:3306
       - DB_NAME=db_platform
-      - GLOBAL_DB_USER=teste
-      - GLOBAL_USER_PWD=teste
-      - NEW_USER_PWD=teste
+      - JWT_SECRET=DONOTSHOWTHISTOANYONEnew
+      - CRYPTO_SECRET=BNM8uXzhdfWEgMZxFr6smtM_Ne44r*w@
     depends_on:
-      db:
-        condition: service_completed_successfully
-        restart: true
       dbsql:
-        condition: service_completed_successfully
+        condition: service_started
         restart: true
 
 networks:
-  default:
+  db-platform-net:
     driver: bridge
-    name: db-platform
