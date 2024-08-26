@@ -2,7 +2,7 @@ package layouts
 
 templ Base(sideBar templ.Component) {
 	<!DOCTYPE html>
-	<html lang="en">
+	<html lang="en" class="h-full m-0">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -10,7 +10,7 @@ templ Base(sideBar templ.Component) {
 			<script src="/public/js/htmx.min.js"></script>
 			<title>DB Platform</title>
 		</head>
-		<body>
+		<body class="h-full m-0">
 			<nav class="bg-slate-300">
 				<ul class="flex justify-between items-center p-6">
 					<li>
@@ -36,17 +36,15 @@ templ Base(sideBar templ.Component) {
 					</li>
 				</ul>
 			</nav>
-			<main>
-				<div class="grid grid-cols-[300px_auto] h-screen">
+			<main class="h-full">
+				<div class="grid grid-cols-[300px_auto] h-full">
 					<div class="border-gray-600 border-r-2">
 						<ul class="p-5 grid gap-3" hx-boost="true">
 							@sideBar
 						</ul>
 					</div>
-					<div class="grid grid-rows-[70px_auto]">
-						<div class="h-full p-4">
-							{ children... }
-						</div>
+					<div class="h-full p-4">
+						{ children... }
 					</div>
 				</div>
 				<script src="https://unpkg.com/htmx.org/dist/ext/disable-element.js"></script>

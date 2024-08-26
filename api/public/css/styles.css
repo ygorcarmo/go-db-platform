@@ -598,6 +598,10 @@ video {
   grid-column-start: 2;
 }
 
+.m-0 {
+  margin: 0px;
+}
+
 .-mr-1 {
   margin-right: -0.25rem;
 }
@@ -768,6 +772,10 @@ video {
 
 .border-r-2 {
   border-right-width: 2px;
+}
+
+.border-l-2 {
+  border-left-width: 2px;
 }
 
 .border-gray-500 {
