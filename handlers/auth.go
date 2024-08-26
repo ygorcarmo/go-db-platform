@@ -63,7 +63,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 	http.SetCookie(w, &cookie)
 
 	w.Header().Add("HX-Redirect", "/")
-	w.Write([]byte("Loged In."))
+	w.Write([]byte("Logged In."))
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {

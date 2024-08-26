@@ -51,6 +51,9 @@ func (s *Server) Start() error {
 
 		r.Route("/user", func(userRoute chi.Router) {
 			userRoute.Get("/reset-password", handlers.GetResetPasswordPage)
+			userRoute.Post("/reset-password", func(w http.ResponseWriter, r *http.Request) {
+				handlers.ResetApplicationUserPasswordHandler(w, r, s.store)
+			})
 		})
 
 		r.Group(func(adminR chi.Router) {
@@ -71,6 +74,8 @@ func (s *Server) Start() error {
 					sdr.Post("/create", func(w http.ResponseWriter, r *http.Request) { handlers.CreateExternalDbHandler(w, r, s.store) })
 					sdr.Get("/edit/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.GetEditExternalDbConfigPage(w, r, s.store) })
 					sdr.Put("/edit/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateExternalDbHandler(w, r, s.store) })
+					sdr.Get("/{id}/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.GetUpdateExternalDbCredPage(w, r, s.store) })
+					sdr.Post("/{id}/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateExternalDbCredHandler(w, r, s.store) })
 				})
 
 			})

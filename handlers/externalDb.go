@@ -170,7 +170,7 @@ func GetEditExternalDbConfigPage(w http.ResponseWriter, r *http.Request, s stora
 		return
 	}
 
-	err = externalDb.EditDbConfigPage(d).Render(r.Context(), w)
+	err = externalDb.UpdateDbConfigPage(d).Render(r.Context(), w)
 	if err != nil {
 		fmt.Println("something went wrong when rendering edit db config page")
 	}
@@ -202,5 +202,43 @@ func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	components.Response(models.CreateResponse("Database config updated successfully", true)).Render(r.Context(), w)
+	w.Header().Add("HX-Redirect", "/settings/dbs")
+	w.Write([]byte("db config updated"))
+}
+
+func GetUpdateExternalDbCredPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	i := chi.URLParam(r, "id")
+
+	d, err := s.GetDbById(i)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Db config not found"))
+		return
+	}
+
+	err = externalDb.UpdateCredentials(d.Name, d.Id).Render(r.Context(), w)
+	if err != nil {
+		fmt.Println("Something went wrong when rendering update external db credentials page")
+	}
+}
+
+func UpdateExternalDbCredHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	i := chi.URLParam(r, "id")
+	u := r.FormValue("username")
+	p := r.FormValue("password")
+	p2 := r.FormValue("re-password")
+
+	if p != p2 {
+		components.Response(models.CreateResponse("passwords do not match", false)).Render(r.Context(), w)
+		return
+	}
+
+	err := s.UpdateExternalDbCredentials(i, u, p)
+	if err != nil {
+		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
+		return
+	}
+
+	w.Header().Add("HX-Redirect", "/settings/dbs")
+	w.Write([]byte("db credential updated"))
 }

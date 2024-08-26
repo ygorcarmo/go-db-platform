@@ -117,6 +117,14 @@ func (db *MySQLStorage) GetUserById(id string) (*models.AppUser, error) {
 	return &user, nil
 }
 
+func (db *MySQLStorage) UpdateApplicationUserPassword(i string, p string) error {
+	_, err := db.connection.Exec(`
+	 	UPDATE users SET password = ? WHERE id=UUID_TO_BIN(?);
+	`, p, i)
+
+	return err
+}
+
 func (db *MySQLStorage) GetUserByUsername(username string) (*models.AppUser, error) {
 	user := models.AppUser{Username: username}
 	err := db.connection.QueryRow("SELECT BIN_TO_UUID(id), username, password FROM users WHERE username=?;", username).Scan(&user.Id, &user.Username, &user.Password)
@@ -244,7 +252,6 @@ func (db *MySQLStorage) GetDbByName(name string) (*models.ExternalDb, error) {
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("Username: %s, Password: %s\n", targetDb.Username, targetDb.Password)
 
 	eService, err := utils.NewEncryptionService()
 	if err != nil {
@@ -262,7 +269,6 @@ func (db *MySQLStorage) GetDbByName(name string) (*models.ExternalDb, error) {
 		return nil, errors.New("unable to decrypt username")
 	}
 	targetDb.Username = username
-	fmt.Printf("Username: %s, Password: %s\n", targetDb.Username, targetDb.Password)
 
 	return &targetDb, nil
 }
@@ -273,6 +279,30 @@ func (db *MySQLStorage) UpdateExternalDb(e models.ExternalDb) error {
 		SET name=?, host=?, port=?, type=?, sslMode=?
 		WHERE id = UUID_TO_BIN(?);
 	`, e.Name, e.Host, e.Port, e.Type, e.SslMode, e.Id)
+	return err
+}
+
+func (db *MySQLStorage) UpdateExternalDbCredentials(i string, u string, p string) error {
+	eService, err := utils.NewEncryptionService()
+	if err != nil {
+		return err
+	}
+
+	username, err := eService.Encrypt(u)
+	if err != nil {
+		return err
+	}
+
+	password, err := eService.Encrypt(p)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.connection.Exec(`
+		UPDATE external_databases
+		SET username=?, password=?
+		WHERE id = UUID_TO_BIN(?);
+	`, username, password, i)
 	return err
 }
 

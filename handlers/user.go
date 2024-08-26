@@ -18,6 +18,46 @@ func GetResetPasswordPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func ResetApplicationUserPasswordHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	user := r.Context().Value(models.UserCtx).(*models.AppUser)
+
+	p := r.FormValue("password")
+	// TODO: add validation to new password
+	np := r.FormValue("new-password")
+	np2 := r.FormValue("re-password")
+
+	if np != np2 {
+		components.Response(models.CreateResponse("The new passwords don't match", false)).Render(r.Context(), w)
+		return
+	}
+
+	match, err := hashParams.ComparePasswordAndHash(p, user.Password)
+	if err != nil {
+		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
+		return
+	}
+
+	if !match {
+		components.Response(models.CreateResponse("Invalid Current Password.", false)).Render(r.Context(), w)
+		return
+	}
+
+	hashedP, err := hashParams.HashPasword(np)
+	if err != nil {
+		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
+		return
+	}
+
+	err = s.UpdateApplicationUserPassword(user.Id, hashedP)
+	if err != nil {
+		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
+		return
+	}
+
+	components.Response(models.CreateResponse("Password updated successfully", true)).Render(r.Context(), w)
+
+}
+
 func GetAllUserSettingsPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 	users, err := s.GetAllUsers()
 	if err != nil {
@@ -67,6 +107,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage
 		return
 	}
 
-	components.Response(models.CreateResponse("User created successfully.", true)).Render(r.Context(), w)
+	w.Header().Add("HX-Redirect", "/settings/users")
+	w.Write([]byte("user created"))
 
 }
