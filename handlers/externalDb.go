@@ -159,7 +159,8 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	components.Response(models.Response{Message: "DB Connection config has been created", IsSuccess: true}).Render(r.Context(), w)
+	w.Header().Add("HX-Redirect", "/settings/dbs")
+	w.Write([]byte("DB Connection config has been created"))
 }
 
 func GetEditExternalDbConfigPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
