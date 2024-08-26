@@ -8,7 +8,9 @@ package appUser
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func CreateUser() templ.Component {
+import "github.com/ygorcarmo/db-platform/views/layouts"
+
+func CreateUserPage() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -26,6 +28,28 @@ func CreateUser() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"text-2xl text-green-400\">Add New Application User</h1><form class=\"border rounded border-gray-500 p-5 w-fit flex flex-col gap-2\" hx-post=\"/settings/users/create\" hx-target=\"#response\"><div class=\"grid grid-cols-2 gap-y-2\"><label for=\"username\" class=\"col-start-1\">Username: </label> <input type=\"text\" name=\"username\" id=\"username\" class=\"border border-slate-400 rounded p-2\" required> <label for=\"password\">Password:</label> <input type=\"password\" name=\"password\" id=\"password\" class=\"border border-slate-400 rounded p-2\" autocomplete=\"new-password\" minlength=\"8\" required> <label for=\"password\">Re-enter Password:</label> <input type=\"password\" name=\"re-password\" id=\"re-password\" class=\"border border-slate-400 rounded p-2\" autocomplete=\"new-password\" minlength=\"8\" required> <label for=\"supervisor\" class=\"col-start-1\">Supervisor: </label> <input type=\"text\" name=\"supervisor\" id=\"supervisor\" class=\"border border-slate-400 rounded p-2\" required> <label for=\"sector\" class=\"col-start-1\">Sector: </label> <input type=\"text\" name=\"sector\" id=\"sector\" class=\"border border-slate-400 rounded p-2\" required> <label for=\"admin\" class=\"col-start-1\">Admin: </label> <input type=\"checkbox\" name=\"admin\" id=\"admin\" class=\"border border-slate-400 rounded p-2\"></div><button type=\"submit\" class=\"bg-blue-400 py-2 px-4 rounded\">Submit</button></form><div id=\"response\"></div>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return templ_7745c5c3_Err
+		})
+		templ_7745c5c3_Err = layouts.Setting().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
 		return templ_7745c5c3_Err
 	})
 }
