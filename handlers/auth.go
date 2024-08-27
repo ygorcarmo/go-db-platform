@@ -54,10 +54,11 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 		return
 	}
 
+	fmt.Println(tokenString)
+
 	cookie := http.Cookie{
 		Name:     "token",
 		Value:    tokenString,
-		Secure:   true,
 		HttpOnly: true,
 		Expires:  time.Now().Add(6 * time.Hour)}
 
