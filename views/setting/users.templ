@@ -65,7 +65,7 @@ templ GetUsersPage(users []models.AppUser) {
 							<td>
 								<button
 									class="bg-red-400 text-white py-2 px-4 rounded"
-									hx-delete={ "/settings/update-user/" + user.Id }
+									hx-delete={ "/settings/users/" + user.Id }
 								>
 									Delete
 								</button>

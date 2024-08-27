@@ -243,3 +243,14 @@ func UpdateExternalDbCredHandler(w http.ResponseWriter, r *http.Request, s stora
 	w.Header().Add("HX-Redirect", "/settings/dbs")
 	w.Write([]byte("db credential updated"))
 }
+
+func DeleteExternalDbByIdHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	id := chi.URLParam(r, "id")
+	err := s.DeleteUserById(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("something went wrong"))
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+}

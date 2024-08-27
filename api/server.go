@@ -66,6 +66,7 @@ func (s *Server) Start() error {
 					sur.Get("/", func(w http.ResponseWriter, r *http.Request) { handlers.GetAllUserSettingsPage(w, r, s.store) })
 					sur.Get("/create", handlers.GetCreateUserPage)
 					sur.Post("/create", func(w http.ResponseWriter, r *http.Request) { handlers.CreateUserHandler(w, r, s.store) })
+					sur.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.DeleteUserById(w, r, s.store) })
 				})
 
 				settingsR.Route("/dbs", func(sdr chi.Router) {
@@ -76,6 +77,7 @@ func (s *Server) Start() error {
 					sdr.Put("/edit/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateExternalDbHandler(w, r, s.store) })
 					sdr.Get("/{id}/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.GetUpdateExternalDbCredPage(w, r, s.store) })
 					sdr.Post("/{id}/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateExternalDbCredHandler(w, r, s.store) })
+					sdr.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.DeleteExternalDbByIdHandler(w, r, s.store) })
 				})
 
 				settingsR.Get("/logs", func(w http.ResponseWriter, r *http.Request) { handlers.GetLogsPage(w, r, s.store) })
@@ -87,9 +89,6 @@ func (s *Server) Start() error {
 
 	})
 
-	// router.Use(authentication)
-
-	// router.Get("/test", func(w http.ResponseWriter, r *http.Request) { handlers.HandleHome(w, r, s.store) })
 	slog.Info("Server is running on: ", "listenAddr", s.listenAddr)
 	return http.ListenAndServe(s.listenAddr, router)
 }

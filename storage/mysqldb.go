@@ -273,6 +273,11 @@ func (db *MySQLStorage) GetDbByName(name string) (*models.ExternalDb, error) {
 	return &targetDb, nil
 }
 
+func (db *MySQLStorage) DeleteUserById(id string) error {
+	_, err := db.connection.Exec("DELETE FROM users WHERE id=UUID_TO_BIN(?);", id)
+	return err
+}
+
 func (db *MySQLStorage) UpdateExternalDb(e models.ExternalDb) error {
 	_, err := db.connection.Exec(`
 		UPDATE external_databases
@@ -326,6 +331,11 @@ func (db *MySQLStorage) CreateExternalDb(edb models.ExternalDb) error {
 
 	_, err = db.connection.Exec("INSERT INTO external_databases (name, host, port, type, sslMode, username, password, createdBy) VALUES (?, ?, ?, ?, ?, ?, ?, UUID_TO_BIN(?));",
 		edb.Name, edb.Host, edb.Port, edb.Type, edb.SslMode, edb.Username, edb.Password, edb.CreatedBy)
+	return err
+}
+
+func (db *MySQLStorage) DeleteExternalDbById(id string) error {
+	_, err := db.connection.Exec("DELETE FROM external_databases WHERE id=UUID_TO_BIN(?)", id)
 	return err
 }
 

@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi"
 	"github.com/ygorcarmo/db-platform/models"
 	"github.com/ygorcarmo/db-platform/storage"
 	"github.com/ygorcarmo/db-platform/views/components"
@@ -110,4 +111,17 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage
 	w.Header().Add("HX-Redirect", "/settings/users")
 	w.Write([]byte("user created"))
 
+}
+
+func DeleteUserById(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	id := chi.URLParam(r, "id")
+	err := s.DeleteUserById(id)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong"))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
