@@ -36,6 +36,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 
 	user, err := s.GetUserByUsername(username)
 	if err != nil {
+		fmt.Println(err)
 		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
