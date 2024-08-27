@@ -25,6 +25,7 @@ var hashParams = utils.HashParams{
 func GetLoginPage(w http.ResponseWriter, r *http.Request) {
 	err := login.Index().Render(r.Context(), w)
 	if err != nil {
+		fmt.Println(err)
 		log.Fatal("Error when rendering the login page")
 	}
 }
