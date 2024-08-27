@@ -90,5 +90,5 @@ func (s *Server) Start() error {
 	})
 
 	slog.Info("Server is running on: ", "listenAddr", s.listenAddr)
-	return http.ListenAndServeTLS(s.listenAddr, "api/certs/server.crt", "api/certs/server.key", router)
+	return http.ListenAndServeTLS(s.listenAddr, "certs/server.crt", "certs/server.key", router)
 }
