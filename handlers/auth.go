@@ -42,14 +42,14 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 	}
 	match, err := hashParams.ComparePasswordAndHash(p, user.Password)
 	if err != nil || !match {
-		fmt.Println(err)
+		fmt.Printf("Unable to compare hash: %v", err)
 		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
 
 	tokenString, err := utils.CreateToken(user.Id)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Unable to create token: %v", err)
 		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
