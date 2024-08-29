@@ -1,9 +1,7 @@
 package api
 
 import (
-	"crypto/tls"
 	_ "embed"
-	"log"
 	"log/slog"
 	"net/http"
 
@@ -12,12 +10,6 @@ import (
 	"github.com/ygorcarmo/db-platform/models"
 	"github.com/ygorcarmo/db-platform/storage"
 )
-
-//go:embed certs/server.crt
-var serverCert []byte
-
-//go:embed certs/server.key
-var serverKey []byte
 
 type Server struct {
 	listenAddr string
@@ -98,21 +90,7 @@ func (s *Server) Start() error {
 
 	})
 
-	cert, err := tls.X509KeyPair(serverCert, serverKey)
-	if err != nil {
-		log.Fatalf("Failed to load certificate and key: %v", err)
-	}
-
-	tlsConfig := &tls.Config{
-		Certificates: []tls.Certificate{cert},
-	}
-
 	slog.Info("Server is running on: ", "listenAddr", s.listenAddr)
-	server := &http.Server{
-		Addr:      s.listenAddr,
-		Handler:   router,
-		TLSConfig: tlsConfig,
-	}
 
-	return server.ListenAndServeTLS("", "")
+	return http.ListenAndServe(s.listenAddr, router)
 }
