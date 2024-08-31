@@ -1,0 +1,58 @@
+package appUser
+
+import (
+	"github.com/ygorcarmo/db-platform/models"
+	"github.com/ygorcarmo/db-platform/views/layouts"
+	"strconv"
+)
+
+templ EditUserPage(user *models.AppUser) {
+	@layouts.Setting() {
+		<h1 class="text-2xl">Edit User</h1>
+		<form
+			class="border rounded border-gray-500 p-5 w-fit flex flex-col gap-2"
+			hx-post={ "/settings/users/update/" + user.Id }
+			hx-target="#response"
+		>
+			<div class="grid grid-cols-2 gap-y-2">
+				<label for="username" class="col-start-1">Username: </label>
+				<input
+					type="text"
+					name="username"
+					id="username"
+					class="border border-slate-400 rounded p-2"
+					required
+					value={ user.Username }
+				/>
+				<label for="supervisor" class="col-start-1">Supervisor: </label>
+				<input
+					type="text"
+					name="supervisor"
+					id="supervisor"
+					class="border border-slate-400 rounded p-2"
+					required
+					value={ user.Supervisor }
+				/>
+				<label for="sector" class="col-start-1">Department: </label>
+				<input
+					type="text"
+					name="sector"
+					id="sector"
+					class="border border-slate-400 rounded p-2"
+					required
+					value={ user.Sector }
+				/>
+				<label for="admin" class="col-start-1">Admin: </label>
+				<input
+					type="checkbox"
+					name="admin"
+					id="admin"
+					class="border border-slate-400 rounded"
+					checked={ strconv.FormatBool(user.IsAdmin) }
+				/>
+			</div>
+			<button type="submit" class="bg-blue-400 py-2 px-4 rounded">Submit</button>
+		</form>
+		<div id="response"></div>
+	}
+}

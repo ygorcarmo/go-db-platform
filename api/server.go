@@ -68,6 +68,8 @@ func (s *Server) Start() error {
 					sur.Get("/create", handlers.GetCreateUserPage)
 					sur.Post("/create", func(w http.ResponseWriter, r *http.Request) { handlers.CreateUserHandler(w, r, s.store) })
 					sur.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.DeleteUserById(w, r, s.store) })
+					sur.Get("/update/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.GetEditUserSettingsPage(w, r, s.store) })
+					sur.Post("/update/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateUserSettingsHandler(w, r, s.store) })
 				})
 
 				settingsR.Route("/dbs", func(sdr chi.Router) {

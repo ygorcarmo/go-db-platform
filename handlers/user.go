@@ -125,3 +125,53 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func GetEditUserSettingsPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	id := chi.URLParam(r, "id")
+
+	user, err := s.GetUserById(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong"))
+		return
+	}
+
+	err = appUser.EditUserPage(user).Render(r.Context(), w)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong"))
+		return
+	}
+
+}
+
+func UpdateUserSettingsHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	id := chi.URLParam(r, "id")
+	u := r.FormValue("username")
+	sup := r.FormValue("supervisor")
+	d := r.FormValue("sector")
+	a := r.FormValue("admin")
+
+	isAdmin := false
+	if a != "" {
+		isAdmin = true
+	}
+
+	user := models.AppUser{
+		Username:   u,
+		Supervisor: sup,
+		Sector:     d,
+		IsAdmin:    isAdmin,
+		Id:         id,
+	}
+
+	err := s.UpdateApplicationUser(user)
+	if err != nil {
+		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
+		return
+	}
+
+	w.Header().Add("HX-Redirect", "/settings/users")
+	// components.Response(models.CreateResponse("User updated Successfully", true)).Render(r.Context(), w)
+}
