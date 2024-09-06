@@ -118,7 +118,7 @@ func (t *ExternalDb) ConnectAndDeleteUser(user NewDbUserProps) ExternalDbRespons
 		}
 		defer pg.Close()
 
-		_, err = pg.Exec("DROP USER IF EXISTS " + user.Username + ";")
+		_, err = pg.Exec("DROP USER " + user.Username + ";")
 
 		if err != nil {
 			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
@@ -132,7 +132,7 @@ func (t *ExternalDb) ConnectAndDeleteUser(user NewDbUserProps) ExternalDbRespons
 		}
 		defer mysql.Close()
 
-		_, err = mysql.Exec("DROP USER IF EXISTS '" + user.Username + "'@'" + t.Host + "';")
+		_, err = mysql.Exec("DROP USER '" + user.Username + "'@'" + t.Host + "';")
 		if err != nil {
 			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
 		}
@@ -198,7 +198,6 @@ func (targetDb *ExternalDb) connectToSQL() (*sql.DB, error) {
 
 func (targetDb *ExternalDb) connectToOracle() (*sql.DB, error) {
 	connectionStr := go_ora.BuildUrl(targetDb.Host, targetDb.Port, targetDb.Name, targetDb.Username, targetDb.Password, nil)
-	fmt.Println("Connection: ", connectionStr)
 	database, err := sql.Open(string(targetDb.Type), connectionStr)
 	if err != nil {
 		return nil, err

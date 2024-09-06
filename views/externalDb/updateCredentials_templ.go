@@ -40,7 +40,7 @@ func UpdateCredentials(dbName string, id string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"text-2xl text-green-400\">Updating ")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -53,7 +53,7 @@ func UpdateCredentials(dbName string, id string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(" credentials</h1><form class=\"border rounded border-gray-500 p-5 w-fit flex flex-col gap-2\" hx-post=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -66,7 +66,7 @@ func UpdateCredentials(dbName string, id string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-target=\"#response\"><div class=\"grid grid-cols-2 gap-y-2\"><label for=\"username\" class=\"col-start-1\">Username: </label> <input type=\"text\" name=\"username\" id=\"username\" class=\"border border-slate-400 rounded p-2\" required> <label for=\"password\">Password:</label> <input type=\"password\" name=\"password\" id=\"password\" class=\"border border-slate-400 rounded p-2\" autocomplete=\"new-password\" minlength=\"8\" required> <label for=\"password\">Re-enter Password:</label> <input type=\"password\" name=\"re-password\" id=\"re-password\" class=\"border border-slate-400 rounded p-2\" autocomplete=\"new-password\" minlength=\"8\" required></div><button type=\"submit\" class=\"bg-blue-400 py-2 px-4 rounded\">Submit</button></form><div id=\"response\"></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

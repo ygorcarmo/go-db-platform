@@ -6,8 +6,6 @@ services:
     container_name: dbsql
     hostname: dbsql
     environment:
-      # - MYSQL_USER=apt_db_platform
-      # - MYSQL_PASSWORD=1qaz!EDC
       - MYSQL_ROOT_PASSWORD=VERYSECRET
     ports:
       - 3008:3306
@@ -32,6 +30,8 @@ services:
     image: postgres
     container_name: postgres
     hostname: postgres
+    ports:
+      - 3020:5432
     environment:
       - POSTGRES_PASSWORD=VERYSECRET
 
