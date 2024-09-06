@@ -53,7 +53,7 @@ CREATE TABLE logs(
     FOREIGN KEY (dbId) REFERENCES external_databases(id)
 );
 
--- Insert the user and get its ID
+-- Insert the default admin user with password test
 INSERT INTO
     users (username, password, isAdmin)
 VALUES
@@ -67,3 +67,14 @@ VALUES
 ALTER TABLE external_databases
 ADD COLUMN username VARCHAR(255) NOT NULL,
 ADD COLUMN password VARCHAR(255) NOT NULL;
+
+-- Create administrational logs table
+
+CREATE TABLE admin_logs(
+    id BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
+    message VARCHAR(255) NOT NULL,
+    userId BINARY(16) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(id),
+    FOREIGN KEY (userId) REFERENCES users(id)
+)
