@@ -45,6 +45,19 @@ func GetDeleteDbUserPage(w http.ResponseWriter, r *http.Request, db storage.Stor
 		log.Fatal("Error when rendering delete db user page")
 	}
 }
+func GetUpdateDbUserPasswordPage(w http.ResponseWriter, r *http.Request, db storage.Storage) {
+	data, derr := db.GetDbsName()
+	if derr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something Went Wrong"))
+		return
+	}
+
+	err := externalDb.UpdateDbUserPasswordPage(data).Render(r.Context(), w)
+	if err != nil {
+		log.Fatal("Error when rendering delete db user page")
+	}
+}
 
 func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage, a models.ActionType) {
 	// TODO: add server side validation
@@ -85,6 +98,8 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 				result = currentDb.ConnectAndCreateUser(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt, Password: password})
 			case models.Delete:
 				result = currentDb.ConnectAndDeleteUser(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt})
+			case models.UPDATEPWD:
+				result = currentDb.ConnectAndUpdateUserPassword(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt, Password: password})
 			default:
 				fmt.Println("Action Type not supported")
 				result = models.ExternalDbResponse{Message: "Action type not supported", IsSuccess: false, DbId: "NOTVALID"}

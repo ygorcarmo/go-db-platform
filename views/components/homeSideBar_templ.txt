@@ -1,1 +1,1 @@
-<li><a href=\"/\" class=\"block\">Home Page</a></li><li><a href=\"/db/create-user\" class=\"block\">Create Database User</a></li><li><a href=\"/db/delete-user\" class=\"block\">Delete Database User</a></li>
+<li><a href=\"/\" class=\"block\">Home Page</a></li><li><a href=\"/db/create-user\" class=\"block\">Create Database User</a></li><li><a href=\"/db/delete-user\" class=\"block\">Delete Database User</a></li><li><a href=\"/db/update-user\" class=\"block\">Update Database User</a></li>

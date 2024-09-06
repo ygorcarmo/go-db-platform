@@ -5,8 +5,9 @@ import "time"
 type ActionType string
 
 const (
-	Create ActionType = "CREATE"
-	Delete ActionType = "DELETE"
+	Create    ActionType = "CREATE"
+	Delete    ActionType = "DELETE"
+	UPDATEPWD ActionType = "UPDATEPWD"
 )
 
 type Log struct {

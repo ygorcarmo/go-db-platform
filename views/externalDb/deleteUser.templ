@@ -3,11 +3,12 @@ package externalDb
 import (
 	"github.com/ygorcarmo/db-platform/views/components"
 	"github.com/ygorcarmo/db-platform/views/layouts"
+	"github.com/ygorcarmo/db-platform/models"
 )
 
 templ DeleteUserPage(dbs []string) {
 	@layouts.Home() {
 		<h1 class="text-2xl text-red-500">Delete User</h1>
-		@components.ExternalUserForm(dbs, false)
+		@components.ExternalUserForm(dbs, models.Delete)
 	}
 }

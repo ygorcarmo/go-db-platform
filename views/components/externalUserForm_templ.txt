@@ -1,6 +1,9 @@
 <form class=\"border rounded border-gray-500 p-5 w-fit flex flex-col gap-2\"
  hx-post=\"/db/create-user\"
+ else
  hx-post=\"/db/delete-user\"
+ else
+ hx-post=\"/db/update-user\"
  hx-target=\"#response\" hx-ext=\"disable-element\" hx-disable-element=\"#button\" hx-indicator=\".spinner\"><div class=\"grid grid-cols-2 gap-y-2\"><label for=\"username\" class=\"col-start-1\">Username: </label> <input type=\"text\" name=\"username\" id=\"username\" class=\"border border-slate-400 rounded p-2\" required> 
 <label for=\"password\" class=\"col-start-1\">Password: </label><div class=\"relative col-start-2 flex\"><input type=\"password\" name=\"password\" id=\"password\" class=\"border border-slate-400 rounded p-2 flex-grow\" required> <button type=\"button\" class=\"ml-2 text-sm text-gray-600 hover:text-gray-900\" onclick=\"togglePassword()\">Show</button></div>
 <label for=\"wo\" class=\"col-start-1\">WO: </label> <input type=\"text\" name=\"wo\" id=\"wo\" class=\"border border-slate-400 rounded p-2\" required></div><label for=\"databases\">Select the following databases: </label><div id=\"databases\" class=\"flex flex-col gap-2\">

@@ -1,12 +1,17 @@
 package components
 
-templ ExternalUserForm(dbs []string, shouldCreate bool) {
+import "github.com/ygorcarmo/db-platform/models"
+
+templ ExternalUserForm(dbs []string, action models.ActionType) {
 	<form
 		class="border rounded border-gray-500 p-5 w-fit flex flex-col gap-2"
-		if shouldCreate {
+	
+		if action == models.Create {
 			hx-post="/db/create-user"
-		} else {
+		} else if action == models.Delete {
 			hx-post="/db/delete-user"
+		} else if action == models.UPDATEPWD{
+			hx-post="/db/update-user"
 		}
 		hx-target="#response"
 		hx-ext="disable-element"
@@ -22,7 +27,7 @@ templ ExternalUserForm(dbs []string, shouldCreate bool) {
 				class="border border-slate-400 rounded p-2"
 				required
 			/>
-			if shouldCreate {
+			if action == models.Create || action == models.UPDATEPWD {
 				<label for="password" class="col-start-1">Password: </label>
 				<div class="relative col-start-2 flex">
 					<input

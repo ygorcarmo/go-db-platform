@@ -35,7 +35,6 @@ func (s *Server) Start() error {
 	router.Group(func(r chi.Router) {
 		r.Use(s.authentication)
 		r.Get("/", handlers.GetHomePage)
-		// THIS is only for DEV
 
 		r.Route("/db", func(dbroute chi.Router) {
 			dbroute.Get("/create-user", func(w http.ResponseWriter, r *http.Request) { handlers.GetCreateDbUserPage(w, r, s.store) })
@@ -46,6 +45,13 @@ func (s *Server) Start() error {
 			dbroute.Get("/delete-user", func(w http.ResponseWriter, r *http.Request) { handlers.GetDeleteDbUserPage(w, r, s.store) })
 			dbroute.Post("/delete-user", func(w http.ResponseWriter, r *http.Request) {
 				handlers.ExternalDBUserHandler(w, r, s.store, models.Delete)
+			})
+
+			dbroute.Get("/update-user", func(w http.ResponseWriter, r *http.Request) {
+				handlers.GetUpdateDbUserPasswordPage(w, r, s.store)
+			})
+			dbroute.Post("/update-user", func(w http.ResponseWriter, r *http.Request) {
+				handlers.ExternalDBUserHandler(w, r, s.store, models.UPDATEPWD)
 			})
 
 		})
@@ -85,7 +91,7 @@ func (s *Server) Start() error {
 
 				settingsR.Get("/logs", func(w http.ResponseWriter, r *http.Request) { handlers.GetLogsPage(w, r, s.store) })
 			})
-
+			// THIS is only for DEV
 			adminR.Get("/seed", func(w http.ResponseWriter, r *http.Request) { handlers.SeedHandler(w, r, s.store) })
 
 		})

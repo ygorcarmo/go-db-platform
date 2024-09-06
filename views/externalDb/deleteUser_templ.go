@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"github.com/ygorcarmo/db-platform/models"
 	"github.com/ygorcarmo/db-platform/views/components"
 	"github.com/ygorcarmo/db-platform/views/layouts"
 )
@@ -47,7 +48,7 @@ func DeleteUserPage(dbs []string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = components.ExternalUserForm(dbs, false).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = components.ExternalUserForm(dbs, models.Delete).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
