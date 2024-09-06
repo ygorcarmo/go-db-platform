@@ -121,7 +121,6 @@ func (db *MySQLStorage) UpdateApplicationUserPassword(i string, p string) error 
 	_, err := db.connection.Exec(`
 	 	UPDATE users SET password = ? WHERE id=UUID_TO_BIN(?);
 	`, p, i)
-
 	return err
 }
 

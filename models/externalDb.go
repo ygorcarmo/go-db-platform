@@ -3,6 +3,7 @@ package models
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -93,7 +94,9 @@ func (t *ExternalDb) ConnectAndCreateUser(user NewDbUserProps) ExternalDbRespons
 		}
 		defer db.Close()
 
-		_, err = db.Exec("CREATE USER " + user.Username + " IDENTIFIED BY " + user.Password)
+		uppername := strings.ToUpper(user.Username)
+
+		_, err = db.Exec("CREATE USER \"" + uppername + "\" IDENTIFIED BY \"" + user.Password + "\"")
 		if err != nil {
 			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
 		}
@@ -141,7 +144,9 @@ func (t *ExternalDb) ConnectAndDeleteUser(user NewDbUserProps) ExternalDbRespons
 		}
 		defer db.Close()
 
-		_, err = db.Exec("DROP USER " + user.Username + " CASCADE ")
+		upperName := strings.ToUpper(user.Username)
+
+		_, err = db.Exec("DROP USER \"" + upperName + "\" CASCADE ")
 		if err != nil {
 			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
 		}
@@ -193,6 +198,7 @@ func (targetDb *ExternalDb) connectToSQL() (*sql.DB, error) {
 
 func (targetDb *ExternalDb) connectToOracle() (*sql.DB, error) {
 	connectionStr := go_ora.BuildUrl(targetDb.Host, targetDb.Port, targetDb.Name, targetDb.Username, targetDb.Password, nil)
+	fmt.Println("Connection: ", connectionStr)
 	database, err := sql.Open(string(targetDb.Type), connectionStr)
 	if err != nil {
 		return nil, err
