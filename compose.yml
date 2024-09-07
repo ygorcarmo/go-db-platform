@@ -46,6 +46,8 @@ services:
     image: mariadb
     container_name: db-maria
     hostname: db-maria
+    ports:
+      - 3022:3306
     environment:
       - MARIADB_ROOT_PASSWORD=VERYSECRET
 

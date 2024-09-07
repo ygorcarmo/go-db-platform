@@ -28,7 +28,13 @@ templ ExternalUserForm(dbs []string, action models.ActionType) {
 				required
 			/>
 			if action == models.Create || action == models.UPDATEPWD {
-				<label for="password" class="col-start-1">Password: </label>
+				<label for="password" class="col-start-1">
+				if action == models.Create {
+				Password: 
+				} else {
+				New Password:
+				}
+				</label>
 				<div class="relative col-start-2 flex">
 					<input
 						type="password"
