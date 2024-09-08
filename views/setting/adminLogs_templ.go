@@ -11,10 +11,9 @@ import templruntime "github.com/a-h/templ/runtime"
 import (
 	"github.com/ygorcarmo/db-platform/models"
 	"github.com/ygorcarmo/db-platform/views/layouts"
-	"strconv"
 )
 
-func DatabasesPage(dbs []models.ExternalDb) templ.Component {
+func AdminLogsPage(logs []models.AdminLogResponse) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -44,19 +43,19 @@ func DatabasesPage(dbs []models.ExternalDb) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-row justify-between p-3\"><h1>Manage Databases</h1><a href=\"/settings/dbs/create\" class=\"bg-blue-400 py-2 px-4 rounded spinner my-indicator\">Create New Database</a></div><div class=\"relative overflow-x-auto\"><table class=\"w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400\"><thead class=\"text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400\"><tr><th scope=\"col\" class=\"px-6 py-3\">Name</th><th scope=\"col\" class=\"px-6 py-3\">Host</th><th scope=\"col\" class=\"px-6 py-3\">Port</th><th scope=\"col\" class=\"px-6 py-3\">Type</th><th scope=\"col\" class=\"px-6 py-3\">Ssl Mode</th><th scope=\"col\" class=\"px-6 py-3\">Created By</th><th scope=\"col\" class=\"px-6 py-3\"></th><th scope=\"col\" class=\"px-6 py-3\"></th></tr></thead> <tbody hx-confirm=\"Are you sure?\" hx-target=\"closest tr\" hx-swap=\"outerHTML swap:1s\">")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1>Administrative Logs</h1><table class=\"w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400\"><thead class=\"text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400\"><tr><th scope=\"col\" class=\"px-6 py-3\">Username</th><th scope=\"col\" class=\"px-6 py-3\">Action</th><th scope=\"col\" class=\"px-6 py-3\">Resource Type</th><th scope=\"col\" class=\"px-6 py-3\">User Id</th><th scope=\"col\" class=\"px-6 py-3\">Resource Id</th><th scope=\"col\" class=\"px-6 py-3\">Occurred At</th></tr></thead> <tbody>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			for _, db := range dbs {
+			for _, log := range logs {
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr class=\"bg-white border-b dark:bg-gray-800 dark:border-gray-700\"><td class=\"px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white\">")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var3 string
-				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(db.Name)
+				templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(log.Username)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/databases.templ`, Line: 48, Col: 17}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/adminLogs.templ`, Line: 32, Col: 21}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 				if templ_7745c5c3_Err != nil {
@@ -67,9 +66,9 @@ func DatabasesPage(dbs []models.ExternalDb) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var4 string
-				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(db.Host)
+				templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(string(log.Action))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/databases.templ`, Line: 50, Col: 38}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/adminLogs.templ`, Line: 34, Col: 48}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 				if templ_7745c5c3_Err != nil {
@@ -80,9 +79,9 @@ func DatabasesPage(dbs []models.ExternalDb) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var5 string
-				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(db.Port))
+				templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(string(log.ResourceType))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/databases.templ`, Line: 51, Col: 52}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/adminLogs.templ`, Line: 35, Col: 54}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 				if templ_7745c5c3_Err != nil {
@@ -93,9 +92,9 @@ func DatabasesPage(dbs []models.ExternalDb) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var6 string
-				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(string(db.Type))
+				templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(log.UserId)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/databases.templ`, Line: 52, Col: 46}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/adminLogs.templ`, Line: 37, Col: 19}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 				if templ_7745c5c3_Err != nil {
@@ -106,9 +105,9 @@ func DatabasesPage(dbs []models.ExternalDb) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var7 string
-				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(db.SslMode)
+				templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(log.ResourceId)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/databases.templ`, Line: 53, Col: 41}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/adminLogs.templ`, Line: 39, Col: 44}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 				if templ_7745c5c3_Err != nil {
@@ -119,42 +118,20 @@ func DatabasesPage(dbs []models.ExternalDb) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				var templ_7745c5c3_Var8 string
-				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(db.CreatedBy)
+				templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(log.CreatedAt.String())
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/databases.templ`, Line: 54, Col: 43}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/adminLogs.templ`, Line: 41, Col: 31}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td class=\"px-6 py-4\"><a class=\"border rounded py-2 px-4\" href=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var9 templ.SafeURL = templ.SafeURL("/settings/dbs/edit/" + db.Id)
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var9)))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Edit</a></td><td><button class=\"bg-red-400 text-white py-2 px-4 rounded\" hx-delete=\"")
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				var templ_7745c5c3_Var10 string
-				templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs("/settings/dbs/" + db.Id)
-				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/databases.templ`, Line: 61, Col: 45}
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
-				if templ_7745c5c3_Err != nil {
-					return templ_7745c5c3_Err
-				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\">Delete</button></td></tr>")
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

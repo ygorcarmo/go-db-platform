@@ -7,7 +7,7 @@ type ActionType string
 const (
 	Create    ActionType = "CREATE"
 	Delete    ActionType = "DELETE"
-	UPDATEPWD ActionType = "UPDATEPWD"
+	UPDATEPWD ActionType = "UPDATE_PASSWORD"
 )
 
 type Log struct {

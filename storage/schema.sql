@@ -72,9 +72,11 @@ ADD COLUMN password VARCHAR(255) NOT NULL;
 
 CREATE TABLE admin_logs(
     id BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
-    message VARCHAR(255) NOT NULL,
+    action VARCHAR(255) NOT NULL,
+    resourceId BINARY(16) NOT NULL,
+    resourceType VARCHAR(255) NOT NULL,
     userId BINARY(16) NOT NULL,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(id),
     FOREIGN KEY (userId) REFERENCES users(id)
-)
+);

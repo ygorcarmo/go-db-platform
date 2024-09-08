@@ -90,6 +90,7 @@ func (s *Server) Start() error {
 				})
 
 				settingsR.Get("/logs", func(w http.ResponseWriter, r *http.Request) { handlers.GetLogsPage(w, r, s.store) })
+				settingsR.Get("/admin-logs", func(w http.ResponseWriter, r *http.Request) { handlers.GetAdminLogsPage(w, r, s.store) })
 			})
 			// THIS is only for DEV
 			adminR.Get("/seed", func(w http.ResponseWriter, r *http.Request) { handlers.SeedHandler(w, r, s.store) })

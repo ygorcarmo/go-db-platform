@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -77,6 +78,8 @@ func GetCreateUserPage(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	cUser := r.Context().Value(models.UserCtx).(*models.AppUser)
+
 	u := r.FormValue("username")
 	p := r.FormValue("password")
 	p2 := r.FormValue("re-password")
@@ -102,11 +105,14 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage
 
 	user := models.AppUser{Username: u, Password: encodedHash, Supervisor: sup, Sector: sec, IsAdmin: isAdmin}
 
-	err = s.CreateApplicationUser(user)
+	id, err := s.CreateApplicationUser(user)
 	if err != nil {
 		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
 		return
 	}
+	fmt.Println("User id: ", id)
+
+	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.CreateAdminAction, ResourceId: id, ResourceType: models.User})
 
 	w.Header().Add("HX-Redirect", "/settings/users")
 	w.Write([]byte("user created"))
@@ -114,6 +120,8 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage
 }
 
 func DeleteUserById(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	cUser := r.Context().Value(models.UserCtx).(*models.AppUser)
+
 	id := chi.URLParam(r, "id")
 	err := s.DeleteUserById(id)
 
@@ -122,6 +130,8 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 		w.Write([]byte("Something went wrong"))
 		return
 	}
+
+	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.DeleteAdminAction, ResourceId: id, ResourceType: models.User})
 
 	w.WriteHeader(http.StatusOK)
 }
@@ -147,6 +157,8 @@ func GetEditUserSettingsPage(w http.ResponseWriter, r *http.Request, s storage.S
 }
 
 func UpdateUserSettingsHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	cUser := r.Context().Value(models.UserCtx).(*models.AppUser)
+
 	id := chi.URLParam(r, "id")
 	u := r.FormValue("username")
 	sup := r.FormValue("supervisor")
@@ -172,6 +184,7 @@ func UpdateUserSettingsHandler(w http.ResponseWriter, r *http.Request, s storage
 		return
 	}
 
+	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.UpdateSettingsAdminAction, ResourceId: id, ResourceType: models.User})
+
 	w.Header().Add("HX-Redirect", "/settings/users")
-	// components.Response(models.CreateResponse("User updated Successfully", true)).Render(r.Context(), w)
 }

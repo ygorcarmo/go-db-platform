@@ -167,12 +167,13 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 
 	config := models.ExternalDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Id}
 
-	err = s.CreateExternalDb(config)
+	id, err := s.CreateExternalDb(config)
 
 	if err != nil {
 		components.Response(models.Response{Message: err.Error(), IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
+	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.CreateAdminAction, ResourceType: models.DbConnection, ResourceId: id})
 
 	w.Header().Add("HX-Redirect", "/settings/dbs")
 	w.Write([]byte("DB Connection config has been created"))
@@ -193,6 +194,8 @@ func GetEditExternalDbConfigPage(w http.ResponseWriter, r *http.Request, s stora
 }
 
 func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	user := r.Context().Value(models.UserCtx).(*models.AppUser)
+
 	i := chi.URLParam(r, "id")
 	n := r.FormValue("name")
 	h := r.FormValue("host")
@@ -218,6 +221,8 @@ func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
+	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.UpdateSettingsAdminAction, ResourceType: models.DbConnection, ResourceId: i})
+
 	w.Header().Add("HX-Redirect", "/settings/dbs")
 	w.Write([]byte("db config updated"))
 }
@@ -239,6 +244,8 @@ func GetUpdateExternalDbCredPage(w http.ResponseWriter, r *http.Request, s stora
 }
 
 func UpdateExternalDbCredHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	user := r.Context().Value(models.UserCtx).(*models.AppUser)
+
 	i := chi.URLParam(r, "id")
 	u := r.FormValue("username")
 	p := r.FormValue("password")
@@ -254,12 +261,15 @@ func UpdateExternalDbCredHandler(w http.ResponseWriter, r *http.Request, s stora
 		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
 		return
 	}
+	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.UpdateCredentialsAdminAction, ResourceType: models.DbConnection, ResourceId: i})
 
 	w.Header().Add("HX-Redirect", "/settings/dbs")
 	w.Write([]byte("db credential updated"))
 }
 
 func DeleteExternalDbByIdHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	user := r.Context().Value(models.UserCtx).(*models.AppUser)
+
 	id := chi.URLParam(r, "id")
 	err := s.DeleteUserById(id)
 	if err != nil {
@@ -267,5 +277,8 @@ func DeleteExternalDbByIdHandler(w http.ResponseWriter, r *http.Request, s stora
 		w.Write([]byte("something went wrong"))
 		return
 	}
+
+	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.DeleteAdminAction, ResourceType: models.DbConnection, ResourceId: id})
+
 	w.WriteHeader(http.StatusOK)
 }

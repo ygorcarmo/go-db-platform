@@ -9,7 +9,7 @@ type Storage interface {
 	GetUserById(string) (*models.AppUser, error)
 	GetAllUsers() ([]models.AppUser, error)
 	GetUserByUsername(string) (*models.AppUser, error)
-	CreateApplicationUser(models.AppUser) error
+	CreateApplicationUser(models.AppUser) (string, error)
 	UpdateApplicationUserPassword(id string, password string) error
 	UpdateApplicationUser(models.AppUser) error
 	DeleteUserById(string) error
@@ -20,7 +20,9 @@ type Storage interface {
 	UpdateExternalDb(models.ExternalDb) error
 	UpdateExternalDbCredentials(id string, username string, password string) error
 	DeleteExternalDbById(string) error
-	CreateExternalDb(models.ExternalDb) error
+	CreateExternalDb(models.ExternalDb) (string, error)
 	CreateLog(models.Log) error
 	GetAllLogs() ([]models.LogResponse, error)
+	CreateAdminLog(models.AdminLog) error
+	GetAllAdminLogs() ([]models.AdminLogResponse, error)
 }

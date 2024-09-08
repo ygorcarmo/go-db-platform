@@ -26,7 +26,7 @@ func HomeSideBar() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<li><a href=\"/\" class=\"block\">Home Page</a></li><li><a href=\"/db/create-user\" class=\"block text-green-500\">Create Database User</a></li><li><a href=\"/db/delete-user\" class=\"block text-red-500\">Delete Database User</a></li><li><a href=\"/db/update-user\" class=\"block text-yellow-400\">Update Database User</a></li>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

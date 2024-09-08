@@ -164,11 +164,35 @@ func (db *MySQLStorage) GetAllUsers() ([]models.AppUser, error) {
 	return users, nil
 }
 
-func (db *MySQLStorage) CreateApplicationUser(u models.AppUser) error {
-	_, err := db.connection.Exec("INSERT INTO users (username, password, supervisor, sector, isAdmin) VALUES (?, ?, ?, ?, ?);",
+func (db *MySQLStorage) CreateApplicationUser(u models.AppUser) (string, error) {
+	tx, err := db.connection.Begin()
+	if err != nil {
+		return "", err
+	}
+
+	// Insert user within the transaction
+	_, err = tx.Exec(`
+        INSERT INTO users 
+        (username, password, supervisor, sector, isAdmin)
+        VALUES (?, ?, ?, ?, ?);`,
 		u.Username, u.Password, u.Supervisor, u.Sector, u.IsAdmin)
 
-	return err
+	if err != nil {
+		tx.Rollback()
+		return "", err
+	}
+
+	// Retrieve the last inserted ID in the same transaction
+	err = tx.QueryRow(`SELECT BIN_TO_UUID(id) FROM users WHERE id = LAST_INSERT_ID();`).Scan(&u.Id)
+	if err != nil {
+		tx.Rollback()
+		return "", err
+	}
+
+	// Commit the transaction
+	err = tx.Commit()
+
+	return u.Id, err
 }
 
 func (db *MySQLStorage) GetDbById(i string) (*models.ExternalDb, error) {
@@ -319,27 +343,48 @@ func (db *MySQLStorage) UpdateExternalDbCredentials(i string, u string, p string
 	return err
 }
 
-func (db *MySQLStorage) CreateExternalDb(edb models.ExternalDb) error {
+func (db *MySQLStorage) CreateExternalDb(edb models.ExternalDb) (string, error) {
 	eService, err := utils.NewEncryptionService()
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	ePassword, err := eService.Encrypt(edb.Password)
 	if err != nil {
-		return err
+		return "", err
 	}
 	edb.Password = ePassword
 
 	eUsername, err := eService.Encrypt(edb.Username)
 	if err != nil {
-		return err
+		return "", err
 	}
 	edb.Username = eUsername
 
-	_, err = db.connection.Exec("INSERT INTO external_databases (name, host, port, type, sslMode, username, password, createdBy) VALUES (?, ?, ?, ?, ?, ?, ?, UUID_TO_BIN(?));",
+	tx, err := db.connection.Begin()
+	if err != nil {
+		return "", err
+	}
+
+	_, err = tx.Exec(`
+	INSERT INTO external_databases
+		(name, host, port, type, sslMode, username, password, createdBy)
+	VALUES 
+		(?, ?, ?, ?, ?, ?, ?, UUID_TO_BIN(?));`,
 		edb.Name, edb.Host, edb.Port, edb.Type, edb.SslMode, edb.Username, edb.Password, edb.CreatedBy)
-	return err
+	if err != nil {
+		tx.Rollback()
+		return "", err
+	}
+
+	err = tx.QueryRow(`SELECT BIN_TO_UUID(id) FROM users WHERE id = LAST_INSERT_ID();`).Scan(&edb.Id)
+	if err != nil {
+		tx.Rollback()
+		return "", err
+	}
+	err = tx.Commit()
+
+	return edb.Id, err
 }
 
 func (db *MySQLStorage) DeleteExternalDbById(id string) error {
@@ -389,4 +434,51 @@ func (db *MySQLStorage) GetAllLogs() ([]models.LogResponse, error) {
 	}
 
 	return logs, nil
+}
+
+func (db *MySQLStorage) CreateAdminLog(l models.AdminLog) error {
+	_, err := db.connection.Exec(`
+	INSERT INTO admin_logs
+		(action, resourceId, resourceType, userId)
+	VALUES
+		(?, UUID_TO_BIN(?), ?,UUID_TO_BIN(?));`, l.Action, l.ResourceId, l.ResourceType, l.UserId)
+	return err
+}
+
+func (db *MySQLStorage) GetAllAdminLogs() ([]models.AdminLogResponse, error) {
+	ls := []models.AdminLogResponse{}
+	rows, err := db.connection.Query(`
+		SELECT
+			l.action,
+			u.username,
+			BIN_TO_UUID(l.userId),
+			BIN_TO_UUID(l.resourceId),
+			l.resourceType,
+			l.createdAt
+		FROM
+			admin_logs l
+		JOIN
+			users u ON l.userId = u.id
+		ORDER BY
+			l.createdAt DESC;
+	`)
+	if err != nil {
+		return nil, err
+	}
+
+	for rows.Next() {
+		l := models.AdminLogResponse{}
+		err := rows.Scan(&l.Action, &l.Username, &l.UserId, &l.ResourceId, &l.ResourceType, &l.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		ls = append(ls, l)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return ls, nil
 }
