@@ -31,6 +31,7 @@ templ DatabasesPage(dbs []models.ExternalDb) {
 						<th scope="col" class="px-6 py-3">Type</th>
 						<th scope="col" class="px-6 py-3">Ssl Mode</th>
 						<th scope="col" class="px-6 py-3">Created By</th>
+						<th scope="col" class="px-6 py-3">Owner</th>
 						<th scope="col" class="px-6 py-3"></th>
 						<th scope="col" class="px-6 py-3"></th>
 					</tr>
@@ -52,6 +53,7 @@ templ DatabasesPage(dbs []models.ExternalDb) {
 							<td class="px-6 py-4">{ string(db.Type) }</td>
 							<td class="px-6 py-4">{ db.SslMode }</td>
 							<td class="px-6 py-4">{ db.CreatedBy }</td>
+							<td class="px-6 py-4">{ db.Owner }</td>
 							<td class="px-6 py-4">
 								<a class="border rounded py-2 px-4" href={ templ.SafeURL("/settings/dbs/edit/" + db.Id) }>Edit</a>
 							</td>

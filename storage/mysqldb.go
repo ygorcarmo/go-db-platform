@@ -207,8 +207,8 @@ func (db *MySQLStorage) CreateApplicationUser(u models.AppUser) (string, error) 
 
 func (db *MySQLStorage) GetDbById(i string) (*models.ExternalDb, error) {
 	r := models.ExternalDb{Id: i}
-	err := db.connection.QueryRow("SELECT name, host, port, type, sslMode from external_databases WHERE id = UUID_TO_BIN(?);",
-		i).Scan(&r.Name, &r.Host, &r.Port, &r.Type, &r.SslMode)
+	err := db.connection.QueryRow("SELECT name, host, port, type, sslMode, owner from external_databases WHERE id = UUID_TO_BIN(?);",
+		i).Scan(&r.Name, &r.Host, &r.Port, &r.Type, &r.SslMode, &r.Owner)
 	if err != nil {
 		return nil, err
 	}
@@ -250,7 +250,8 @@ func (db *MySQLStorage) GetAllDbs() ([]models.ExternalDb, error) {
     		ed.port AS external_database_port,
     		ed.type AS external_database_type,
     		ed.sslMode AS external_database_sslMode,
-    		u.username AS user_username
+    		u.username AS user_username,
+			ed.owner
 		FROM 
     		external_databases ed
 		JOIN 
@@ -264,7 +265,7 @@ func (db *MySQLStorage) GetAllDbs() ([]models.ExternalDb, error) {
 
 	for rows.Next() {
 		config := models.ExternalDb{}
-		if err := rows.Scan(&config.Id, &config.Name, &config.Host, &config.Port, &config.Type, &config.SslMode, &config.CreatedBy); err != nil {
+		if err := rows.Scan(&config.Id, &config.Name, &config.Host, &config.Port, &config.Type, &config.SslMode, &config.CreatedBy, &config.Owner); err != nil {
 			return nil, err
 		}
 		databasesConfig = append(databasesConfig, config)
@@ -286,11 +287,12 @@ func (db *MySQLStorage) GetDbByName(name string) (*models.ExternalDb, error) {
     	ed.sslMode AS external_database_sslMode,
 		BIN_TO_UUID(ed.id) as external_database_id,
 		ed.username,
-		ed.password
+		ed.password,
+		ed.owner
 	FROM 
     	external_databases ed 
 	WHERE 
-		name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode, &targetDb.Id, &targetDb.Username, &targetDb.Password)
+		name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode, &targetDb.Id, &targetDb.Username, &targetDb.Password, &targetDb.Owner)
 	if err != nil {
 		return nil, err
 	}
@@ -323,9 +325,9 @@ func (db *MySQLStorage) DeleteUserById(id string) error {
 func (db *MySQLStorage) UpdateExternalDb(e models.ExternalDb) error {
 	_, err := db.connection.Exec(`
 		UPDATE external_databases
-		SET name=?, host=?, port=?, type=?, sslMode=?
+		SET name=?, host=?, port=?, type=?, sslMode=?, owner=?
 		WHERE id = UUID_TO_BIN(?);
-	`, e.Name, e.Host, e.Port, e.Type, e.SslMode, e.Id)
+	`, e.Name, e.Host, e.Port, e.Type, e.SslMode, e.Owner, e.Id)
 	return err
 }
 
@@ -378,10 +380,10 @@ func (db *MySQLStorage) CreateExternalDb(edb models.ExternalDb) (string, error) 
 
 	_, err = tx.Exec(`
 	INSERT INTO external_databases
-		(name, host, port, type, sslMode, username, password, createdBy)
+		(name, host, port, type, sslMode, username, password, createdBy, owner)
 	VALUES 
-		(?, ?, ?, ?, ?, ?, ?, UUID_TO_BIN(?));`,
-		edb.Name, edb.Host, edb.Port, edb.Type, edb.SslMode, edb.Username, edb.Password, edb.CreatedBy)
+		(?, ?, ?, ?, ?, ?, ?, UUID_TO_BIN(?), ?);`,
+		edb.Name, edb.Host, edb.Port, edb.Type, edb.SslMode, edb.Username, edb.Password, edb.CreatedBy, edb.Owner)
 	if err != nil {
 		tx.Rollback()
 		return "", err

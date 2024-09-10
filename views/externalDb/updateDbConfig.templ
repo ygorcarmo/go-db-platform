@@ -50,6 +50,15 @@ templ UpdateDbConfigPage(db *models.ExternalDb) {
 					required
 					value={ strconv.Itoa(db.Port) }
 				/>
+				<label for="owner" class="col-start-1">Owner: </label>
+				<input
+					type="text"
+					name="owner"
+					id="owner"
+					class="border border-slate-400 rounded p-2"
+					value={ db.Owner }
+					required
+				/>
 				<label for="type">Type: </label>
 				<select name="type" id="type">
 					<option value={ string(db.Type) } selected disabled hidden>{ string(db.Type) }</option>

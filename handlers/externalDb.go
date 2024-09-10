@@ -153,6 +153,7 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 	dp := r.FormValue("port")
 	t := r.FormValue("type")
 	m := r.FormValue("sslMode")
+	o := r.FormValue("owner")
 
 	dType, err := models.ToDbType(t)
 	if err != nil {
@@ -166,7 +167,7 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	config := models.ExternalDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Id}
+	config := models.ExternalDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Id, Owner: o}
 
 	id, err := s.CreateExternalDb(config)
 
@@ -203,6 +204,7 @@ func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 	p := r.FormValue("port")
 	t := r.FormValue("type")
 	m := r.FormValue("sslMode")
+	o := r.FormValue("owner")
 
 	port, err := strconv.Atoi(p)
 	if err != nil {
@@ -216,7 +218,7 @@ func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	err = s.UpdateExternalDb(models.ExternalDb{Id: i, Name: n, Host: h, Port: port, Type: dbType, SslMode: m})
+	err = s.UpdateExternalDb(models.ExternalDb{Id: i, Name: n, Host: h, Port: port, Type: dbType, SslMode: m, Owner: o})
 	if err != nil {
 		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
 		return

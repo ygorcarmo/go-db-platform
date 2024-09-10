@@ -29,6 +29,7 @@ type ExternalDb struct {
 	Username  string
 	Password  string
 	CreatedBy string
+	Owner     string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

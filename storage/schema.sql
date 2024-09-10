@@ -69,7 +69,6 @@ ADD COLUMN username VARCHAR(255) NOT NULL,
 ADD COLUMN password VARCHAR(255) NOT NULL;
 
 -- Create administrational logs table
-
 CREATE TABLE admin_logs(
     id BINARY(16) NOT NULL DEFAULT (UUID_TO_BIN(UUID())),
     action VARCHAR(255) NOT NULL,
@@ -80,3 +79,7 @@ CREATE TABLE admin_logs(
     PRIMARY KEY(id),
     FOREIGN KEY (userId) REFERENCES users(id)
 );
+
+-- Add owner to external_databases
+ALTER TABLE external_databases
+ADD COLUMN owner VARCHAR(255) NOT NULL DEFAULT "verificar";
