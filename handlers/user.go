@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -110,7 +109,6 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage
 		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
 		return
 	}
-	fmt.Println("User id: ", id)
 
 	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.CreateAdminAction, ResourceId: id, ResourceType: models.User})
 
