@@ -7,9 +7,10 @@ import (
 	"log"
 	"log/slog"
 
+	"db-platform/models"
+	"db-platform/utils"
+
 	"github.com/go-sql-driver/mysql"
-	"github.com/ygorcarmo/db-platform/models"
-	"github.com/ygorcarmo/db-platform/utils"
 )
 
 type MySQLStorage struct {

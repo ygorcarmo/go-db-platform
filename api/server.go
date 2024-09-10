@@ -5,10 +5,11 @@ import (
 	"log/slog"
 	"net/http"
 
+	"db-platform/handlers"
+	"db-platform/models"
+	"db-platform/storage"
+
 	"github.com/go-chi/chi"
-	"github.com/ygorcarmo/db-platform/handlers"
-	"github.com/ygorcarmo/db-platform/models"
-	"github.com/ygorcarmo/db-platform/storage"
 )
 
 type Server struct {

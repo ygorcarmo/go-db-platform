@@ -4,8 +4,9 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ygorcarmo/db-platform/models"
-	"github.com/ygorcarmo/db-platform/utils"
+	"db-platform/models"
+
+	"db-platform/utils"
 )
 
 func (s *Server) authentication(next http.Handler) http.Handler {

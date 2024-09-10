@@ -7,12 +7,13 @@ import (
 	"strconv"
 	"sync"
 
+	"db-platform/models"
+	"db-platform/storage"
+	"db-platform/views/components"
+	"db-platform/views/externalDb"
+	"db-platform/views/setting"
+
 	"github.com/go-chi/chi"
-	"github.com/ygorcarmo/db-platform/models"
-	"github.com/ygorcarmo/db-platform/storage"
-	"github.com/ygorcarmo/db-platform/views/components"
-	"github.com/ygorcarmo/db-platform/views/externalDb"
-	"github.com/ygorcarmo/db-platform/views/setting"
 )
 
 var wg sync.WaitGroup

@@ -1,7 +1,7 @@
 package storage
 
 import (
-	"github.com/ygorcarmo/db-platform/models"
+	"db-platform/models"
 )
 
 type Storage interface {

@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ygorcarmo/db-platform/views/home"
+	"db-platform/views/home"
 )
 
 func GetHomePage(w http.ResponseWriter, r *http.Request) {

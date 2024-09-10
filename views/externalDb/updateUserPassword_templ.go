@@ -9,9 +9,9 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"github.com/ygorcarmo/db-platform/models"
-	"github.com/ygorcarmo/db-platform/views/components"
-	"github.com/ygorcarmo/db-platform/views/layouts"
+	"db-platform/models"
+	"db-platform/views/components"
+	"db-platform/views/layouts"
 )
 
 func UpdateDbUserPasswordPage(dbs []string) templ.Component {

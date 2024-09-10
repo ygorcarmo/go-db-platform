@@ -4,8 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/ygorcarmo/db-platform/api"
-	"github.com/ygorcarmo/db-platform/storage"
+	"db-platform/api"
+
+	"db-platform/storage"
 )
 
 func main() {

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/ygorcarmo/db-platform/storage"
-	"github.com/ygorcarmo/db-platform/views/setting"
+	"db-platform/storage"
+	"db-platform/views/setting"
 )
 
 func GetLogsPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {

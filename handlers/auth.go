@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ygorcarmo/db-platform/models"
-	"github.com/ygorcarmo/db-platform/storage"
-	"github.com/ygorcarmo/db-platform/utils"
-	"github.com/ygorcarmo/db-platform/views/components"
-	"github.com/ygorcarmo/db-platform/views/login"
+	"db-platform/models"
+	"db-platform/storage"
+	"db-platform/utils"
+	"db-platform/views/components"
+	"db-platform/views/login"
 )
 
 // should we get this from a enviroment variable?

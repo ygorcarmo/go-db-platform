@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/ygorcarmo/db-platform/storage"
+	"db-platform/storage"
 )
 
 func SeedHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {

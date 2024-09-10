@@ -9,8 +9,8 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
-	"github.com/ygorcarmo/db-platform/models"
-	"github.com/ygorcarmo/db-platform/views/layouts"
+	"db-platform/models"
+	"db-platform/views/layouts"
 )
 
 func Index() templ.Component {

@@ -4,12 +4,13 @@ import (
 	"log"
 	"net/http"
 
+	"db-platform/models"
+	"db-platform/storage"
+	"db-platform/views/components"
+	"db-platform/views/setting"
+	appUser "db-platform/views/user"
+
 	"github.com/go-chi/chi"
-	"github.com/ygorcarmo/db-platform/models"
-	"github.com/ygorcarmo/db-platform/storage"
-	"github.com/ygorcarmo/db-platform/views/components"
-	"github.com/ygorcarmo/db-platform/views/setting"
-	appUser "github.com/ygorcarmo/db-platform/views/user"
 )
 
 func GetResetPasswordPage(w http.ResponseWriter, r *http.Request) {

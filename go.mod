@@ -1,4 +1,4 @@
-module github.com/ygorcarmo/db-platform
+module db-platform
 
 go 1.23.0
 
