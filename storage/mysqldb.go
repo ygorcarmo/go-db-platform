@@ -133,6 +133,15 @@ func (db *MySQLStorage) UpdateApplicationUser(u models.AppUser) error {
 	return err
 }
 
+func (db *MySQLStorage) UpdateApplicationUserCredentials(u string, p string, i string) error {
+	_, err := db.connection.Exec(`
+		UPDATE users
+		SET username=?, password=?
+		WHERE id=UUID_TO_BIN(?);
+	`, u, p, i)
+	return err
+}
+
 func (db *MySQLStorage) GetUserByUsername(username string) (*models.AppUser, error) {
 	user := models.AppUser{Username: username}
 	err := db.connection.QueryRow("SELECT BIN_TO_UUID(id), username, password FROM users WHERE username=?;", username).Scan(&user.Id, &user.Username, &user.Password)

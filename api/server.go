@@ -76,6 +76,8 @@ func (s *Server) Start() error {
 					sur.Delete("/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.DeleteUserById(w, r, s.store) })
 					sur.Get("/update/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.GetEditUserSettingsPage(w, r, s.store) })
 					sur.Post("/update/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateUserSettingsHandler(w, r, s.store) })
+					sur.Get("/{id}/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.GetUpdateAppUserCredentials(w, r, s.store) })
+					sur.Post("/{id}/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateAppUserCredentialsHandler(w, r, s.store) })
 				})
 
 				settingsR.Route("/dbs", func(sdr chi.Router) {

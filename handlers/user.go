@@ -188,3 +188,47 @@ func UpdateUserSettingsHandler(w http.ResponseWriter, r *http.Request, s storage
 
 	w.Header().Add("HX-Redirect", "/settings/users")
 }
+
+func GetUpdateAppUserCredentials(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	id := chi.URLParam(r, "id")
+	name := r.URL.Query().Get("username")
+
+	err := appUser.UpdateAppUserCredentials(id, name).Render(r.Context(), w)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Something went wrong when rendering update user app credentials"))
+		return
+	}
+}
+
+func UpdateAppUserCredentialsHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	cUser := r.Context().Value(models.UserCtx).(*models.AppUser)
+
+	// TODO: add server side validation
+	id := chi.URLParam(r, "id")
+	u := r.FormValue("username")
+	p := r.FormValue("new-password")
+	p2 := r.FormValue("re-password")
+
+	if p != p2 {
+		components.Response(models.CreateResponse("Passwords do not match", false)).Render(r.Context(), w)
+		return
+	}
+
+	h, err := hashParams.HashPasword(p)
+	if err != nil {
+		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
+		return
+	}
+
+	err = s.UpdateApplicationUserCredentials(u, h, id)
+	if err != nil {
+		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
+		return
+	}
+
+	w.Header().Add("HX-Redirect", "/settings/users")
+
+	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.UpdateCredentialsAdminAction, ResourceId: id, ResourceType: models.User})
+
+}

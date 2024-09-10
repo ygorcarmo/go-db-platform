@@ -8,7 +8,15 @@ import (
 
 templ EditUserPage(user *models.AppUser) {
 	@layouts.Setting() {
-		<h1 class="text-2xl">Edit User</h1>
+		<div class="flex flex-row justify-between p-3">
+			<h1 class="text-2xl">Edit User</h1>
+			<a
+				href={ templ.SafeURL("/settings/users/" + user.Id + "/credentials" + "?username=" + user.Username) }
+				class="bg-blue-400 py-2 px-4 rounded spinner my-indicator"
+			>
+				Edit User Credentials
+			</a>
+		</div>
 		<form
 			class="border rounded border-gray-500 p-5 w-fit flex flex-col gap-2"
 			hx-post={ "/settings/users/update/" + user.Id }

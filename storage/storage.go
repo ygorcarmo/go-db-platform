@@ -12,6 +12,7 @@ type Storage interface {
 	CreateApplicationUser(models.AppUser) (string, error)
 	UpdateApplicationUserPassword(id string, password string) error
 	UpdateApplicationUser(models.AppUser) error
+	UpdateApplicationUserCredentials(username string, password string, id string) error
 	DeleteUserById(string) error
 	GetDbById(string) (*models.ExternalDb, error)
 	GetDbsName() ([]string, error)
