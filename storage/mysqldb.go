@@ -463,7 +463,6 @@ func (db *MySQLStorage) GetAllAdminLogs() ([]models.AdminLogResponse, error) {
 		SELECT
 			l.action,
 			u.username,
-			BIN_TO_UUID(l.userId),
 			BIN_TO_UUID(l.resourceId),
 			l.resourceType,
 			l.createdAt
@@ -480,7 +479,7 @@ func (db *MySQLStorage) GetAllAdminLogs() ([]models.AdminLogResponse, error) {
 
 	for rows.Next() {
 		l := models.AdminLogResponse{}
-		err := rows.Scan(&l.Action, &l.Username, &l.UserId, &l.ResourceId, &l.ResourceType, &l.CreatedAt)
+		err := rows.Scan(&l.Action, &l.Username, &l.ResourceId, &l.ResourceType, &l.CreatedAt)
 		if err != nil {
 			return nil, err
 		}

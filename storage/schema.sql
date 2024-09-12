@@ -83,3 +83,7 @@ CREATE TABLE admin_logs(
 -- Add owner to external_databases
 ALTER TABLE external_databases
 ADD COLUMN owner VARCHAR(255) NOT NULL DEFAULT "verificar";
+
+-- Make dbId not null on logs table
+ALTER TABLE logs
+MODIFY COLUMN dbId BINARY(16) NOT NULL;
