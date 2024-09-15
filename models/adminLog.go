@@ -10,6 +10,7 @@ type AdminLog struct {
 	UserId       string
 	ResourceId   string
 	ResourceType resourceTypes
+	ResourceName string
 	CreatedAt    time.Time
 }
 
@@ -17,6 +18,7 @@ type AdminLogResponse struct {
 	Action       adminActions
 	Username     string
 	ResourceId   string
+	ResourceName string
 	ResourceType resourceTypes
 	CreatedAt    time.Time
 }

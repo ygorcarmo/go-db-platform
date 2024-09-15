@@ -87,3 +87,8 @@ ADD COLUMN owner VARCHAR(255) NOT NULL DEFAULT "verificar";
 -- Make dbId not null on logs table
 ALTER TABLE logs
 MODIFY COLUMN dbId BINARY(16) NOT NULL;
+
+-- Add resourceName to admin logs table
+ALTER TABLE admin_logs
+ADD COLUMN resourceName VARCHAR(255) NOT NULL DEFAULT "TBC",
+ADD COLUMN username VARCHAR(255) NOT NULL DEFAULT "TBC";

@@ -451,9 +451,10 @@ func (db *MySQLStorage) GetAllLogs() ([]models.LogResponse, error) {
 func (db *MySQLStorage) CreateAdminLog(l models.AdminLog) error {
 	_, err := db.connection.Exec(`
 	INSERT INTO admin_logs
-		(action, resourceId, resourceType, userId)
+		(action, resourceId, resourceType, userId, resourceName)
 	VALUES
-		(?, UUID_TO_BIN(?), ?,UUID_TO_BIN(?));`, l.Action, l.ResourceId, l.ResourceType, l.UserId)
+		(?, UUID_TO_BIN(?), ?,UUID_TO_BIN(?),?);`, l.Action, l.ResourceId, l.ResourceType, l.UserId, l.ResourceName)
+	fmt.Println(err)
 	return err
 }
 
@@ -465,7 +466,8 @@ func (db *MySQLStorage) GetAllAdminLogs() ([]models.AdminLogResponse, error) {
 			u.username,
 			BIN_TO_UUID(l.resourceId),
 			l.resourceType,
-			l.createdAt
+			l.createdAt,
+			l.resourceName
 		FROM
 			admin_logs l
 		JOIN
@@ -479,7 +481,7 @@ func (db *MySQLStorage) GetAllAdminLogs() ([]models.AdminLogResponse, error) {
 
 	for rows.Next() {
 		l := models.AdminLogResponse{}
-		err := rows.Scan(&l.Action, &l.Username, &l.ResourceId, &l.ResourceType, &l.CreatedAt)
+		err := rows.Scan(&l.Action, &l.Username, &l.ResourceId, &l.ResourceType, &l.CreatedAt, &l.ResourceName)
 		if err != nil {
 			return nil, err
 		}

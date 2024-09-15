@@ -4,6 +4,7 @@ import (
 	_ "embed"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"db-platform/handlers"
 	"db-platform/models"
@@ -104,5 +105,11 @@ func (s *Server) Start() error {
 
 	slog.Info("Server is running on: ", "listenAddr", s.listenAddr)
 
-	return http.ListenAndServe(s.listenAddr, router)
+	server := &http.Server{
+		Addr:              s.listenAddr,
+		ReadHeaderTimeout: 3 * time.Second,
+		Handler:           router,
+	}
+
+	return server.ListenAndServe()
 }

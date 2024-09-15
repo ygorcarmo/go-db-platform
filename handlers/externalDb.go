@@ -175,7 +175,7 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		components.Response(models.Response{Message: err.Error(), IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
-	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.CreateAdminAction, ResourceType: models.DbConnection, ResourceId: id})
+	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.CreateAdminAction, ResourceType: models.DbConnection, ResourceId: id, ResourceName: d})
 
 	w.Header().Add("HX-Redirect", "/settings/dbs")
 	w.Write([]byte("DB Connection config has been created"))
@@ -224,7 +224,7 @@ func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.UpdateSettingsAdminAction, ResourceType: models.DbConnection, ResourceId: i})
+	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.UpdateSettingsAdminAction, ResourceType: models.DbConnection, ResourceId: i, ResourceName: n})
 
 	w.Header().Add("HX-Redirect", "/settings/dbs")
 	w.Write([]byte("db config updated"))
@@ -264,7 +264,14 @@ func UpdateExternalDbCredHandler(w http.ResponseWriter, r *http.Request, s stora
 		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
 		return
 	}
-	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.UpdateCredentialsAdminAction, ResourceType: models.DbConnection, ResourceId: i})
+	go func() {
+		db, err := s.GetDbById(i)
+		if err != nil {
+			return
+		}
+
+		s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.UpdateCredentialsAdminAction, ResourceType: models.DbConnection, ResourceId: i, ResourceName: db.Name})
+	}()
 
 	w.Header().Add("HX-Redirect", "/settings/dbs")
 	w.Write([]byte("db credential updated"))
@@ -272,16 +279,22 @@ func UpdateExternalDbCredHandler(w http.ResponseWriter, r *http.Request, s stora
 
 func DeleteExternalDbByIdHandler(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 	user := r.Context().Value(models.UserCtx).(*models.AppUser)
-
 	id := chi.URLParam(r, "id")
+
+	go func() {
+		db, err := s.GetDbById(id)
+		if err != nil {
+			return
+		}
+		s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.DeleteAdminAction, ResourceType: models.DbConnection, ResourceId: id, ResourceName: db.Name})
+	}()
+
 	err := s.DeleteUserById(id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("something went wrong"))
 		return
 	}
-
-	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.DeleteAdminAction, ResourceType: models.DbConnection, ResourceId: id})
 
 	w.WriteHeader(http.StatusOK)
 }

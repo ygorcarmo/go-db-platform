@@ -20,7 +20,8 @@ func main() {
 
 	listenAddr := os.Getenv("LISTEN_ADDR")
 	s := api.NewServer(listenAddr, store)
-
-	log.Fatal(s.Start())
-
+	err := s.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

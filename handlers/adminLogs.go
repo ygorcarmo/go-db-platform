@@ -13,7 +13,7 @@ func GetAdminLogsPage(w http.ResponseWriter, r *http.Request, s storage.Storage)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Something went wrong"))
+		w.Write([]byte(err.Error()))
 		return
 	}
 

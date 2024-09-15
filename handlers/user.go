@@ -111,7 +111,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage
 		return
 	}
 
-	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.CreateAdminAction, ResourceId: id, ResourceType: models.User})
+	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.CreateAdminAction, ResourceId: id, ResourceType: models.User, ResourceName: u})
 
 	w.Header().Add("HX-Redirect", "/settings/users")
 	w.Write([]byte("user created"))
@@ -126,12 +126,17 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Something went wrong"))
+		w.Write([]byte(err.Error()))
 		return
 	}
 
-	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.DeleteAdminAction, ResourceId: id, ResourceType: models.User})
-
+	go func() {
+		user, err := s.GetUserById(id)
+		if err != nil {
+			return
+		}
+		s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.DeleteAdminAction, ResourceId: id, ResourceType: models.User, ResourceName: user.Username})
+	}()
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -183,7 +188,7 @@ func UpdateUserSettingsHandler(w http.ResponseWriter, r *http.Request, s storage
 		return
 	}
 
-	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.UpdateSettingsAdminAction, ResourceId: id, ResourceType: models.User})
+	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.UpdateSettingsAdminAction, ResourceId: id, ResourceType: models.User, ResourceName: u})
 
 	w.Header().Add("HX-Redirect", "/settings/users")
 }
@@ -228,6 +233,6 @@ func UpdateAppUserCredentialsHandler(w http.ResponseWriter, r *http.Request, s s
 
 	w.Header().Add("HX-Redirect", "/settings/users")
 
-	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.UpdateCredentialsAdminAction, ResourceId: id, ResourceType: models.User})
+	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.UpdateCredentialsAdminAction, ResourceId: id, ResourceType: models.User, ResourceName: u})
 
 }
