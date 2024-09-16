@@ -66,7 +66,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 		Name:     "token",
 		Value:    tokenString,
 		HttpOnly: true,
-		Expires:  time.Now().Add(6 * time.Hour),
+		Expires:  time.Now().Add(1 * time.Hour),
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
 	}
