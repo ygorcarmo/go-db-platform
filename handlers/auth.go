@@ -51,7 +51,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 	if err != nil || !match {
 		fmt.Printf("Unable to compare hash: %v", err)
 		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
-		s.IncreaseUserLoginAttempts(user.Id, user.LoginAttempts+1)
+		go s.IncreaseUserLoginAttempts(user.Id, user.LoginAttempts+1)
 		return
 	}
 
@@ -61,6 +61,13 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
+
+	// reset login attempts on successfull login
+	go func() {
+		if user.LoginAttempts > 0 {
+			s.ResetUserLoginAttempts(user.Id)
+		}
+	}()
 
 	cookie := http.Cookie{
 		Name:     "token",
