@@ -80,6 +80,7 @@ func (s *Server) Start() error {
 					sur.Post("/update/{id}", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateUserSettingsHandler(w, r, s.store) })
 					sur.Get("/{id}/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.GetUpdateAppUserCredentials(w, r, s.store) })
 					sur.Post("/{id}/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateAppUserCredentialsHandler(w, r, s.store) })
+					sur.Put("/{id}/unlock", func(w http.ResponseWriter, r *http.Request) { handlers.UnlockUser(w, r, s.store) })
 				})
 
 				settingsR.Route("/dbs", func(sdr chi.Router) {

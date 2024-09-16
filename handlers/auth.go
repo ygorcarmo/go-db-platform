@@ -41,10 +41,17 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
+
+	if user.LoginAttempts > 5 {
+		components.Response(models.Response{Message: "Account is locked.", IsSuccess: false}).Render(r.Context(), w)
+		return
+	}
+
 	match, err := hashParams.ComparePasswordAndHash(p, user.Password)
 	if err != nil || !match {
 		fmt.Printf("Unable to compare hash: %v", err)
 		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
+		s.IncreaseUserLoginAttempts(user.Id, user.LoginAttempts+1)
 		return
 	}
 

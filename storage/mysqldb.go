@@ -145,16 +145,35 @@ func (db *MySQLStorage) UpdateApplicationUserCredentials(u string, p string, i s
 
 func (db *MySQLStorage) GetUserByUsername(username string) (*models.AppUser, error) {
 	user := models.AppUser{Username: username}
-	err := db.connection.QueryRow("SELECT BIN_TO_UUID(id), username, password FROM users WHERE username=?;", username).Scan(&user.Id, &user.Username, &user.Password)
+	err := db.connection.QueryRow("SELECT BIN_TO_UUID(id), username, password, loginAttempts FROM users WHERE username=?;", username).Scan(&user.Id, &user.Username, &user.Password, &user.LoginAttempts)
 	if err != nil {
 		return nil, err
 	}
 	return &user, nil
 }
 
+func (db *MySQLStorage) IncreaseUserLoginAttempts(id string, attempts int) error {
+	_, err := db.connection.Exec(`
+		UPDATE users
+		SET loginAttempts=? 
+		WHERE id=UUID_TO_BIN(?);
+	`, attempts, id)
+	return err
+}
+
+func (db *MySQLStorage) ResetUserLoginAttempts(id string) error {
+	fmt.Println(id)
+	_, err := db.connection.Exec(`
+	 	UPDATE users
+		SET loginAttempts=0
+		WHERE id=UUID_TO_BIN(?);
+	`, id)
+	return err
+}
+
 func (db *MySQLStorage) GetAllUsers() ([]models.AppUser, error) {
 	users := []models.AppUser{}
-	rows, err := db.connection.Query("SELECT BIN_TO_UUID(id), username, password, supervisor, sector, isAdmin, createdAt, updatedAt FROM users;")
+	rows, err := db.connection.Query("SELECT BIN_TO_UUID(id), username, password, supervisor, sector, isAdmin, createdAt, updatedAt, loginAttempts FROM users;")
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +181,7 @@ func (db *MySQLStorage) GetAllUsers() ([]models.AppUser, error) {
 
 	for rows.Next() {
 		user := models.AppUser{}
-		if err := rows.Scan(&user.Id, &user.Username, &user.Password, &user.Supervisor, &user.Sector, &user.IsAdmin, &user.CreatedAt, &user.UpdatedAt); err != nil {
+		if err := rows.Scan(&user.Id, &user.Username, &user.Password, &user.Supervisor, &user.Sector, &user.IsAdmin, &user.CreatedAt, &user.UpdatedAt, &user.LoginAttempts); err != nil {
 			return nil, err
 		}
 		users = append(users, user)

@@ -236,3 +236,21 @@ func UpdateAppUserCredentialsHandler(w http.ResponseWriter, r *http.Request, s s
 	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.UpdateCredentialsAdminAction, ResourceId: id, ResourceType: models.User, ResourceName: u})
 
 }
+
+func UnlockUser(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("Invalid user id"))
+		return
+	}
+
+	err := s.ResetUserLoginAttempts(id)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	w.Header().Add("HX-Redirect", "/settings/users")
+}
