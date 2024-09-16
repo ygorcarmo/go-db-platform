@@ -47,3 +47,19 @@ func (s *Server) adminsOnly(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
+
+func (s *Server) addHttpHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Add("Content-Security-Policy", "frame-ancestors 'none'")
+		w.Header().Add("X-Content-Type-Options", "nosniff")
+		w.Header().Add("Referrer-Policy", "no-referrer")
+		w.Header().Add("Permissions-Policy", "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=()")
+		w.Header().Add("X-Frame-Options", "DENY")
+		w.Header().Add("Strict-Transport-Security", "max-age=5")
+		w.Header().Add("Cache-control", "no-store")
+
+		next.ServeHTTP(w, r)
+
+	})
+}

@@ -27,6 +27,7 @@ func NewServer(listenAddr string, store storage.Storage) *Server {
 
 func (s *Server) Start() error {
 	router := chi.NewMux()
+	router.Use(s.addHttpHeaders)
 
 	router.Handle("/*", public())
 
