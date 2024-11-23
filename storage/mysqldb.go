@@ -226,8 +226,12 @@ func (db *MySQLStorage) CreateApplicationUser(u models.AppUser) (string, error) 
 
 func (db *MySQLStorage) GetDbById(i string) (*models.ExternalDb, error) {
 	r := models.ExternalDb{Id: i}
-	err := db.connection.QueryRow("SELECT name, host, port, type, sslMode, owner from external_databases WHERE id = UUID_TO_BIN(?);",
-		i).Scan(&r.Name, &r.Host, &r.Port, &r.Type, &r.SslMode, &r.Owner)
+	err := db.connection.QueryRow(`
+		SELECT
+		 	name, host, port, type, sslMode, owner, protocol, host_fallback, port_fallback, protocol_fallback 
+		FROM
+			external_databases WHERE id = UUID_TO_BIN(?);`,
+		i).Scan(&r.Name, &r.Host, &r.Port, &r.Type, &r.SslMode, &r.Owner, &r.Protocol, &r.HostFallback, &r.PortFallback, &r.ProtocolFallback)
 	if err != nil {
 		return nil, err
 	}
@@ -307,11 +311,15 @@ func (db *MySQLStorage) GetDbByName(name string) (*models.ExternalDb, error) {
 		BIN_TO_UUID(ed.id) as external_database_id,
 		ed.username,
 		ed.password,
-		ed.owner
+		ed.owner,
+		ed.protocol,
+		ed.host_fallback,
+		ed.port_fallback,
+		ed.protocol_fallback
 	FROM 
     	external_databases ed 
 	WHERE 
-		name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode, &targetDb.Id, &targetDb.Username, &targetDb.Password, &targetDb.Owner)
+		name=?;`, name).Scan(&targetDb.Name, &targetDb.Host, &targetDb.Port, &targetDb.Type, &targetDb.SslMode, &targetDb.Id, &targetDb.Username, &targetDb.Password, &targetDb.Owner, &targetDb.Protocol, &targetDb.HostFallback, &targetDb.PortFallback, &targetDb.ProtocolFallback)
 	if err != nil {
 		return nil, err
 	}
@@ -342,6 +350,14 @@ func (db *MySQLStorage) DeleteUserById(id string) error {
 }
 
 func (db *MySQLStorage) UpdateExternalDb(e models.ExternalDb) error {
+	if e.Type == models.OracleDG {
+		_, err := db.connection.Exec(`
+		UPDATE external_databases
+		SET name=?, host=?, port=?, type=?, sslMode=?, owner=?, protocol=?, host_fallback=?, port_fallback=?, protocol_fallback=?
+		WHERE id = UUID_TO_BIN(?);
+	`, e.Name, e.Host, e.Port, e.Type, e.SslMode, e.Owner, e.Protocol, e.HostFallback, e.PortFallback, e.ProtocolFallback, e.Id)
+		return err
+	}
 	_, err := db.connection.Exec(`
 		UPDATE external_databases
 		SET name=?, host=?, port=?, type=?, sslMode=?, owner=?
@@ -375,6 +391,7 @@ func (db *MySQLStorage) UpdateExternalDbCredentials(i string, u string, p string
 }
 
 func (db *MySQLStorage) CreateExternalDb(edb models.ExternalDb) (string, error) {
+	fmt.Println(edb)
 	eService, err := utils.NewEncryptionService()
 	if err != nil {
 		return "", err
@@ -399,10 +416,10 @@ func (db *MySQLStorage) CreateExternalDb(edb models.ExternalDb) (string, error) 
 
 	_, err = tx.Exec(`
 	INSERT INTO external_databases
-		(name, host, port, type, sslMode, username, password, createdBy, owner)
+		(name, host, port, type, sslMode, username, password, createdBy, owner, protocol, host_fallback, port_fallback, protocol_fallback)
 	VALUES 
-		(?, ?, ?, ?, ?, ?, ?, UUID_TO_BIN(?), ?);`,
-		edb.Name, edb.Host, edb.Port, edb.Type, edb.SslMode, edb.Username, edb.Password, edb.CreatedBy, edb.Owner)
+		(?, ?, ?, ?, ?, ?, ?, UUID_TO_BIN(?), ?, ?, ?, ?, ?);`,
+		edb.Name, edb.Host, edb.Port, edb.Type, edb.SslMode, edb.Username, edb.Password, edb.CreatedBy, edb.Owner, edb.Protocol, edb.HostFallback, edb.PortFallback, edb.ProtocolFallback)
 	if err != nil {
 		tx.Rollback()
 		return "", err

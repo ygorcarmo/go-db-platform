@@ -1,4 +1,4 @@
-zrun: build
+run: build
 	@./bin/app
 
 build: 

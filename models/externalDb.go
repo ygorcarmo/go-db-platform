@@ -17,21 +17,26 @@ const (
 	Postgres dbType = "postgres"
 	MySQL    dbType = "mysql"
 	Oracle   dbType = "oracle"
+	OracleDG dbType = "oracle-dg"
 )
 
 type ExternalDb struct {
-	Id        string
-	Name      string
-	Host      string
-	Port      int
-	Type      dbType
-	SslMode   string
-	Username  string
-	Password  string
-	CreatedBy string
-	Owner     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	Id               string
+	Name             string
+	Host             string
+	Port             int
+	Type             dbType
+	SslMode          string
+	Username         string
+	Password         string
+	CreatedBy        string
+	Owner            string
+	CreatedAt        time.Time
+	UpdatedAt        time.Time
+	Protocol         string
+	HostFallback     string
+	PortFallback     int
+	ProtocolFallback string
 }
 
 type NewDbUserProps struct {
@@ -48,12 +53,14 @@ type ExternalDbResponse struct {
 
 func ToDbType(t string) (dbType, error) {
 	switch t {
-	case "mysql":
+	case string(MySQL):
 		return MySQL, nil
-	case "postgres":
+	case string(Postgres):
 		return Postgres, nil
-	case "oracle":
+	case string(Oracle):
 		return Oracle, nil
+	case string(OracleDG):
+		return OracleDG, nil
 	default:
 		return "", fmt.Errorf("invalid dbType: %s", t)
 	}
@@ -88,8 +95,15 @@ func (t *ExternalDb) ConnectAndCreateUser(user NewDbUserProps) ExternalDbRespons
 			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
 		}
 
-	case Oracle:
-		db, err := t.connectToOracle()
+	case Oracle, OracleDG:
+		var db *sql.DB
+		var err error
+		if t.Type == Oracle {
+			db, err = t.connectToOracle()
+		} else if t.Type == OracleDG {
+			db, err = t.connectToOracleDG()
+		}
+
 		if err != nil {
 			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
 		}
@@ -138,8 +152,15 @@ func (t *ExternalDb) ConnectAndDeleteUser(user NewDbUserProps) ExternalDbRespons
 			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
 		}
 
-	case Oracle:
-		db, err := t.connectToOracle()
+	case Oracle, OracleDG:
+		var db *sql.DB
+		var err error
+		if t.Type == Oracle {
+			db, err = t.connectToOracle()
+		} else if t.Type == OracleDG {
+			db, err = t.connectToOracleDG()
+		}
+
 		if err != nil {
 			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
 		}
@@ -249,6 +270,31 @@ func (targetDb *ExternalDb) connectToSQL() (*sql.DB, error) {
 func (targetDb *ExternalDb) connectToOracle() (*sql.DB, error) {
 	connectionStr := go_ora.BuildUrl(targetDb.Host, targetDb.Port, targetDb.Name, targetDb.Username, targetDb.Password, nil)
 	database, err := sql.Open(string(targetDb.Type), connectionStr)
+	if err != nil {
+		return nil, err
+	}
+	err = database.Ping()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("Connected to %s!\n", targetDb.Name)
+	return database, nil
+}
+
+func (targetDb *ExternalDb) connectToOracleDG() (*sql.DB, error) {
+
+	connStr := fmt.Sprintf(`(DESCRIPTION=
+    (ADDRESS_LIST=
+    	(LOAD_BALANCE=OFF)
+        (FAILOVER=ON)
+    	(address=(PROTOCOL=%s)(host=%s)(PORT=%v))
+    	(address=(protocol=%s)(host=%s)(port=%v))
+    )
+    (CONNECT_DATA=
+    	(SERVICE_NAME=%s))
+    )`, targetDb.Protocol, targetDb.Host, targetDb.Port, targetDb.ProtocolFallback, targetDb.HostFallback, targetDb.PortFallback, targetDb.Name)
+	connectionStr := go_ora.BuildJDBC(targetDb.Username, targetDb.Password, connStr, nil)
+	database, err := sql.Open(string(Oracle), connectionStr)
 	if err != nil {
 		return nil, err
 	}

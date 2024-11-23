@@ -96,3 +96,9 @@ ADD COLUMN username VARCHAR(255) NOT NULL DEFAULT "TBC";
 
 ALTER TABLE users
 ADD COLUMN loginAttempts INT NOT NULL DEFAULT 0;
+
+ALTER TABLE external_databases
+ADD COLUMN protocol CHAR(4) DEFAULT "tcp",
+ADD COLUMN host_fallback VARCHAR(255) DEFAULT "localhost",
+ADD COLUMN port_fallback INT DEFAULT 1521,
+ADD COLUMN protocol_fallback CHAR(4) DEFAULT "tcp";

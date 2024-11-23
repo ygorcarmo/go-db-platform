@@ -50,6 +50,12 @@ templ UpdateDbConfigPage(db *models.ExternalDb) {
 					required
 					value={ strconv.Itoa(db.Port) }
 				/>
+				<label for="protocol" class="oracle-dg hidden">Protocol: </label>
+				<select name="protocol" class="oracle-dg border border-slate-400 rounded p-2 hidden">
+					<option value={ db.Protocol } selected disabled hidden>{ db.Protocol }</option>
+					<option value="tcp">tcp</option>
+					<option value="tcps">tcps</option>
+				</select>
 				<label for="owner" class="col-start-1">Owner: </label>
 				<input
 					type="text"
@@ -60,11 +66,36 @@ templ UpdateDbConfigPage(db *models.ExternalDb) {
 					required
 				/>
 				<label for="type">Type: </label>
-				<select name="type" id="type">
+				<select name="type" id="type" class="border border-slate-400 rounded p-2">
 					<option value={ string(db.Type) } selected disabled hidden>{ string(db.Type) }</option>
 					<option value="postgres">postgres</option>
 					<option value="mysql">mysql/maria</option>
 					<option value="oracle">oracle</option>
+					<option value="oracle-dg">Oracle DG</option>
+				</select>
+				<label for="host-fallback" class="col-start-1 oracle-dg hidden">Host Fallback: </label>
+				<input
+					type="text"
+					name="host-fallback"
+					id="host-fallback"
+					class="border border-slate-400 rounded p-2 oracle-dg hidden"
+					value={ db.HostFallback }
+					required
+				/>
+				<label for="port-fallback" class="col-start-1 oracle-dg hidden">Port Fallback: </label>
+				<input
+					type="number"
+					name="port-fallback"
+					id="port-fallback"
+					class="border border-slate-400 rounded p-2 oracle-dg hidden"
+					value={ strconv.Itoa(db.PortFallback) }
+					required
+				/>
+				<label for="protocol-fallback" class="oracle-dg hidden">Protocol Fallback: </label>
+				<select name="protocol-fallback" class="oracle-dg hidden p-2 border border-slate-400 rounded">
+					<option value={ db.ProtocolFallback } selected disabled hidden>{ db.ProtocolFallback }</option>
+					<option value="tcp">tcp</option>
+					<option value="tcps">tcps</option>
 				</select>
 				<label for="sslMode">SSL Mode: </label>
 				<select name="sslMode" id="sslMode">
@@ -80,5 +111,30 @@ templ UpdateDbConfigPage(db *models.ExternalDb) {
 			<button type="submit" class="bg-blue-400 py-2 px-4 rounded">Submit</button>
 		</form>
 		<div id="response"></div>
+		<script>
+		document.addEventListener("DOMContentLoaded", (e) =>{
+			const currentType = document.getElementById("type").value
+			console.log(currentType)
+			const oracleFields = document.querySelectorAll('.oracle-dg');
+
+			if (currentType === "oracle-dg")
+				oracleFields.forEach(function (field) {
+					field.classList.remove('hidden');
+				});
+		})
+			document.getElementById('type').addEventListener('change', function () {
+				const selectedType = this.value;
+				const oracleFields = document.querySelectorAll('.oracle-dg');
+				if (selectedType === 'oracle-dg') {
+					oracleFields.forEach(function (field) {
+						field.classList.remove('hidden');
+					});
+				} else {
+					oracleFields.forEach(function (field) {
+						field.classList.add('hidden');
+					});
+				}
+			});
+		</script>
 	}
 }

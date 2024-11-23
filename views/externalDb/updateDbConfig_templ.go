@@ -105,29 +105,16 @@ func UpdateDbConfigPage(db *models.ExternalDb) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <label for=\"owner\" class=\"col-start-1\">Owner: </label> <input type=\"text\" name=\"owner\" id=\"owner\" class=\"border border-slate-400 rounded p-2\" value=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"> <label for=\"protocol\" class=\"oracle-dg hidden\">Protocol: </label> <select name=\"protocol\" class=\"oracle-dg border border-slate-400 rounded p-2 hidden\"><option value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var8 string
-			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(db.Owner)
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(db.Protocol)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 59, Col: 21}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 55, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" required> <label for=\"type\">Type: </label> <select name=\"type\" id=\"type\"><option value=\"")
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
-			var templ_7745c5c3_Var9 string
-			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(string(db.Type))
-			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 64, Col: 36}
-			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -135,23 +122,36 @@ func UpdateDbConfigPage(db *models.ExternalDb) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var10 string
-			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(string(db.Type))
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(db.Protocol)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 64, Col: 81}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 55, Col: 73}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"tcp\">tcp</option> <option value=\"tcps\">tcps</option></select> <label for=\"owner\" class=\"col-start-1\">Owner: </label> <input type=\"text\" name=\"owner\" id=\"owner\" class=\"border border-slate-400 rounded p-2\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var10 string
+			templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(db.Owner)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 65, Col: 21}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"postgres\">postgres</option> <option value=\"mysql\">mysql/maria</option> <option value=\"oracle\">oracle</option></select> <label for=\"sslMode\">SSL Mode: </label> <select name=\"sslMode\" id=\"sslMode\"><option value=\"")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" required> <label for=\"type\">Type: </label> <select name=\"type\" id=\"type\" class=\"border border-slate-400 rounded p-2\"><option value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var11 string
-			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(db.SslMode)
+			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(string(db.Type))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 71, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 70, Col: 36}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -162,15 +162,93 @@ func UpdateDbConfigPage(db *models.ExternalDb) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var12 string
-			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(db.SslMode)
+			templ_7745c5c3_Var12, templ_7745c5c3_Err = templ.JoinStringErrs(string(db.Type))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 72, Col: 18}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 70, Col: 81}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var12))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"disable\">disable</option> <option value=\"require\">require</option> <option value=\"verify-ca\">verify-ca</option> <option value=\"verify-full\">verify-full</option></select></div><button type=\"submit\" class=\"bg-blue-400 py-2 px-4 rounded\">Submit</button></form><div id=\"response\"></div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"postgres\">postgres</option> <option value=\"mysql\">mysql/maria</option> <option value=\"oracle\">oracle</option> <option value=\"oracle-dg\">Oracle DG</option></select> <label for=\"host-fallback\" class=\"col-start-1 oracle-dg hidden\">Host Fallback: </label> <input type=\"text\" name=\"host-fallback\" id=\"host-fallback\" class=\"border border-slate-400 rounded p-2 oracle-dg hidden\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var13 string
+			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(db.HostFallback)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 82, Col: 28}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" required> <label for=\"port-fallback\" class=\"col-start-1 oracle-dg hidden\">Port Fallback: </label> <input type=\"number\" name=\"port-fallback\" id=\"port-fallback\" class=\"border border-slate-400 rounded p-2 oracle-dg hidden\" value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var14 string
+			templ_7745c5c3_Var14, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(db.PortFallback))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 91, Col: 42}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var14))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" required> <label for=\"protocol-fallback\" class=\"oracle-dg hidden\">Protocol Fallback: </label> <select name=\"protocol-fallback\" class=\"oracle-dg hidden p-2 border border-slate-400 rounded\"><option value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var15 string
+			templ_7745c5c3_Var15, templ_7745c5c3_Err = templ.JoinStringErrs(db.ProtocolFallback)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 96, Col: 40}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var15))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" selected disabled hidden>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var16 string
+			templ_7745c5c3_Var16, templ_7745c5c3_Err = templ.JoinStringErrs(db.ProtocolFallback)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 96, Col: 89}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var16))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"tcp\">tcp</option> <option value=\"tcps\">tcps</option></select> <label for=\"sslMode\">SSL Mode: </label> <select name=\"sslMode\" id=\"sslMode\"><option value=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var17 string
+			templ_7745c5c3_Var17, templ_7745c5c3_Err = templ.JoinStringErrs(db.SslMode)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 102, Col: 31}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var17))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" selected disabled hidden>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var18 string
+			templ_7745c5c3_Var18, templ_7745c5c3_Err = templ.JoinStringErrs(db.SslMode)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/externalDb/updateDbConfig.templ`, Line: 103, Col: 18}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var18))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</option> <option value=\"disable\">disable</option> <option value=\"require\">require</option> <option value=\"verify-ca\">verify-ca</option> <option value=\"verify-full\">verify-full</option></select></div><button type=\"submit\" class=\"bg-blue-400 py-2 px-4 rounded\">Submit</button></form><div id=\"response\"></div><script>\r\n\t\tdocument.addEventListener(\"DOMContentLoaded\", (e) =>{\r\n\t\t\tconst currentType = document.getElementById(\"type\").value\r\n\t\t\tconsole.log(currentType)\r\n\t\t\tconst oracleFields = document.querySelectorAll('.oracle-dg');\r\n\r\n\t\t\tif (currentType === \"oracle-dg\")\r\n\t\t\t\toracleFields.forEach(function (field) {\r\n\t\t\t\t\tfield.classList.remove('hidden');\r\n\t\t\t\t});\r\n\t\t})\r\n\t\t\tdocument.getElementById('type').addEventListener('change', function () {\r\n\t\t\t\tconst selectedType = this.value;\r\n\t\t\t\tconst oracleFields = document.querySelectorAll('.oracle-dg');\r\n\t\t\t\tif (selectedType === 'oracle-dg') {\r\n\t\t\t\t\toracleFields.forEach(function (field) {\r\n\t\t\t\t\t\tfield.classList.remove('hidden');\r\n\t\t\t\t\t});\r\n\t\t\t\t} else {\r\n\t\t\t\t\toracleFields.forEach(function (field) {\r\n\t\t\t\t\t\tfield.classList.add('hidden');\r\n\t\t\t\t\t});\r\n\t\t\t\t}\r\n\t\t\t});\r\n\t\t</script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

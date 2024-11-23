@@ -80,12 +80,14 @@ templ GetUsersPage(users []models.AppUser) {
 								</button>
 							</td>
 							<td>
-								<button
-									class="bg-yellow-500 text-white py-2 px-4 rounded"
-									hx-put={ "/settings/users/" + user.Id + "/unlock" }
-								>
-									Unlock User
-								</button>
+								if user.LoginAttempts > 5 {
+									<button
+										class="bg-yellow-500 text-white py-2 px-4 rounded"
+										hx-put={ "/settings/users/" + user.Id + "/unlock" }
+									>
+										Unlock User
+									</button>
+								}
 							</td>
 						</tr>
 					}

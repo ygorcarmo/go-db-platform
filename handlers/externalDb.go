@@ -154,6 +154,10 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 	t := r.FormValue("type")
 	m := r.FormValue("sslMode")
 	o := r.FormValue("owner")
+	protocol := r.FormValue("protocol")
+	hostFallback := r.FormValue("host-fallback")
+	pFallback := r.FormValue("port-fallback")
+	protocolFallback := r.FormValue("protocol-fallback")
 
 	dType, err := models.ToDbType(t)
 	if err != nil {
@@ -167,7 +171,13 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	config := models.ExternalDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Id, Owner: o}
+	portFallback, err := strconv.Atoi(pFallback)
+	if err != nil {
+		components.Response(models.Response{Message: "Invalid Port. It should be a valid number"}).Render(r.Context(), w)
+		return
+	}
+
+	config := models.ExternalDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Id, Owner: o, Protocol: protocol, HostFallback: hostFallback, PortFallback: portFallback, ProtocolFallback: protocolFallback}
 
 	id, err := s.CreateExternalDb(config)
 
@@ -205,6 +215,10 @@ func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 	t := r.FormValue("type")
 	m := r.FormValue("sslMode")
 	o := r.FormValue("owner")
+	protocol := r.FormValue("protocol")
+	hostFallback := r.FormValue("host-fallback")
+	pFallback := r.FormValue("port-fallback")
+	protocolFallback := r.FormValue("protocol-fallback")
 
 	port, err := strconv.Atoi(p)
 	if err != nil {
@@ -218,7 +232,13 @@ func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	err = s.UpdateExternalDb(models.ExternalDb{Id: i, Name: n, Host: h, Port: port, Type: dbType, SslMode: m, Owner: o})
+	portFallback, err := strconv.Atoi(pFallback)
+	if err != nil {
+		components.Response(models.CreateResponse("Invalid port number", false)).Render(r.Context(), w)
+		return
+	}
+
+	err = s.UpdateExternalDb(models.ExternalDb{Id: i, Name: n, Host: h, Port: port, Type: dbType, SslMode: m, Owner: o, Protocol: protocol, HostFallback: hostFallback, PortFallback: portFallback, ProtocolFallback: protocolFallback})
 	if err != nil {
 		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
 		return
