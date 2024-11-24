@@ -75,7 +75,7 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 
 	woInt, err := strconv.Atoi(wo)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("Error when converting WO: %s\n", err)
 	}
 
 	user := r.Context().Value(models.UserCtx).(*models.AppUser)

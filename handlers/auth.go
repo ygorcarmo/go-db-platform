@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -25,8 +24,7 @@ var hashParams = utils.HashParams{
 func GetLoginPage(w http.ResponseWriter, r *http.Request) {
 	err := login.Index().Render(r.Context(), w)
 	if err != nil {
-		fmt.Println(err)
-		log.Fatal("Error when rendering the login page")
+		fmt.Printf("Error when rendering the login page: %s\n", err)
 	}
 }
 
@@ -37,7 +35,6 @@ func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 
 	user, err := s.GetUserByUsername(username)
 	if err != nil {
-		fmt.Println(err)
 		components.Response(models.Response{Message: "Invalid Username or Password.", IsSuccess: false}).Render(r.Context(), w)
 		return
 	}

@@ -293,11 +293,14 @@ func (targetDb *ExternalDb) connectToOracleDG() (*sql.DB, error) {
     (CONNECT_DATA=
     	(SERVICE_NAME=%s))
     )`, targetDb.Protocol, targetDb.Host, targetDb.Port, targetDb.ProtocolFallback, targetDb.HostFallback, targetDb.PortFallback, targetDb.Name)
+
 	connectionStr := go_ora.BuildJDBC(targetDb.Username, targetDb.Password, connStr, nil)
+
 	database, err := sql.Open(string(Oracle), connectionStr)
 	if err != nil {
 		return nil, err
 	}
+
 	err = database.Ping()
 	if err != nil {
 		return nil, err

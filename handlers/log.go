@@ -11,7 +11,6 @@ import (
 func GetLogsPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 	logs, err := s.GetAllLogs()
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("Something went wrong"))
 		return

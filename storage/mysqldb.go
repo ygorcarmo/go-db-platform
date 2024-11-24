@@ -162,7 +162,6 @@ func (db *MySQLStorage) IncreaseUserLoginAttempts(id string, attempts int) error
 }
 
 func (db *MySQLStorage) ResetUserLoginAttempts(id string) error {
-	fmt.Println(id)
 	_, err := db.connection.Exec(`
 	 	UPDATE users
 		SET loginAttempts=0
@@ -391,7 +390,6 @@ func (db *MySQLStorage) UpdateExternalDbCredentials(i string, u string, p string
 }
 
 func (db *MySQLStorage) CreateExternalDb(edb models.ExternalDb) (string, error) {
-	fmt.Println(edb)
 	eService, err := utils.NewEncryptionService()
 	if err != nil {
 		return "", err
@@ -490,7 +488,6 @@ func (db *MySQLStorage) CreateAdminLog(l models.AdminLog) error {
 		(action, resourceId, resourceType, userId, resourceName)
 	VALUES
 		(?, UUID_TO_BIN(?), ?,UUID_TO_BIN(?),?);`, l.Action, l.ResourceId, l.ResourceType, l.UserId, l.ResourceName)
-	fmt.Println(err)
 	return err
 }
 
