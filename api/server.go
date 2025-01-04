@@ -10,7 +10,7 @@ import (
 	"db-platform/models"
 	"db-platform/storage"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 type Server struct {
@@ -34,6 +34,7 @@ func (s *Server) Start() error {
 	router.Get("/login", handlers.GetLoginPage)
 	router.Post("/login", func(w http.ResponseWriter, r *http.Request) { handlers.HandleLogin(w, r, s.store) })
 	router.Get("/logout", handlers.Logout)
+	router.Get("/login-ad", func(w http.ResponseWriter, r *http.Request) { handlers.GetADLoginPage(w, r, s.store) })
 
 	router.Group(func(r chi.Router) {
 		r.Use(s.authentication)

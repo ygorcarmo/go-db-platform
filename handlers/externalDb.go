@@ -13,7 +13,7 @@ import (
 	"db-platform/views/externalDb"
 	"db-platform/views/setting"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 var wg sync.WaitGroup

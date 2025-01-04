@@ -28,4 +28,5 @@ type Storage interface {
 	GetAllLogs() ([]models.LogResponse, error)
 	CreateAdminLog(models.AdminLog) error
 	GetAllAdminLogs() ([]models.AdminLogResponse, error)
+	GetADConfig() (*models.LDAPConfig, error)
 }

@@ -28,6 +28,36 @@ func GetLoginPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetADLoginPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	config, err := s.GetADConfig()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("AD is not configured. Please Contact your Administrator."))
+		return
+	}
+
+	ad := models.LDAPConfig{
+		ConnectionStr:     config.ConnectionStr,
+		Username:          config.Username,
+		Password:          config.Password,
+		TopLevelDomain:    config.TopLevelDomain,
+		SecondLevelDomain: config.SecondLevelDomain,
+	}
+
+	_, err = ad.Connect()
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("AD is not configured. Please Contact your Administrator."))
+		return
+	}
+
+	err = login.AD().Render(r.Context(), w)
+	if err != nil {
+		fmt.Printf("Error when rendering the AD login page: %s\n", err)
+	}
+}
+
 func HandleLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 	// TODO: add validation
 	username := r.FormValue("username")

@@ -10,7 +10,7 @@ import (
 	"db-platform/views/setting"
 	appUser "db-platform/views/user"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 )
 
 func GetResetPasswordPage(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,1 @@
+<li><a href=\"/\" class=\"block\">Home Page</a></li><li><a href=\"/settings/dbs\" class=\"block\">Manage Database Connections</a></li><li><a href=\"/settings/users\" class=\"block\">Manage Application Users</a></li><li><a href=\"/settings/logs\" class=\"block\">Logs</a></li><li><a href=\"/settings/admin-logs\" class=\"block\">Administrative Logs</a></li>

@@ -102,3 +102,20 @@ ADD COLUMN protocol CHAR(4) DEFAULT "tcp",
 ADD COLUMN host_fallback VARCHAR(255) DEFAULT "localhost",
 ADD COLUMN port_fallback INT DEFAULT 1521,
 ADD COLUMN protocol_fallback CHAR(4) DEFAULT "tcp";
+
+-- New feature: AD Authentication
+-- TODO Drop DbId FK in logs, and add username to logs and admin logs as we wont add the ad users to DB
+-- Add Config Table
+
+CREATE TABLE config(
+    id TINYINT UNSIGNED NOT NULL PRIMARY KEY DEFAULT 1,
+    connectionStr VARCHAR(255) NOT NULL DEFAULT "127.0.0.1",
+    username VARCHAR(255) NOT NULL DEFAULT "user",
+    passwd VARCHAR(255) NOT  NULL DEFAULT "changeme",
+    topLevelDomain VARCHAR(255) NOT NULL DEFAULT "example",
+    secondLevelDomain VARCHAR(255) NOT NULL DEFAULT "com"
+);
+
+-- create config here as we only want one row. Just to avoid any mistakes on the application
+
+INSERT INTO config (id) VALUES (1);
