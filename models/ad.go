@@ -1,34 +1,111 @@
 package models
 
 import (
+	"errors"
 	"fmt"
-	"log"
+	"regexp"
 
-	"github.com/go-ldap/ldap/v3"
+	goLdap "github.com/go-ldap/ldap/v3"
 )
 
-type LDAPConfig struct {
+type LDAP struct {
 	ConnectionStr     string
 	Username          string
 	Password          string
 	TopLevelDomain    string
 	SecondLevelDomain string
+	BaseGroup         string
+	BaseGroupOU       string
+	AdminGroup        string
+	AdminGroupOU      string
+	IsDefault         bool
 }
 
 // ldapsearch -H ldap://localhost:10389 -x -b "ou=people,dc=planetexpress,dc=com" -D "cn=admin,dc=planetexpress,dc=com" -w GoodNewsEveryone "(objectClass=inetOrgPerson)"
 
-func (s LDAPConfig) Connect() (*ldap.Conn, error) {
-	conn, err := ldap.DialURL(s.ConnectionStr)
+func (s *LDAP) Connect() (*goLdap.Conn, error) {
+	conn, err := goLdap.DialURL(s.ConnectionStr)
 	if err != nil {
 		return nil, err
 	}
-	defer conn.Close()
 
 	err = conn.Bind(fmt.Sprintf("cn=%s,dc=%s,dc=%s", s.Username, s.TopLevelDomain, s.SecondLevelDomain), s.Password)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	fmt.Println("Connected to ldap")
 	return conn, nil
+}
+
+func (s *LDAP) Authenticate(conn *goLdap.Conn, username, password string) error {
+
+	baseDN := fmt.Sprintf("dc=%s,dc=%s", s.TopLevelDomain, s.SecondLevelDomain)
+
+	searchRequest := goLdap.NewSearchRequest(
+		baseDN,
+		goLdap.ScopeWholeSubtree, goLdap.NeverDerefAliases, 0, 0, false,
+		fmt.Sprintf("(&(objectClass=organizationalPerson)(uid=%s))", goLdap.EscapeFilter(username)),
+		[]string{"dn"},
+		nil,
+	)
+
+	sr, err := conn.Search(searchRequest)
+	if err != nil {
+		return err
+	}
+
+	if len(sr.Entries) != 1 {
+		return errors.New("user does not exist or too many entries returned")
+	}
+
+	userdn := sr.Entries[0].DN
+	fmt.Println(sr.Entries[0])
+
+	// Bind as the user to verify their password
+	err = conn.Bind(userdn, password)
+	if err != nil {
+		return err
+	}
+
+	// Connect back as application user
+	err = conn.Bind(fmt.Sprintf("cn=%s,dc=%s,dc=%s", s.Username, s.TopLevelDomain, s.SecondLevelDomain), s.Password)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (*LDAP) GetGroupMembers(conn *goLdap.Conn, groupName, ou string) ([]string, error) {
+	users := []string{}
+
+	groupSearchRequest := goLdap.NewSearchRequest(
+		fmt.Sprintf("ou=%s,dc=planetexpress,dc=com", ou),
+		// search without OU filter
+		// "dc=planetexpress,dc=com",
+		goLdap.ScopeWholeSubtree,
+		goLdap.NeverDerefAliases,
+		0, 0, false,
+		fmt.Sprintf("(&(objectClass=groupOfNames)(cn=%s))", groupName),
+		[]string{"member"},
+		nil,
+	)
+
+	result, err := conn.Search(groupSearchRequest)
+	if err != nil {
+		return users, nil
+	}
+
+	for _, entry := range result.Entries {
+		members := entry.GetAttributeValues("member")
+		for _, memberDN := range members {
+			re := regexp.MustCompile(`uid=([^,]+)`)
+			matches := re.FindStringSubmatch(memberDN)
+			if len(matches) > 1 {
+				users = append(users, matches[1])
+			}
+		}
+	}
+
+	return users, nil
 }

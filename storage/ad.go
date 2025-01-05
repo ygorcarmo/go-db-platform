@@ -2,9 +2,9 @@ package storage
 
 import "db-platform/models"
 
-func (db *MySQLStorage) GetADConfig() (*models.LDAPConfig, error) {
+func (db *MySQLStorage) GetADConfig() (*models.LDAP, error) {
 	// TODO: Username and password should be encrypted?
-	config := models.LDAPConfig{}
+	config := models.LDAP{}
 
 	err := db.connection.QueryRow(`
 	SELECT
@@ -12,9 +12,24 @@ func (db *MySQLStorage) GetADConfig() (*models.LDAPConfig, error) {
 		username,
 		passwd,
 		topLevelDomain,
-		secondLevelDomain
+		secondLevelDomain,
+		baseGroup,
+		adminGroup,
+		isDefault,
+		adminGroupOU,
+		baseGroupOU
 	FROM
-		config;`).Scan(&config.ConnectionStr, &config.Username, &config.Password, &config.TopLevelDomain, &config.SecondLevelDomain)
+		ldap_config;`).Scan(
+		&config.ConnectionStr,
+		&config.Username,
+		&config.Password,
+		&config.TopLevelDomain,
+		&config.SecondLevelDomain,
+		&config.BaseGroup,
+		&config.AdminGroup,
+		&config.IsDefault,
+		&config.AdminGroupOU,
+		&config.BaseGroupOU)
 
 	if err != nil {
 		return nil, err

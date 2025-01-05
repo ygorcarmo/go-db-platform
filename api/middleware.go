@@ -11,26 +11,52 @@ import (
 
 func (s *Server) authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		adConfig, err := s.store.GetADConfig()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Please run the AD migration"))
+			return
+		}
+
 		jwtToken, err := r.Cookie("token")
 
 		if err != nil || jwtToken.Value == "" {
-			http.Redirect(w, r, "/login", http.StatusFound)
+			// http.Redirect(w, r, "/login", http.StatusFound)
+			redirect(w, r, adConfig.IsDefault)
 			return
 		}
 
-		userId, err := utils.DecodeToken(jwtToken.Value)
+		userClaim, err := utils.DecodeToken(jwtToken.Value)
 		if err != nil {
 			http.SetCookie(w, &http.Cookie{Name: "token", Value: "", Path: "/"})
-			http.Redirect(w, r, "/login", http.StatusFound)
+			// http.Redirect(w, r, "/login", http.StatusFound)
+			redirect(w, r, adConfig.IsDefault)
 			return
 		}
-		user, err := s.store.GetUserById(userId)
 
-		if err != nil {
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
+		if userClaim.UserId != "" {
+			res, err := s.store.GetUserById(userClaim.UserId)
+			if err != nil {
+				// http.Redirect(w, r, "/login", http.StatusFound)
+				redirect(w, r, adConfig.IsDefault)
+				return
+			}
+			ctx := context.WithValue(r.Context(), models.UserCtx, res)
+			next.ServeHTTP(w, r.WithContext(ctx))
 		}
-		ctx := context.WithValue(r.Context(), models.UserCtx, user)
+
+		isAdmin := false
+
+		if userClaim.Group == adConfig.AdminGroup {
+			isAdmin = true
+		}
+
+		user := models.AppUser{
+			Username: userClaim.Username,
+			IsAdmin:  isAdmin,
+		}
+
+		ctx := context.WithValue(r.Context(), models.UserCtx, &user)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
@@ -62,4 +88,13 @@ func (s *Server) addHttpHeaders(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 
 	})
+}
+
+func redirect(w http.ResponseWriter, r *http.Request, isConfigured bool) {
+	if isConfigured {
+		http.Redirect(w, r, "/login-ad", http.StatusFound)
+
+	} else {
+		http.Redirect(w, r, "/login", http.StatusFound)
+	}
 }

@@ -107,15 +107,24 @@ ADD COLUMN protocol_fallback CHAR(4) DEFAULT "tcp";
 -- TODO Drop DbId FK in logs, and add username to logs and admin logs as we wont add the ad users to DB
 -- Add Config Table
 
-CREATE TABLE config(
+CREATE TABLE ldap_config(
     id TINYINT UNSIGNED NOT NULL PRIMARY KEY DEFAULT 1,
     connectionStr VARCHAR(255) NOT NULL DEFAULT "127.0.0.1",
     username VARCHAR(255) NOT NULL DEFAULT "user",
     passwd VARCHAR(255) NOT  NULL DEFAULT "changeme",
     topLevelDomain VARCHAR(255) NOT NULL DEFAULT "example",
-    secondLevelDomain VARCHAR(255) NOT NULL DEFAULT "com"
+    secondLevelDomain VARCHAR(255) NOT NULL DEFAULT "com",
+    baseGroup VARCHAR(255) NOT NULL DEFAULT "dba",
+    baseGroupOU VARCHAR(255) NOT NULL DEFAULT "groups",
+    adminGroup VARCHAR(255) NOT NULL DEFAULT "sudodba",
+    adminGroupOU VARCHAR(255) NOT NULL DEFAULT "groups",
+    isDefault BOOLEAN NOT NULL DEFAULT FALSE
 );
 
 -- create config here as we only want one row. Just to avoid any mistakes on the application
 
-INSERT INTO config (id) VALUES (1);
+-- INSERT INTO config (id) VALUES (1);
+
+-- This is for local testing only
+INSERT INTO ldap_config(connectionStr, username, passwd, topLevelDomain)
+    VALUES("ldap://localhost:10389", "admin", "GoodNewsEveryone", "planetexpress");

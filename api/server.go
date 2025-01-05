@@ -35,6 +35,7 @@ func (s *Server) Start() error {
 	router.Post("/login", func(w http.ResponseWriter, r *http.Request) { handlers.HandleLogin(w, r, s.store) })
 	router.Get("/logout", handlers.Logout)
 	router.Get("/login-ad", func(w http.ResponseWriter, r *http.Request) { handlers.GetADLoginPage(w, r, s.store) })
+	router.Post("/login-ad", func(w http.ResponseWriter, r *http.Request) { handlers.HandleADLogin(w, r, s.store) })
 
 	router.Group(func(r chi.Router) {
 		r.Use(s.authentication)
