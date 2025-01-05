@@ -1,0 +1,30 @@
+package setting
+
+import (
+	"db-platform/models"
+	"db-platform/views/layouts"
+)
+
+templ LDAPSettingsPage(conf models.LDAP) {
+	@layouts.Setting() {
+		<h1 class="text-2xl">AD Settings</h1>
+		<form
+			class="border rounded border-gray-500 p-5 w-fit flex flex-col gap-2"
+			hx-post="/settings/ldap"
+			hx-target="#response"
+		>
+			<div class="grid grid-cols-2 gap-y-2">
+				<label for="connectionStr" class="align-center">Connection String:</label>
+				<input
+					type="text"
+					name="connectionStr"
+					id="connectionStr"
+					class="border border-slate-400 rounded p-2"
+					value={ conf.ConnectionStr }
+				/>
+				<label>Domain</label>
+			</div>
+			<button type="submit" class="bg-blue-400 py-2 px-4 rounded">Submit</button>
+		</form>
+	}
+}

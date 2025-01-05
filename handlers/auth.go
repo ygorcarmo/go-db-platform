@@ -111,13 +111,14 @@ func GetADLoginPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 	}
 
 	conn, err := ad.Connect()
-	conn.Close()
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("AD is not configured. Please contact your Administrator."))
 		return
 	}
+
+	defer conn.Close()
 
 	err = login.AD().Render(r.Context(), w)
 	if err != nil {

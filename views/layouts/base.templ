@@ -60,6 +60,8 @@ templ Base(sideBar templ.Component) {
     				        if (!menuButton || !menu) return;
 				
     				        if (menuButton.contains(event.target)) {
+								// degub this
+								console.log("clicked")
     				            // Toggle the dropdown when the button is clicked
     				            const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
     				            menuButton.setAttribute('aria-expanded', !isExpanded);
