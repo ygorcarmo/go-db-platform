@@ -1,9 +1,11 @@
 package models
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 
 	goLdap "github.com/go-ldap/ldap/v3"
 )
@@ -19,22 +21,61 @@ type LDAP struct {
 	AdminGroup        string
 	AdminGroupOU      string
 	IsDefault         bool
+	TimeOutInSecs     int
 }
 
 // ldapsearch -H ldap://localhost:10389 -x -b "ou=people,dc=planetexpress,dc=com" -D "cn=admin,dc=planetexpress,dc=com" -w GoodNewsEveryone "(objectClass=inetOrgPerson)"
 
+// func (s *LDAP) Connect() (*goLdap.Conn, error) {
+// 	conn, err := goLdap.DialURL(s.ConnectionStr)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	err = conn.Bind(fmt.Sprintf("cn=%s,dc=%s,dc=%s", s.Username, s.TopLevelDomain, s.SecondLevelDomain), s.Password)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return conn, nil
+// }
+
 func (s *LDAP) Connect() (*goLdap.Conn, error) {
-	conn, err := goLdap.DialURL(s.ConnectionStr)
-	if err != nil {
-		return nil, err
-	}
+	// Create a context with the specified timeout
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.TimeOutInSecs)*time.Second)
+	defer cancel()
 
-	err = conn.Bind(fmt.Sprintf("cn=%s,dc=%s,dc=%s", s.Username, s.TopLevelDomain, s.SecondLevelDomain), s.Password)
-	if err != nil {
-		return nil, err
-	}
+	// Channel to handle connection and errors
+	connChan := make(chan *goLdap.Conn, 1)
+	errChan := make(chan error, 1)
 
-	return conn, nil
+	go func() {
+		conn, err := goLdap.DialURL(s.ConnectionStr)
+		if err != nil {
+			errChan <- err
+			return
+		}
+
+		err = conn.Bind(
+			fmt.Sprintf("cn=%s,dc=%s,dc=%s", s.Username, s.TopLevelDomain, s.SecondLevelDomain),
+			s.Password,
+		)
+		if err != nil {
+			errChan <- err
+			return
+		}
+
+		connChan <- conn
+	}()
+
+	select {
+	case conn := <-connChan:
+		return conn, nil
+	case err := <-errChan:
+		return nil, err
+	case <-ctx.Done():
+		return nil, fmt.Errorf("LDAP connection timed out after %d seconds", s.TimeOutInSecs)
+	}
 }
 
 func (s *LDAP) Authenticate(conn *goLdap.Conn, username, password string) error {

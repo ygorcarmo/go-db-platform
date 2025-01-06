@@ -118,7 +118,8 @@ CREATE TABLE ldap_config(
     baseGroupOU VARCHAR(255) NOT NULL DEFAULT "groups",
     adminGroup VARCHAR(255) NOT NULL DEFAULT "sudodba",
     adminGroupOU VARCHAR(255) NOT NULL DEFAULT "groups",
-    isDefault BOOLEAN NOT NULL DEFAULT FALSE
+    isDefault BOOLEAN NOT NULL DEFAULT FALSE,
+    timeOutInSecs INT DEFAULT 3 
 );
 
 -- create config here as we only want one row. Just to avoid any mistakes on the application

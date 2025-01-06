@@ -17,7 +17,8 @@ func (db *MySQLStorage) GetADConfig() (*models.LDAP, error) {
 		adminGroup,
 		isDefault,
 		adminGroupOU,
-		baseGroupOU
+		baseGroupOU,
+		timeOutInSecs
 	FROM
 		ldap_config;`).Scan(
 		&config.ConnectionStr,
@@ -29,7 +30,8 @@ func (db *MySQLStorage) GetADConfig() (*models.LDAP, error) {
 		&config.AdminGroup,
 		&config.IsDefault,
 		&config.AdminGroupOU,
-		&config.BaseGroupOU)
+		&config.BaseGroupOU,
+		&config.TimeOutInSecs)
 
 	if err != nil {
 		return nil, err

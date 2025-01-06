@@ -102,19 +102,11 @@ func GetADLoginPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 		return
 	}
 
-	ad := models.LDAP{
-		ConnectionStr:     config.ConnectionStr,
-		Username:          config.Username,
-		Password:          config.Password,
-		TopLevelDomain:    config.TopLevelDomain,
-		SecondLevelDomain: config.SecondLevelDomain,
-	}
-
-	conn, err := ad.Connect()
+	conn, err := config.Connect()
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("AD is not configured. Please contact your Administrator."))
+		w.Write([]byte(fmt.Sprintf("Something went wrong. Please contact your Administrator. Error: %v", err)))
 		return
 	}
 

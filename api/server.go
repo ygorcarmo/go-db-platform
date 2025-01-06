@@ -29,7 +29,7 @@ func (s *Server) Start() error {
 	router := chi.NewMux()
 	router.Use(s.addHttpHeaders)
 
-	router.Handle("/*", public())
+	router.Handle("/public/*", public())
 
 	router.Get("/login", handlers.GetLoginPage)
 	router.Post("/login", func(w http.ResponseWriter, r *http.Request) { handlers.HandleLogin(w, r, s.store) })
@@ -39,7 +39,13 @@ func (s *Server) Start() error {
 
 	router.Group(func(r chi.Router) {
 		r.Use(s.authentication)
-		r.Get("/", handlers.GetHomePage)
+		// for some weird reason and I don't have time to debug the home page renders twice
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/h", http.StatusMovedPermanently)
+		})
+		r.Route("/", func(hRouter chi.Router) {
+			hRouter.Get("/h", handlers.GetHomePage)
+		})
 
 		r.Route("/db", func(dbroute chi.Router) {
 			dbroute.Get("/create-user", func(w http.ResponseWriter, r *http.Request) { handlers.GetCreateDbUserPage(w, r, s.store) })
