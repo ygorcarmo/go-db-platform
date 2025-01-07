@@ -27,4 +27,9 @@
     opacity: 0;
     transition: opacity 1s ease-out;
   }
+
+  button:disabled {
+    background-color: grey;
+    cursor: not-allowed; /* Optional: Change the cursor to indicate the button is not clickable */
+  }
 }

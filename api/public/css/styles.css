@@ -574,6 +574,12 @@ video {
   display: inline;
 }
 
+button:disabled {
+  background-color: grey;
+  cursor: not-allowed;
+  /* Optional: Change the cursor to indicate the button is not clickable */
+}
+
 .absolute {
   position: absolute;
 }
@@ -610,12 +616,12 @@ video {
   margin-left: 0.5rem;
 }
 
-.mt-2 {
-  margin-top: 0.5rem;
-}
-
 .mr-auto {
   margin-right: auto;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
 }
 
 .block {

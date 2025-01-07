@@ -47,14 +47,14 @@ func LDAPSettingsPage(conf models.LDAP) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-row gap-2\"><h1 class=\"text-2xl mr-auto\">AD Settings</h1><a class=\"bg-yellow-400 py-2 px-4 rounded\">Test Conneciton</a> <a class=\"bg-blue-400 py-2 px-4 rounded\">Edit Login Credentials</a></div><form class=\"border rounded border-gray-500 p-5 w-fit flex flex-col gap-2\" hx-post=\"/settings/ldap\" hx-target=\"#response\"><div class=\"grid grid-cols-2 gap-y-2\"><label for=\"connectionStr\" class=\"align-center\">Connection String:</label> <input type=\"text\" name=\"connectionStr\" id=\"connectionStr\" class=\"border border-slate-400 rounded p-2\" value=\"")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<div class=\"flex flex-row gap-2\"><h1 class=\"text-2xl mr-auto\">AD Settings</h1><button class=\"bg-yellow-400 py-2 px-4 rounded\" hx-post=\"/settings/ldap/test\" hx-target=\"#connectionRes\" hx-trigger=\"click\" hx-ext=\"disable-element\" hx-disable-element=\"self\">Test Conneciton</button> <a class=\"bg-blue-400 py-2 px-4 rounded\" href=\"/settings/ldap/credentials\">Edit Login Credentials</a></div><div class=\"flex flex-column justify-between py-2\"><form class=\"border rounded border-gray-500 p-5 w-fit flex flex-col gap-2\" hx-post=\"/settings/ldap\" hx-target=\"#response\"><div class=\"grid grid-cols-2 gap-y-2\"><label for=\"connectionStr\" class=\"align-center\">Connection String:</label> <input type=\"text\" name=\"connectionStr\" id=\"connectionStr\" class=\"border border-slate-400 rounded p-2\" value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
 			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(conf.ConnectionStr)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 28, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 36, Col: 32}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -67,7 +67,7 @@ func LDAPSettingsPage(conf models.LDAP) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(conf.TopLevelDomain + "." + conf.SecondLevelDomain)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 36, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 44, Col: 64}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -80,7 +80,7 @@ func LDAPSettingsPage(conf models.LDAP) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(conf.BaseGroup)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 44, Col: 27}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 52, Col: 28}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -93,7 +93,7 @@ func LDAPSettingsPage(conf models.LDAP) templ.Component {
 			var templ_7745c5c3_Var6 string
 			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(conf.BaseGroupOU)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 52, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 60, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 			if templ_7745c5c3_Err != nil {
@@ -106,7 +106,7 @@ func LDAPSettingsPage(conf models.LDAP) templ.Component {
 			var templ_7745c5c3_Var7 string
 			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(conf.AdminGroup)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 60, Col: 28}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 68, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 			if templ_7745c5c3_Err != nil {
@@ -119,7 +119,7 @@ func LDAPSettingsPage(conf models.LDAP) templ.Component {
 			var templ_7745c5c3_Var8 string
 			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(conf.AdminGroupOU)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 68, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 76, Col: 31}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 			if templ_7745c5c3_Err != nil {
@@ -132,7 +132,7 @@ func LDAPSettingsPage(conf models.LDAP) templ.Component {
 			var templ_7745c5c3_Var9 string
 			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(conf.TimeOutInSecs))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 76, Col: 45}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/setting/ldapSettings.templ`, Line: 84, Col: 46}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 			if templ_7745c5c3_Err != nil {
@@ -148,7 +148,7 @@ func LDAPSettingsPage(conf models.LDAP) templ.Component {
 					return templ_7745c5c3_Err
 				}
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "></div><button type=\"submit\" class=\"bg-blue-400 py-2 px-4 rounded\">Submit</button></form>")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "></div><button type=\"submit\" class=\"bg-blue-400 py-2 px-4 rounded\">Submit</button></form><div id=\"connectionRes\"></div></div><div id=\"response\"></div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

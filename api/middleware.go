@@ -43,6 +43,7 @@ func (s *Server) authentication(next http.Handler) http.Handler {
 			}
 			ctx := context.WithValue(r.Context(), models.UserCtx, res)
 			next.ServeHTTP(w, r.WithContext(ctx))
+			return
 		}
 
 		isAdmin := false

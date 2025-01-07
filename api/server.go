@@ -39,13 +39,8 @@ func (s *Server) Start() error {
 
 	router.Group(func(r chi.Router) {
 		r.Use(s.authentication)
-		// for some weird reason and I don't have time to debug the home page renders twice
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			http.Redirect(w, r, "/h", http.StatusMovedPermanently)
-		})
-		r.Route("/", func(hRouter chi.Router) {
-			hRouter.Get("/h", handlers.GetHomePage)
-		})
+
+		r.Get("/", handlers.GetHomePage)
 
 		r.Route("/db", func(dbroute chi.Router) {
 			dbroute.Get("/create-user", func(w http.ResponseWriter, r *http.Request) { handlers.GetCreateDbUserPage(w, r, s.store) })
@@ -106,6 +101,7 @@ func (s *Server) Start() error {
 				settingsR.Get("/logs", func(w http.ResponseWriter, r *http.Request) { handlers.GetLogsPage(w, r, s.store) })
 				settingsR.Get("/admin-logs", func(w http.ResponseWriter, r *http.Request) { handlers.GetAdminLogsPage(w, r, s.store) })
 				settingsR.Get("/ldap", func(w http.ResponseWriter, r *http.Request) { handlers.GetADConfigPage(w, r, s.store) })
+				settingsR.Post("/ldap/test", func(w http.ResponseWriter, r *http.Request) { handlers.TestConnectionHandler(w, r, s.store) })
 			})
 			// THIS is only for DEV
 			adminR.Get("/seed", func(w http.ResponseWriter, r *http.Request) { handlers.SeedHandler(w, r, s.store) })
