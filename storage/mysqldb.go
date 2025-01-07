@@ -41,28 +41,16 @@ func NewMySQLStorage(user string, password string, address string, dbName string
 }
 
 func (db *MySQLStorage) Seed() error {
-	var userId string
-
-	// Get the user ID from the database
-	err := db.connection.QueryRow(`
-        SELECT BIN_TO_UUID(id)
-        FROM users
-        WHERE username = "admin"
-    `).Scan(&userId)
-	if err != nil {
-		fmt.Println("Failed to get userId: ", err)
-		return err
-	}
 
 	dbConnections := []models.ExternalDb{
-		{Name: "mysql", Host: "localhost", Port: 3001, Type: models.MySQL, SslMode: "disable", Username: "apt_db_platform", Password: "1qaz!EDC", CreatedBy: userId},
-		{Name: "mysql-2", Host: "db-sql-02", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: userId},
-		{Name: "mysql-3", Host: "db-sql-03", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: userId},
-		{Name: "maria", Host: "db-maria", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: userId},
-		{Name: "maria-2", Host: "db-maria-02", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: userId},
-		{Name: "postgres", Host: "postgres", Port: 5432, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: userId},
-		{Name: "postgres-2", Host: "postgres-02", Port: 5432, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: userId},
-		{Name: "XEPDB1", Host: "172.21.192.1", Port: 1521, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: userId},
+		{Name: "mysql", Host: "localhost", Port: 3001, Type: models.MySQL, SslMode: "disable", Username: "apt_db_platform", Password: "1qaz!EDC", CreatedBy: "admin"},
+		{Name: "mysql-2", Host: "db-sql-02", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: "admin"},
+		{Name: "mysql-3", Host: "db-sql-03", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: "admin"},
+		{Name: "maria", Host: "db-maria", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: "admin"},
+		{Name: "maria-2", Host: "db-maria-02", Port: 3306, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: "admin"},
+		{Name: "postgres", Host: "postgres", Port: 5432, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: "admin"},
+		{Name: "postgres-2", Host: "postgres-02", Port: 5432, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: "admin"},
+		{Name: "XEPDB1", Host: "172.21.192.1", Port: 1521, Type: models.MySQL, SslMode: "disable", Username: "user", Password: "CHANGEME", CreatedBy: "admin"},
 	}
 
 	eService, err := utils.NewEncryptionService()
@@ -91,7 +79,7 @@ func (db *MySQLStorage) Seed() error {
 		connection.Password = ep
 
 		// Append each set of values to the query and args
-		query += "(?, ?, ?, ?, ?, UUID_TO_BIN(?), ?, ?),"
+		query += "(?, ?, ?, ?, ?, ?, ?, ?),"
 		args = append(args, connection.Name, connection.Host, connection.Port, connection.Type, connection.SslMode, connection.CreatedBy, connection.Username, connection.Password)
 	}
 

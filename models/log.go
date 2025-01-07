@@ -12,11 +12,11 @@ const (
 
 type Log struct {
 	Id        string
-	DbId      string
 	NewUser   string
 	WO        int
-	CreateBy  string
+	CreatedBy string
 	CreatedAt time.Time
+	DBName    string
 	Action    ActionType
 	Success   bool
 }

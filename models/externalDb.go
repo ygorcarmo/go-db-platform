@@ -29,8 +29,8 @@ type ExternalDb struct {
 	SslMode          string
 	Username         string
 	Password         string
-	CreatedBy        string
 	Owner            string
+	CreatedBy        string
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 	Protocol         string
@@ -48,7 +48,7 @@ type NewDbUserProps struct {
 type ExternalDbResponse struct {
 	Message   string
 	IsSuccess bool
-	DbId      string
+	DbName    string
 }
 
 func ToDbType(t string) (dbType, error) {
@@ -72,27 +72,27 @@ func (t *ExternalDb) ConnectAndCreateUser(user NewDbUserProps) ExternalDbRespons
 		pg, err := t.connectToPostgresql()
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbName: t.Name}
 		}
 		defer pg.Close()
 
 		_, err = pg.Exec("CREATE USER \"" + user.Username + "\" WITH PASSWORD '" + user.Password + "';")
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbName: t.Name}
 		}
 
 	case MySQL:
 		mysql, err := t.connectToSQL()
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbName: t.Name}
 		}
 		defer mysql.Close()
 
 		_, err = mysql.Exec("CREATE USER '" + user.Username + "'@'" + t.Host + "' IDENTIFIED BY '" + user.Password + "';")
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbName: t.Name}
 		}
 
 	case Oracle, OracleDG:
@@ -105,7 +105,7 @@ func (t *ExternalDb) ConnectAndCreateUser(user NewDbUserProps) ExternalDbRespons
 		}
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbName: t.Name}
 		}
 		defer db.Close()
 
@@ -113,14 +113,14 @@ func (t *ExternalDb) ConnectAndCreateUser(user NewDbUserProps) ExternalDbRespons
 
 		_, err = db.Exec("CREATE USER \"" + uppername + "\" IDENTIFIED BY \"" + user.Password + "\"")
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Create), IsSuccess: false, DbName: t.Name}
 		}
 
 	default:
-		return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, fmt.Errorf("DB type %s not supported", t.Type), Create), IsSuccess: false, DbId: t.Id}
+		return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, fmt.Errorf("DB type %s not supported", t.Type), Create), IsSuccess: false, DbName: t.Name}
 	}
 
-	return ExternalDbResponse{Message: fmt.Sprintf("User %s has been created successfully at %s \n", user.Username, t.Name), IsSuccess: true, DbId: t.Id}
+	return ExternalDbResponse{Message: fmt.Sprintf("User %s has been created successfully at %s \n", user.Username, t.Name), IsSuccess: true, DbName: t.Name}
 }
 
 func (t *ExternalDb) ConnectAndDeleteUser(user NewDbUserProps) ExternalDbResponse {
@@ -129,27 +129,27 @@ func (t *ExternalDb) ConnectAndDeleteUser(user NewDbUserProps) ExternalDbRespons
 		pg, err := t.connectToPostgresql()
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 		defer pg.Close()
 
 		_, err = pg.Exec("DROP USER \"" + user.Username + "\";")
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 
 	case MySQL:
 		mysql, err := t.connectToSQL()
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 		defer mysql.Close()
 
 		_, err = mysql.Exec("DROP USER '" + user.Username + "'@'" + t.Host + "';")
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 
 	case Oracle, OracleDG:
@@ -162,7 +162,7 @@ func (t *ExternalDb) ConnectAndDeleteUser(user NewDbUserProps) ExternalDbRespons
 		}
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 		defer db.Close()
 
@@ -170,14 +170,14 @@ func (t *ExternalDb) ConnectAndDeleteUser(user NewDbUserProps) ExternalDbRespons
 
 		_, err = db.Exec("DROP USER \"" + upperName + "\" CASCADE ")
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 
 	default:
-		return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, fmt.Errorf("DB type %s not supported", t.Type), Delete), IsSuccess: false, DbId: t.Id}
+		return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, fmt.Errorf("DB type %s not supported", t.Type), Delete), IsSuccess: false, DbName: t.Name}
 	}
 
-	return ExternalDbResponse{Message: fmt.Sprintf("User %s has been deleted successfully at %s \n", user.Username, t.Name), IsSuccess: true, DbId: t.Id}
+	return ExternalDbResponse{Message: fmt.Sprintf("User %s has been deleted successfully at %s \n", user.Username, t.Name), IsSuccess: true, DbName: t.Name}
 }
 func (t *ExternalDb) ConnectAndUpdateUserPassword(user NewDbUserProps) ExternalDbResponse {
 	switch t.Type {
@@ -185,33 +185,33 @@ func (t *ExternalDb) ConnectAndUpdateUserPassword(user NewDbUserProps) ExternalD
 		pg, err := t.connectToPostgresql()
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 		defer pg.Close()
 
 		_, err = pg.Exec("ALTER ROLE \"" + user.Username + "\" WITH PASSWORD '" + user.Password + "';")
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 
 	case MySQL:
 		mysql, err := t.connectToSQL()
 
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 		defer mysql.Close()
 
 		_, err = mysql.Exec("ALTER USER '" + user.Username + "'@'" + t.Host + "' IDENTIFIED BY '" + user.Password + "';")
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 
 	case Oracle:
 		db, err := t.connectToOracle()
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 		defer db.Close()
 
@@ -219,14 +219,14 @@ func (t *ExternalDb) ConnectAndUpdateUserPassword(user NewDbUserProps) ExternalD
 
 		_, err = db.Exec("ALTER USER \"" + upperName + "\" IDENTIFIED BY \"" + user.Password + "\"")
 		if err != nil {
-			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbId: t.Id}
+			return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, err, Delete), IsSuccess: false, DbName: t.Name}
 		}
 
 	default:
-		return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, fmt.Errorf("DB type %s not supported", t.Type), Delete), IsSuccess: false, DbId: t.Id}
+		return ExternalDbResponse{Message: makeErrorMessage(user.Username, t.Name, fmt.Errorf("DB type %s not supported", t.Type), Delete), IsSuccess: false, DbName: t.Name}
 	}
 
-	return ExternalDbResponse{Message: fmt.Sprintf("User %s's password has been updated successfully at %s \n", user.Username, t.Name), IsSuccess: true, DbId: t.Id}
+	return ExternalDbResponse{Message: fmt.Sprintf("User %s's password has been updated successfully at %s \n", user.Username, t.Name), IsSuccess: true, DbName: t.Name}
 }
 
 func (targetDb *ExternalDb) connectToPostgresql() (*sql.DB, error) {

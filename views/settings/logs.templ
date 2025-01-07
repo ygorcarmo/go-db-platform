@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-templ LogsPage(logs []models.LogResponse) {
+templ LogsPage(logs []models.Log) {
 	@layouts.Setting() {
 		<h1>Logs</h1>
 		<table
@@ -33,7 +33,7 @@ templ LogsPage(logs []models.LogResponse) {
 						>
 							{ log.NewUser }
 						</td>
-						<td class="px-6 py-4">{ log.Database }</td>
+						<td class="px-6 py-4">{ log.DBName }</td>
 						<td class="px-6 py-4">{ strconv.Itoa(log.WO) }</td>
 						<td class="px-6 py-4">
 							{ log.CreatedBy }

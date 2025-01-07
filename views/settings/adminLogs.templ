@@ -5,7 +5,7 @@ import (
 	"db-platform/views/layouts"
 )
 
-templ AdminLogsPage(logs []models.AdminLogResponse) {
+templ AdminLogsPage(logs []models.AdminLog) {
 	@layouts.Setting() {
 		<h1>Administrative Logs</h1>
 		<table
@@ -19,7 +19,6 @@ templ AdminLogsPage(logs []models.AdminLogResponse) {
 					<th scope="col" class="px-6 py-3">Action</th>
 					<th scope="col" class="px-6 py-3">Resource Type</th>
 					<th scope="col" class="px-6 py-3">Resource Name</th>
-					<th scope="col" class="px-6 py-3">Resource Id</th>
 					<th scope="col" class="px-6 py-3">Occurred At</th>
 				</tr>
 			</thead>
@@ -34,7 +33,6 @@ templ AdminLogsPage(logs []models.AdminLogResponse) {
 						<td class="px-6 py-4">{ string(log.Action) }</td>
 						<td class="px-6 py-4">{ string(log.ResourceType) }</td>
 						<td class="px-6 py-4">{ log.ResourceName }</td>
-						<td class="px-6 py-4">{ log.ResourceId }</td>
 						<td class="px-6 py-4">
 							{ log.CreatedAt.String() }
 						</td>

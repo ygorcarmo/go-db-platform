@@ -25,9 +25,9 @@ type Storage interface {
 	DeleteExternalDbById(string) error
 	CreateExternalDb(models.ExternalDb) (string, error)
 	CreateLog(models.Log) error
-	GetAllLogs() ([]models.LogResponse, error)
+	GetAllLogs() ([]models.Log, error)
 	CreateAdminLog(models.AdminLog) error
-	GetAllAdminLogs() ([]models.AdminLogResponse, error)
+	GetAllAdminLogs() ([]models.AdminLog, error)
 	GetADConfigWithCredentials() (*models.LDAP, error)
 	GetADConfig() (*models.LDAP, error)
 	UpdateADConfig(models.LDAP) error

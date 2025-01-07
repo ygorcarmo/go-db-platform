@@ -7,10 +7,9 @@ import (
 type AdminLog struct {
 	Id           string
 	Action       adminActions
-	UserId       string
-	ResourceId   string
 	ResourceType resourceTypes
 	ResourceName string
+	Username     string
 	CreatedAt    time.Time
 }
 

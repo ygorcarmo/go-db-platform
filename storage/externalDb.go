@@ -49,18 +49,16 @@ func (db *MySQLStorage) GetAllDbs() ([]models.ExternalDb, error) {
 
 	rows, err := db.connection.Query(`
 		SELECT 
-    		BIN_TO_UUID(ed.id) AS external_database_id,
-    		ed.name AS external_database_name,
-    		ed.host AS external_database_host,
-    		ed.port AS external_database_port,
-    		ed.type AS external_database_type,
-    		ed.sslMode AS external_database_sslMode,
-    		u.username AS user_username,
-			ed.owner
+    		BIN_TO_UUID(id),
+    		name,
+    		host,
+    		port,
+    		type,
+    		sslMode,
+    		createdBy,
+			owner
 		FROM 
-    		external_databases ed
-		JOIN 
-    		users u ON ed.createdBy = u.id;
+    		external_databases
 	`)
 
 	if err != nil {
@@ -194,7 +192,7 @@ func (db *MySQLStorage) CreateExternalDb(edb models.ExternalDb) (string, error) 
 	INSERT INTO external_databases
 		(name, host, port, type, sslMode, username, password, createdBy, owner, protocol, host_fallback, port_fallback, protocol_fallback)
 	VALUES 
-		(?, ?, ?, ?, ?, ?, ?, UUID_TO_BIN(?), ?, ?, ?, ?, ?);`,
+		(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
 		edb.Name, edb.Host, edb.Port, edb.Type, edb.SslMode, edb.Username, edb.Password, edb.CreatedBy, edb.Owner, edb.Protocol, edb.HostFallback, edb.PortFallback, edb.ProtocolFallback)
 	if err != nil {
 		tx.Rollback()

@@ -86,7 +86,6 @@ func (s *LDAP) Authenticate(conn *goLdap.Conn, username, password string) error 
 	}
 
 	userdn := sr.Entries[0].DN
-	fmt.Println(sr.Entries[0])
 
 	// Bind as the user to verify their password
 	err = conn.Bind(userdn, password)

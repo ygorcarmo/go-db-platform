@@ -94,11 +94,9 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetADLoginPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
-	fmt.Println("here")
 
 	config, err := s.GetADConfigWithCredentials()
 	if err != nil {
-		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("AD is not configured. Please Contact your Administrator."))
 		return

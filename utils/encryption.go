@@ -66,7 +66,6 @@ func (e EncryptionService) Decrypt(encodedData string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error decoding base64 data: %w", err)
 	}
-	fmt.Println(encodedData)
 
 	nonceSize := e.gcm.NonceSize()
 	if len(encryptedData) < nonceSize {

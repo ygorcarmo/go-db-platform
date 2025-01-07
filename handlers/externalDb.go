@@ -103,10 +103,10 @@ func ExternalDBUserHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 				result = currentDb.ConnectAndUpdateUserPassword(models.NewDbUserProps{Username: username, CurrentUserId: user.Id, WO: woInt, Password: password})
 			default:
 				fmt.Println("Action Type not supported")
-				result = models.ExternalDbResponse{Message: "Action type not supported", IsSuccess: false, DbId: "NOTVALID"}
+				result = models.ExternalDbResponse{Message: "Action type not supported", IsSuccess: false, DbName: "NOTVALID"}
 			}
 
-			go s.CreateLog(models.Log{DbId: result.DbId, NewUser: username, WO: woInt, CreateBy: user.Id, Action: a, Success: result.IsSuccess})
+			go s.CreateLog(models.Log{DBName: result.DbName, NewUser: username, WO: woInt, CreatedBy: user.Username, Action: a, Success: result.IsSuccess})
 
 			if result.IsSuccess {
 				successr = append(successr, result.Message)
@@ -177,15 +177,15 @@ func CreateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	config := models.ExternalDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Id, Owner: o, Protocol: protocol, HostFallback: hostFallback, PortFallback: portFallback, ProtocolFallback: protocolFallback}
+	config := models.ExternalDb{Username: u, Password: p, Name: d, Host: h, Port: dPort, Type: dType, SslMode: m, CreatedBy: user.Username, Owner: o, Protocol: protocol, HostFallback: hostFallback, PortFallback: portFallback, ProtocolFallback: protocolFallback}
 
-	id, err := s.CreateExternalDb(config)
+	_, err = s.CreateExternalDb(config)
 
 	if err != nil {
 		components.Response(models.Response{Message: err.Error(), IsSuccess: false}).Render(r.Context(), w)
 		return
 	}
-	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.CreateAdminAction, ResourceType: models.DbConnection, ResourceId: id, ResourceName: d})
+	go s.CreateAdminLog(models.AdminLog{Username: user.Username, Action: models.CreateAdminAction, ResourceType: models.DbConnection, ResourceName: d})
 
 	w.Header().Add("HX-Redirect", "/settings/dbs")
 	w.Write([]byte("DB Connection config has been created"))
@@ -244,7 +244,7 @@ func UpdateExternalDbHandler(w http.ResponseWriter, r *http.Request, s storage.S
 		return
 	}
 
-	go s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.UpdateSettingsAdminAction, ResourceType: models.DbConnection, ResourceId: i, ResourceName: n})
+	go s.CreateAdminLog(models.AdminLog{Username: user.Username, Action: models.UpdateSettingsAdminAction, ResourceType: models.DbConnection, ResourceName: n})
 
 	w.Header().Add("HX-Redirect", "/settings/dbs")
 	w.Write([]byte("db config updated"))
@@ -290,7 +290,7 @@ func UpdateExternalDbCredHandler(w http.ResponseWriter, r *http.Request, s stora
 			return
 		}
 
-		s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.UpdateCredentialsAdminAction, ResourceType: models.DbConnection, ResourceId: i, ResourceName: db.Name})
+		s.CreateAdminLog(models.AdminLog{Username: user.Username, Action: models.UpdateCredentialsAdminAction, ResourceType: models.DbConnection, ResourceName: db.Name})
 	}()
 
 	w.Header().Add("HX-Redirect", "/settings/dbs")
@@ -306,7 +306,7 @@ func DeleteExternalDbByIdHandler(w http.ResponseWriter, r *http.Request, s stora
 		if err != nil {
 			return
 		}
-		s.CreateAdminLog(models.AdminLog{UserId: user.Id, Action: models.DeleteAdminAction, ResourceType: models.DbConnection, ResourceId: id, ResourceName: db.Name})
+		s.CreateAdminLog(models.AdminLog{Username: user.Username, Action: models.DeleteAdminAction, ResourceType: models.DbConnection, ResourceName: db.Name})
 	}()
 
 	err := s.DeleteUserById(id)

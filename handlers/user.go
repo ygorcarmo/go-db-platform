@@ -105,13 +105,13 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request, s storage.Storage
 
 	user := models.AppUser{Username: u, Password: encodedHash, Supervisor: sup, Sector: sec, IsAdmin: isAdmin}
 
-	id, err := s.CreateApplicationUser(user)
+	_, err = s.CreateApplicationUser(user)
 	if err != nil {
 		components.Response(models.CreateResponse(err.Error(), false)).Render(r.Context(), w)
 		return
 	}
 
-	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.CreateAdminAction, ResourceId: id, ResourceType: models.User, ResourceName: u})
+	go s.CreateAdminLog(models.AdminLog{Username: cUser.Username, Action: models.CreateAdminAction, ResourceType: models.User, ResourceName: u})
 
 	w.Header().Add("HX-Redirect", "/settings/users")
 	w.Write([]byte("user created"))
@@ -135,7 +135,7 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 		if err != nil {
 			return
 		}
-		s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.DeleteAdminAction, ResourceId: id, ResourceType: models.User, ResourceName: user.Username})
+		s.CreateAdminLog(models.AdminLog{Username: cUser.Username, Action: models.DeleteAdminAction, ResourceType: models.User, ResourceName: user.Username})
 	}()
 	w.WriteHeader(http.StatusOK)
 }
@@ -188,7 +188,7 @@ func UpdateUserSettingsHandler(w http.ResponseWriter, r *http.Request, s storage
 		return
 	}
 
-	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.UpdateSettingsAdminAction, ResourceId: id, ResourceType: models.User, ResourceName: u})
+	go s.CreateAdminLog(models.AdminLog{Username: cUser.Username, Action: models.UpdateSettingsAdminAction, ResourceType: models.User, ResourceName: u})
 
 	w.Header().Add("HX-Redirect", "/settings/users")
 }
@@ -233,7 +233,7 @@ func UpdateAppUserCredentialsHandler(w http.ResponseWriter, r *http.Request, s s
 
 	w.Header().Add("HX-Redirect", "/settings/users")
 
-	go s.CreateAdminLog(models.AdminLog{UserId: cUser.Id, Action: models.UpdateCredentialsAdminAction, ResourceId: id, ResourceType: models.User, ResourceName: u})
+	go s.CreateAdminLog(models.AdminLog{Username: cUser.Username, Action: models.UpdateCredentialsAdminAction, ResourceType: models.User, ResourceName: u})
 
 }
 
