@@ -6,7 +6,7 @@ import (
 	"errors"
 )
 
-func (db *MySQLStorage) GetADConfig() (*models.LDAP, error) {
+func (db *MySQLStorage) GetADConfigWithCredentials() (*models.LDAP, error) {
 	// TODO: Username and password should be encrypted?
 	config := models.LDAP{}
 
@@ -59,6 +59,39 @@ func (db *MySQLStorage) GetADConfig() (*models.LDAP, error) {
 		return nil, errors.New("unable to decrypt password")
 	}
 	config.Password = passwd
+
+	return &config, nil
+}
+func (db *MySQLStorage) GetADConfig() (*models.LDAP, error) {
+	// TODO: Username and password should be encrypted?
+	config := models.LDAP{}
+
+	err := db.connection.QueryRow(`
+	SELECT
+		connectionStr,
+		topLevelDomain,
+		secondLevelDomain,
+		baseGroup,
+		adminGroup,
+		isDefault,
+		adminGroupOU,
+		baseGroupOU,
+		timeOutInSecs
+	FROM
+		ldap_config;`).Scan(
+		&config.ConnectionStr,
+		&config.TopLevelDomain,
+		&config.SecondLevelDomain,
+		&config.BaseGroup,
+		&config.AdminGroup,
+		&config.IsDefault,
+		&config.AdminGroupOU,
+		&config.BaseGroupOU,
+		&config.TimeOutInSecs)
+
+	if err != nil {
+		return nil, err
+	}
 
 	return &config, nil
 }
@@ -117,4 +150,16 @@ func (db *MySQLStorage) UpdateADCredentials(username, password string) error {
 	}
 
 	return nil
+}
+
+func (db *MySQLStorage) GetIsADDefaultAndAdminGroup() (bool, string, error) {
+	isDefault := false
+	group := ""
+
+	err := db.connection.QueryRow("SELECT isDefault, adminGroup FROM ldap_config;").Scan(&isDefault, &group)
+	if err != nil {
+		return isDefault, group, err
+	}
+
+	return isDefault, group, nil
 }

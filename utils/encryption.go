@@ -66,11 +66,16 @@ func (e EncryptionService) Decrypt(encodedData string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error decoding base64 data: %w", err)
 	}
+	fmt.Println(encodedData)
 
 	nonceSize := e.gcm.NonceSize()
+	if len(encryptedData) < nonceSize {
+		return "", fmt.Errorf("encrypted data is too short: length=%d, expected at least %d", len(encryptedData), nonceSize)
+	}
+
 	nonce, encryptedData := encryptedData[:nonceSize], encryptedData[nonceSize:]
 
-	plaintext, err := e.gcm.Open(nil, []byte(nonce), []byte(encryptedData), nil)
+	plaintext, err := e.gcm.Open(nil, nonce, encryptedData, nil)
 	if err != nil {
 		return "", fmt.Errorf("error decrypting data: %w", err)
 	}

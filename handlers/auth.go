@@ -94,9 +94,11 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetADLoginPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	fmt.Println("here")
 
-	config, err := s.GetADConfig()
+	config, err := s.GetADConfigWithCredentials()
 	if err != nil {
+		fmt.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte("AD is not configured. Please Contact your Administrator."))
 		return
@@ -120,7 +122,7 @@ func GetADLoginPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 
 func HandleADLogin(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 
-	config, err := s.GetADConfig()
+	config, err := s.GetADConfigWithCredentials()
 	if err != nil {
 		components.Response(models.Response{Message: "Error Connecting to AD. Please contact your Administrator", IsSuccess: false}).Render(r.Context(), w)
 		return

@@ -11,7 +11,7 @@ import (
 
 func (s *Server) authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		adConfig, err := s.store.GetADConfig()
+		isDefault, adminGroup, err := s.store.GetIsADDefaultAndAdminGroup()
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte("Please run the AD migration"))
@@ -22,7 +22,7 @@ func (s *Server) authentication(next http.Handler) http.Handler {
 
 		if err != nil || jwtToken.Value == "" {
 			// http.Redirect(w, r, "/login", http.StatusFound)
-			redirect(w, r, adConfig.IsDefault)
+			redirect(w, r, isDefault)
 			return
 		}
 
@@ -30,7 +30,7 @@ func (s *Server) authentication(next http.Handler) http.Handler {
 		if err != nil {
 			http.SetCookie(w, &http.Cookie{Name: "token", Value: "", Path: "/"})
 			// http.Redirect(w, r, "/login", http.StatusFound)
-			redirect(w, r, adConfig.IsDefault)
+			redirect(w, r, isDefault)
 			return
 		}
 
@@ -38,7 +38,7 @@ func (s *Server) authentication(next http.Handler) http.Handler {
 			res, err := s.store.GetUserById(userClaim.UserId)
 			if err != nil {
 				// http.Redirect(w, r, "/login", http.StatusFound)
-				redirect(w, r, adConfig.IsDefault)
+				redirect(w, r, isDefault)
 				return
 			}
 			ctx := context.WithValue(r.Context(), models.UserCtx, res)
@@ -48,7 +48,7 @@ func (s *Server) authentication(next http.Handler) http.Handler {
 
 		isAdmin := false
 
-		if userClaim.Group == adConfig.AdminGroup {
+		if userClaim.Group == adminGroup {
 			isAdmin = true
 		}
 
