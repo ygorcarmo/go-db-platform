@@ -3,9 +3,9 @@ package handlers
 import (
 	"net/http"
 
-	"db-platform/views/setting"
+	"db-platform/views/settings"
 )
 
 func GetSettingsPage(w http.ResponseWriter, r *http.Request) {
-	setting.Index().Render(r.Context(), w)
+	settings.Index().Render(r.Context(), w)
 }

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"db-platform/storage"
-	"db-platform/views/setting"
+	"db-platform/views/settings"
 )
 
 func GetLogsPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
@@ -16,7 +16,7 @@ func GetLogsPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
 		return
 	}
 
-	err = setting.LogsPage(logs).Render(r.Context(), w)
+	err = settings.LogsPage(logs).Render(r.Context(), w)
 	if err != nil {
 		fmt.Println("Something went wrong when trying to render logs config page")
 	}

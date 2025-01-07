@@ -4,7 +4,7 @@ import (
 	"db-platform/models"
 	"db-platform/storage"
 	"db-platform/views/components"
-	"db-platform/views/setting"
+	"db-platform/views/settings"
 	"fmt"
 	"net/http"
 )
@@ -17,7 +17,7 @@ func GetADConfigPage(w http.ResponseWriter, r *http.Request, s storage.Storage) 
 		return
 	}
 
-	err = setting.LDAPSettingsPage(*config).Render(r.Context(), w)
+	err = settings.LDAPSettingsPage(*config).Render(r.Context(), w)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("Something went wrong: %v", err)))

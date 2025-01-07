@@ -11,7 +11,7 @@ import (
 	"db-platform/storage"
 	"db-platform/views/components"
 	"db-platform/views/externalDb"
-	"db-platform/views/setting"
+	"db-platform/views/settings"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -129,7 +129,7 @@ func GetDatabasesConfigPage(w http.ResponseWriter, r *http.Request, s storage.St
 		return
 	}
 
-	renderErr := setting.DatabasesPage(dbs).Render(r.Context(), w)
+	renderErr := settings.DatabasesPage(dbs).Render(r.Context(), w)
 	if renderErr != nil {
 		log.Fatalln("Something went wrong went trying to render the dbs config page")
 	}

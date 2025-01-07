@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"db-platform/storage"
-	"db-platform/views/setting"
+	"db-platform/views/settings"
 )
 
 func GetAdminLogsPage(w http.ResponseWriter, r *http.Request, s storage.Storage) {
@@ -17,7 +17,7 @@ func GetAdminLogsPage(w http.ResponseWriter, r *http.Request, s storage.Storage)
 		return
 	}
 
-	err = setting.AdminLogsPage(ls).Render(r.Context(), w)
+	err = settings.AdminLogsPage(ls).Render(r.Context(), w)
 	if err != nil {
 		fmt.Println("Something went wrong went loading the Admin Logs Page")
 	}

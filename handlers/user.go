@@ -7,7 +7,7 @@ import (
 	"db-platform/models"
 	"db-platform/storage"
 	"db-platform/views/components"
-	"db-platform/views/setting"
+	"db-platform/views/settings"
 	appUser "db-platform/views/user"
 
 	"github.com/go-chi/chi/v5"
@@ -67,7 +67,7 @@ func GetAllUserSettingsPage(w http.ResponseWriter, r *http.Request, s storage.St
 		w.Write([]byte("Something went wrong"))
 		return
 	}
-	setting.GetUsersPage(users).Render(r.Context(), w)
+	settings.GetUsersPage(users).Render(r.Context(), w)
 }
 
 func GetCreateUserPage(w http.ResponseWriter, r *http.Request) {
