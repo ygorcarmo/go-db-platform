@@ -127,5 +127,8 @@ CREATE TABLE ldap_config(
 -- INSERT INTO config (id) VALUES (1);
 
 -- This is for local testing only
+-- INSERT INTO ldap_config(connectionStr, username, passwd, topLevelDomain)
+--     VALUES("ldap://localhost:10389", "admin", "GoodNewsEveryone", "planetexpress");
+
 INSERT INTO ldap_config(connectionStr, username, passwd, topLevelDomain)
-    VALUES("ldap://localhost:10389", "admin", "GoodNewsEveryone", "planetexpress");
+    VALUES("ldap://localhost:10389", "QPzQTsLeocyTE9AJ89SqCvtb9RM12zhw7fPt7/gqS6D6ibhi", "QPzQTsLeocyTE9AJ89SqCvtb9RM12zhw7fPt7/gqS6D6ibhi", "planetexpress");

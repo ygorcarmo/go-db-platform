@@ -26,20 +26,6 @@ type LDAP struct {
 
 // ldapsearch -H ldap://localhost:10389 -x -b "ou=people,dc=planetexpress,dc=com" -D "cn=admin,dc=planetexpress,dc=com" -w GoodNewsEveryone "(objectClass=inetOrgPerson)"
 
-// func (s *LDAP) Connect() (*goLdap.Conn, error) {
-// 	conn, err := goLdap.DialURL(s.ConnectionStr)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	err = conn.Bind(fmt.Sprintf("cn=%s,dc=%s,dc=%s", s.Username, s.TopLevelDomain, s.SecondLevelDomain), s.Password)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return conn, nil
-// }
-
 func (s *LDAP) Connect() (*goLdap.Conn, error) {
 	// Create a context with the specified timeout
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(s.TimeOutInSecs)*time.Second)

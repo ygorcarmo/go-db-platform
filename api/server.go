@@ -100,8 +100,14 @@ func (s *Server) Start() error {
 
 				settingsR.Get("/logs", func(w http.ResponseWriter, r *http.Request) { handlers.GetLogsPage(w, r, s.store) })
 				settingsR.Get("/admin-logs", func(w http.ResponseWriter, r *http.Request) { handlers.GetAdminLogsPage(w, r, s.store) })
-				settingsR.Get("/ldap", func(w http.ResponseWriter, r *http.Request) { handlers.GetADConfigPage(w, r, s.store) })
-				settingsR.Post("/ldap/test", func(w http.ResponseWriter, r *http.Request) { handlers.TestConnectionHandler(w, r, s.store) })
+				settingsR.Route("/ldap", func(ldapRouter chi.Router) {
+
+					ldapRouter.Get("/", func(w http.ResponseWriter, r *http.Request) { handlers.GetADConfigPage(w, r, s.store) })
+					ldapRouter.Post("/", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateADConfigHandler(w, r, s.store) })
+					ldapRouter.Post("/test", func(w http.ResponseWriter, r *http.Request) { handlers.TestConnectionHandler(w, r, s.store) })
+					ldapRouter.Get("/credentials", handlers.GetADCredentialsPage)
+					ldapRouter.Post("/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateADCredentialsHandler(w, r, s.store) })
+				})
 			})
 			// THIS is only for DEV
 			adminR.Get("/seed", func(w http.ResponseWriter, r *http.Request) { handlers.SeedHandler(w, r, s.store) })
