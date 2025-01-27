@@ -7,7 +7,6 @@ import (
 )
 
 func (db *MySQLStorage) GetADConfigWithCredentials() (*models.LDAP, error) {
-	// TODO: Username and password should be encrypted?
 	config := models.LDAP{}
 
 	err := db.connection.QueryRow(`
@@ -22,7 +21,10 @@ func (db *MySQLStorage) GetADConfigWithCredentials() (*models.LDAP, error) {
 		isDefault,
 		adminGroupOU,
 		baseGroupOU,
-		timeOutInSecs
+		timeOutInSecs,
+		enableTLS,
+		verifyCert,
+		cert		
 	FROM
 		ldap_config;`).Scan(
 		&config.ConnectionStr,
@@ -35,7 +37,10 @@ func (db *MySQLStorage) GetADConfigWithCredentials() (*models.LDAP, error) {
 		&config.IsDefault,
 		&config.AdminGroupOU,
 		&config.BaseGroupOU,
-		&config.TimeOutInSecs)
+		&config.TimeOutInSecs,
+		&config.EnableTLS,
+		&config.VerifyCert,
+		&config.Cert)
 
 	if err != nil {
 		return nil, err
@@ -60,10 +65,21 @@ func (db *MySQLStorage) GetADConfigWithCredentials() (*models.LDAP, error) {
 	}
 	config.Password = passwd
 
+	if config.VerifyCert {
+		if len(config.Cert) == 0 {
+			return nil, errors.New("please insert a certificate")
+		}
+
+		cert, err := eService.Decrypt(config.Cert)
+		if err != nil {
+			return nil, errors.New("unable to decrypt certificate")
+		}
+		config.Cert = cert
+	}
+
 	return &config, nil
 }
 func (db *MySQLStorage) GetADConfig() (*models.LDAP, error) {
-	// TODO: Username and password should be encrypted?
 	config := models.LDAP{}
 
 	err := db.connection.QueryRow(`
@@ -76,7 +92,9 @@ func (db *MySQLStorage) GetADConfig() (*models.LDAP, error) {
 		isDefault,
 		adminGroupOU,
 		baseGroupOU,
-		timeOutInSecs
+		timeOutInSecs,
+		enableTLS,
+		verifyCert
 	FROM
 		ldap_config;`).Scan(
 		&config.ConnectionStr,
@@ -87,7 +105,9 @@ func (db *MySQLStorage) GetADConfig() (*models.LDAP, error) {
 		&config.IsDefault,
 		&config.AdminGroupOU,
 		&config.BaseGroupOU,
-		&config.TimeOutInSecs)
+		&config.TimeOutInSecs,
+		&config.EnableTLS,
+		&config.VerifyCert)
 
 	if err != nil {
 		return nil, err
@@ -109,7 +129,9 @@ func (db *MySQLStorage) UpdateADConfig(config models.LDAP) error {
 			adminGroup=?,
 			adminGroupOU=?,
 			isDefault=?,
-			timeOutInSecs=?;
+			timeOutInSecs=?,
+			enableTLS=?,
+			verifyCert=?;
 	`,
 		config.ConnectionStr,
 		config.TopLevelDomain,
@@ -119,7 +141,9 @@ func (db *MySQLStorage) UpdateADConfig(config models.LDAP) error {
 		config.AdminGroup,
 		config.AdminGroupOU,
 		config.IsDefault,
-		config.TimeOutInSecs)
+		config.TimeOutInSecs,
+		config.EnableTLS,
+		config.VerifyCert)
 	if err != nil {
 		return err
 	}
@@ -162,4 +186,24 @@ func (db *MySQLStorage) GetIsADDefaultAndAdminGroup() (bool, string, error) {
 	}
 
 	return isDefault, group, nil
+}
+
+func (db *MySQLStorage) UpdateADCACert(cert string) error {
+	eService, err := utils.NewEncryptionService()
+	if err != nil {
+		return err
+	}
+
+	ecert, err := eService.Encrypt(cert)
+	if err != nil {
+		return err
+	}
+
+	_, err = db.connection.Exec("UPDATE ldap_config SET cert=?;", ecert)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }

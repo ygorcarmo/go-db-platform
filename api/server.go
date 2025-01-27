@@ -107,6 +107,8 @@ func (s *Server) Start() error {
 					ldapRouter.Post("/test", func(w http.ResponseWriter, r *http.Request) { handlers.TestConnectionHandler(w, r, s.store) })
 					ldapRouter.Get("/credentials", handlers.GetADCredentialsPage)
 					ldapRouter.Post("/credentials", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateADCredentialsHandler(w, r, s.store) })
+					ldapRouter.Get("/cert", handlers.GetADCertPage)
+					ldapRouter.Post("/cert", func(w http.ResponseWriter, r *http.Request) { handlers.UpdateADCert(w, r, s.store) })
 				})
 			})
 			// THIS is only for DEV

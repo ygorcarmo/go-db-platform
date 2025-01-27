@@ -2,6 +2,8 @@ package models
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"regexp"
@@ -22,6 +24,9 @@ type LDAP struct {
 	AdminGroupOU      string
 	IsDefault         bool
 	TimeOutInSecs     int
+	EnableTLS         bool
+	VerifyCert        bool
+	Cert              string
 }
 
 // ldapsearch -H ldap://localhost:10389 -x -b "ou=people,dc=planetexpress,dc=com" -D "cn=admin,dc=planetexpress,dc=com" -w GoodNewsEveryone "(objectClass=inetOrgPerson)"
@@ -41,11 +46,31 @@ func (s *LDAP) Connect() (*goLdap.Conn, error) {
 			errChan <- err
 			return
 		}
+		if s.EnableTLS {
+			config := tls.Config{}
 
-		err = conn.Bind(
-			fmt.Sprintf("cn=%s,dc=%s,dc=%s", s.Username, s.TopLevelDomain, s.SecondLevelDomain),
-			s.Password,
-		)
+			if s.VerifyCert {
+				caCertPool := x509.NewCertPool()
+				if !caCertPool.AppendCertsFromPEM([]byte(s.Cert)) {
+					errChan <- fmt.Errorf("failed to parse CA certificate")
+					return
+				}
+
+				config.RootCAs = caCertPool
+				config.ServerName = fmt.Sprintf("%s.%s", s.TopLevelDomain, s.SecondLevelDomain)
+			} else {
+				config.InsecureSkipVerify = true
+
+			}
+
+			err = conn.StartTLS(&config)
+		} else {
+			err = conn.Bind(
+				fmt.Sprintf("cn=%s,dc=%s,dc=%s", s.Username, s.TopLevelDomain, s.SecondLevelDomain),
+				s.Password,
+			)
+		}
+
 		if err != nil {
 			errChan <- err
 			return

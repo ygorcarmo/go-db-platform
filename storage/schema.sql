@@ -107,3 +107,13 @@ INSERT INTO
     ldap_config(connectionStr, topLevelDomain)
 VALUES
     ("ldap://localhost:10389", "planetexpress");
+
+-- Adding tls to ldap connection
+ALTER TABLE
+    ldap_config
+ADD
+    COLUMN enableTLS BOOLEAN NOT NULL DEFAULT FALSE,
+ADD
+    COLUMN verifyCert BOOLEAN NOT NULL DEFAULT FALSE,
+ADD
+    COLUMN cert VARCHAR(255) NULL;

@@ -33,4 +33,5 @@ type Storage interface {
 	UpdateADConfig(models.LDAP) error
 	UpdateADCredentials(username, password string) error
 	GetIsADDefaultAndAdminGroup() (bool, string, error)
+	UpdateADCACert(cert string) error
 }

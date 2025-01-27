@@ -42,6 +42,8 @@ func UpdateADConfigHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 		return
 	}
 	isDefault := r.FormValue("isDefault")
+	enableTLS := r.FormValue("enableTLS")
+	verifyCert := r.FormValue("verifyCert")
 
 	config := models.LDAP{
 		ConnectionStr:     connectionStr,
@@ -53,6 +55,8 @@ func UpdateADConfigHandler(w http.ResponseWriter, r *http.Request, s storage.Sto
 		AdminGroupOU:      adminGroupOU,
 		TimeOutInSecs:     timeOutInSecs,
 		IsDefault:         isDefault != "",
+		EnableTLS:         enableTLS != "",
+		VerifyCert:        verifyCert != "",
 	}
 
 	err = s.UpdateADConfig(config)
@@ -117,6 +121,28 @@ func UpdateADCredentialsHandler(w http.ResponseWriter, r *http.Request, s storag
 	}
 
 	err := s.UpdateADCredentials(username, passwd)
+	if err != nil {
+		components.Response(models.Response{Message: err.Error(), IsSuccess: false}).Render(r.Context(), w)
+		return
+	}
+
+	w.Header().Add("HX-Redirect", "/settings/ldap")
+	w.Write([]byte("success"))
+}
+
+func GetADCertPage(w http.ResponseWriter, r *http.Request) {
+	err := settings.UpdateLDAPCert().Render(r.Context(), w)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("Something went wrong: %v", err)))
+		return
+	}
+}
+
+func UpdateADCert(w http.ResponseWriter, r *http.Request, s storage.Storage) {
+	cert := r.FormValue("cert")
+
+	err := s.UpdateADCACert(cert)
 	if err != nil {
 		components.Response(models.Response{Message: err.Error(), IsSuccess: false}).Render(r.Context(), w)
 		return

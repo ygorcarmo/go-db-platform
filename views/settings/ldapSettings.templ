@@ -10,6 +10,11 @@ templ LDAPSettingsPage(conf models.LDAP) {
 	@layouts.Setting() {
 		<div class="flex flex-row gap-2">
 			<h1 class="text-2xl mr-auto">AD Settings</h1>
+			<a
+				class="bg-green-400 py-2 px-4 rounded"
+				href="/settings/ldap/cert"
+				id="editCertLink"
+			>Edit Certificate</a>
 			<button
 				class="bg-yellow-400 py-2 px-4 rounded"
 				hx-post="/settings/ldap/test"
@@ -93,11 +98,72 @@ templ LDAPSettingsPage(conf models.LDAP) {
 							checked
 						}
 					/>
+					<label>Enable TLS:</label>
+					<input
+						type="checkbox"
+						name="enableTLS"
+						id="enableTLS"
+						class="border border-slate-400 rounded"
+						if conf.EnableTLS {
+							checked
+						}
+					/>
+					<div id="verifyCertContainer" class="col-span-2">
+						<div class="grid grid-cols-2">
+							<label>Verify Certificate:</label>
+							<input
+								type="checkbox"
+								name="verifyCert"
+								id="verifyCert"
+								class="border border-slate-400 rounded"
+								if conf.VerifyCert {
+									checked
+								}
+							/>
+						</div>
+					</div>
 				</div>
 				<button type="submit" class="bg-blue-400 py-2 px-4 rounded">Submit</button>
 			</form>
 			<div id="connectionRes"></div>
 		</div>
 		<div id="response"></div>
+		<script>
+	function initializeLDAPSettingsPage() {
+		const enableTLSCheckbox = document.getElementById("enableTLS");
+		const verifyCertContainer = document.getElementById("verifyCertContainer");
+		const verifyCertCheckbox = document.getElementById("verifyCert");
+		const editCertLink = document.getElementById("editCertLink");
+
+		function updateVisibility() {
+			if (enableTLSCheckbox.checked) {
+				verifyCertContainer.style.display = "block";
+			} else {
+				verifyCertContainer.style.display = "none";
+				verifyCertCheckbox.checked = false;
+			}
+
+			if (enableTLSCheckbox.checked && verifyCertCheckbox.checked) {
+				editCertLink.style.display = "inline";
+			} else {
+				editCertLink.style.display = "none";
+			}
+		}
+
+		if (enableTLSCheckbox) {
+			enableTLSCheckbox.addEventListener("change", updateVisibility);
+			verifyCertCheckbox.addEventListener("change", updateVisibility);
+			updateVisibility();
+		}
+	}
+
+	// Run initialization on page load
+	document.addEventListener("DOMContentLoaded", initializeLDAPSettingsPage);
+
+	// Re-initialize after HTMX updates
+	document.body.addEventListener("htmx:afterSwap", function () {
+		initializeLDAPSettingsPage();
+	});
+</script>
 	}
 }
